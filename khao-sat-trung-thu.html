@@ -247,30 +247,48 @@
         </div>
 
         <div class="form-group">
-          <label>2. Điều gì quan trọng nhất với bạn khi chọn mua bánh Trung Thu? *</label>
-          <select name="Tiêu Chí" required>
-            <option value="">Chọn tiêu chí...</option>
-            <option value="Hương vị bánh">Hương vị bánh (Truyền thống/Hiện đại)</option>
-            <option value="Thiết kế bao bì">Thiết kế bao bì (Sang trọng/Độc đáo)</option>
-            <option value="Thương hiệu">Thương hiệu uy tín</option>
-            <option value="Giá thành">Giá thành hợp lý</option>
+          <label>2. Ngân sách dự kiến cho mỗi hộp quà là bao nhiêu? *</label>
+          <select name="Ngân Sách" required>
+            <option value="">Chọn ngân sách...</option>
+            <option value="Dưới 500.000đ">Dưới 500.000đ</option>
+            <option value="500.000đ - 1.000.000đ">500.000đ - 1.000.000đ</option>
+            <option value="Trên 1.000.000đ">Trên 1.000.000đ</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>3. Bạn mong đợi điều gì nhất ở bộ sưu tập Maison năm nay? *</label>
-          <select name="Mong Đợi" required>
-            <option value="">Chọn mong đợi...</option>
-            <option value="Vị bánh mới">Vị bánh mới lạ (Earl Grey, Rượu Vang...)</option>
-            <option value="Hộp quà tích hợp">Hộp quà tích hợp (Kèm rượu, trà cao cấp)</option>
-            <option value="Thiết kế văn hóa">Thiết kế mang đậm nét văn hóa nghệ thuật</option>
-            <option value="Ưu đãi Early Bird">Chính sách ưu đãi tốt cho người đặt sớm</option>
+          <label>3. Loại hương vị nào bạn quan tâm nhất? *</label>
+          <select name="Hương Vị" required>
+            <option value="">Chọn loại hương vị...</option>
+            <option value="Truyền thống (Thập cẩm, Đậu xanh...)">Truyền thống (Thập cẩm, Đậu xanh...)</option>
+            <option value="Hiện đại (Truffle, Yến sào, Matcha...)">Hiện đại (Truffle, Yến sào, Matcha...)</option>
+            <option value="Healthy (Ít đường, Ăn kiêng)">Healthy (Ít đường, Ăn kiêng)</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="message">4. Ý kiến đóng góp hoặc mong muốn khác của bạn?</label>
-          <textarea id="message" name="Ghi Chú" rows="3" placeholder="Chia sẻ thêm với chúng tôi..."></textarea>
+          <label>4. Phong cách thiết kế bao bì bạn yêu thích? *</label>
+          <select name="Bao Bì" required>
+            <option value="">Chọn phong cách...</option>
+            <option value="Truyền thống (Đỏ/Vàng, họa tiết cổ điển)">Truyền thống (Đỏ/Vàng, họa tiết cổ điển)</option>
+            <option value="Hiện đại (Tối giản, Sang trọng)">Hiện đại (Tối giản, Sang trọng)</option>
+            <option value="Nghệ thuật (Họa tranh, câu chuyện văn hóa)">Nghệ thuật (Họa tranh, câu chuyện văn hóa)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>5. Bạn thường có kế hoạch mua quà khi nào? *</label>
+          <select name="Thời Điểm" required>
+            <option value="">Chọn thời điểm...</option>
+            <option value="Trước 1 tháng (Đặt sớm)">Trước 1 tháng (Đặt sớm)</option>
+            <option value="Trước 2 tuần">Trước 2 tuần</option>
+            <option value="Cận ngày (1 tuần trước lễ)">Cận ngày (1 tuần trước lễ)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Ý kiến đóng góp hoặc mong muốn khác của bạn?</label>
+          <textarea id="message" name="Ghi Chú" rows="2" placeholder="Chia sẻ thêm với chúng tôi..."></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary btn-full" id="submit-btn" style="width:100%">

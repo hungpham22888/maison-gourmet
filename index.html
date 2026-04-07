@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Maison Gourmet - Quà Tặng Cao Cấp. Bộ quà tặng sang trọng, tinh tế dành cho doanh nghiệp và cá nhân. Đặt hàng ngay hôm nay!" />
+  <meta property="og:title" content="Quà Tặng Maison Gourmet - Sang Trọng & Tinh Tế" />
+  <meta property="og:description" content="Bộ sưu tập quà tặng cao cấp từ Maison Gourmet - Lựa chọn hoàn hảo cho doanh nghiệp và cá nhân" />
+  <title>Quà Tặng Maison Gourmet | Sang Trọng – Tinh Tế – Đẳng Cấp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TOP ANNOUNCEMENT BAR -->
+  <div class="announcement-bar" id="announcement-bar">
+    <div class="announcement-inner">
+      <span style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="opacity:.9"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg> Đặt hàng từ 50 hộp – Tặng ngay thiệp chúc mừng in tên thương hiệu miễn phí!</span>
+      <span class="divider">|</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="opacity:.9"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg> Giao hàng toàn quốc – Miễn phí từ 20 hộp</span>
+      <span class="divider">|</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="opacity:.9"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-1.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 15z"/></svg> Hotline: <strong>0985 688 366</strong></span>
+    </div>
+  </div>
+
+  <!-- FLASH SALE BANNER -->
+  <div class="flash-sale-banner" id="flash-sale-banner" style="display: none;">
+    <div class="sale-info">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <span>FLASH SALE GIẢM 30% – CHỈ CÒN:</span>
+    </div>
+    <div class="countdown-timer" id="countdown-timer">
+      <div class="timer-unit">
+        <span class="timer-box" id="timer-days">00</span>
+        <span class="timer-label">Ngày</span>
+      </div>
+      <div class="timer-unit">
+        <span class="timer-box" id="timer-hours">00</span>
+        <span class="timer-label">Giờ</span>
+      </div>
+      <div class="timer-unit">
+        <span class="timer-box" id="timer-mins">00</span>
+        <span class="timer-label">Phút</span>
+      </div>
+      <div class="timer-unit">
+        <span class="timer-box" id="timer-secs">00</span>
+        <span class="timer-label">Giây</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo" id="nav-logo-link">
+        <div class="logo-mark">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="#c2185b" stroke-width="1.5"/>
+            <path d="M18 6 C12 10, 8 14, 8 18 C8 22, 12 26, 18 28 C24 26, 28 22, 28 18 C28 14, 24 10, 18 6Z" fill="#9c27b0" opacity="0.15"/>
+            <text x="18" y="23" text-anchor="middle" font-family="Playfair Display" font-size="13" font-weight="700" fill="#c2185b">M</text>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">MAISON</span>
+          <span class="logo-sub">GOURMET</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about" class="nav-link">Giới thiệu</a></li>
+        <li><a href="#products" class="nav-link">Sản phẩm</a></li>
+        <li><a href="#why-us" class="nav-link">Cam kết</a></li>
+        <li><a href="khao-sat-trung-thu.html" class="nav-link" style="color:var(--primary); font-weight:700">Khảo Sát Trung Thu</a></li>
+        <li><a href="#order" class="nav-link">Liên hệ</a></li>
+        <li><a href="#order" class="nav-cta-link">Đặt hàng</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="cart-btn" id="cart-btn" aria-label="Giỏ hàng">
+          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M9 21a2 2 0 100-4 2 2 0 000 4zm10 0a2 2 0 100-4 2 2 0 000 4z"/></svg>
+          <span class="cart-badge" id="cart-badge">0</span>
+        </button>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-decoration">
+      <div class="hero-blob-pink"></div>
+      <div class="hero-blob-purple"></div>
+      <div class="hero-blob-sm"></div>
+      <div class="petal petal-1">✶</div>
+      <div class="petal petal-2">✵</div>
+      <div class="petal petal-3">✿</div>
+      <div class="petal petal-4">✶</div>
+    </div>
+
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          Quà Tặng Cao Cấp
+        </div>
+        <h1 class="hero-title">
+          Quà Tặng Maison Gourmet<br/>
+          <em>Sang Trọng – Tinh Tế</em><br/>
+          Nghệ Thuật Dâng Tặng
+        </h1>
+        <p class="hero-description">
+          Bộ sưu tập quà tặng độc đáo kết hợp nghệ thuật ẩm thực Pháp với hương vị truyền thống Việt Nam.
+          Mỗi hộp quà là một tác phẩm nghệ thuật, gửi gắm trọn vẹn sự trân trọng và yêu thương.
+        </p>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <strong>500+</strong>
+            <span>Doanh nghiệp tin dùng</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>10,000+</strong>
+            <span>Đơn hàng đã giao</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <strong>100%</strong>
+            <span>Nguyên liệu cao cấp</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <a href="#products" class="btn btn-primary" id="hero-explore-btn">
+            <span>Khám Phá Bộ Sưu Tập</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#order" class="btn btn-outline" id="hero-order-btn">Đặt Hàng Doanh Nghiệp</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" id="hero-visual">
+        <!-- Decorative rotating ring -->
+        <div class="hero-ring-deco"></div>
+
+        <!-- Main large circle -->
+        <div class="hero-circle-main" id="hero-circle-main">
+          <img src="hero_product.png" alt="Quà tặng Maison Gourmet cao cấp" id="hero-main-img" />
+        </div>
+
+        <!-- Small circle top-right -->
+        <div class="hero-circle-sm1" id="hero-circle-sm1" title="Nhấn để xem">
+          <img src="product1.png" alt="Hộp quà cao cấp" />
+        </div>
+
+        <!-- Small circle bottom-left -->
+        <div class="hero-circle-sm2" id="hero-circle-sm2" title="Nhấn để xem">
+          <img src="product3.png" alt="Hộp quà doanh nghiệp" />
+        </div>
+
+        <!-- Decorative pink blob -->
+        <div class="hero-pink-blob"></div>
+
+        <!-- Floating badge top-left -->
+        <div class="hero-badge-float badge-float-top">
+          <span style="display:flex;align-items:center;color:#c2185b">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+          </span>
+          <div>
+            <strong>Thương hiệu uy tín</strong>
+            <small>Top 10 quà tặng cao cấp</small>
+          </div>
+        </div>
+
+        <!-- Floating badge bottom-right -->
+        <div class="hero-badge-float badge-float-bottom">
+          <span style="display:flex;align-items:center;color:#f59e0b">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </span>
+          <div>
+            <strong>4.9/5 đánh giá</strong>
+            <small>Từ 2,000+ khách hàng</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#ffffff"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section class="about-section" id="about">
+    <div class="section-container">
+      <div class="about-grid">
+        <div class="about-image-col">
+          <div class="about-img-wrap">
+            <img src="product_set.png" alt="Bộ sưu tập quà tặng Maison Gourmet" class="about-img" />
+            <div class="about-badge-card">
+              <div class="badge-card-icon" style="display:flex;align-items:center;color:#fff">
+                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+              </div>
+              <div class="badge-card-text">
+                <strong>Đặt hàng tối thiểu</strong>
+                <span>Chỉ từ 1 hộp</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content-col">
+          <div class="section-label">Câu chuyện thương hiệu</div>
+          <h2 class="section-title">Maison Gourmet – Quà Tặng Sang Trọng Đẳng Cấp</h2>
+          <p class="about-text">
+            Được thành lập với sứ mệnh mang đến những trải nghiệm ẩm thực cao cấp nhất,
+            <strong>Maison Gourmet</strong> là thương hiệu tiên phong trong lĩnh vực quà tặng
+            doanh nghiệp và quà tặng cao cấp tại Việt Nam.
+          </p>
+          <p class="about-text">
+            Mỗi sản phẩm được chế tác thủ công bởi đội ngũ nghệ nhân lành nghề, kết hợp
+            nguyên liệu nhập khẩu từ Pháp, Bỉ với hương vị đặc trưng của ẩm thực Việt Nam.
+            Bao bì thiết kế độc bản, mang đậm bản sắc văn hóa Việt.
+          </p>
+          <div class="about-features">
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <span>Nguyên liệu nhập khẩu cao cấp từ Châu Âu</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <span>Thiết kế bao bì độc quyền, sang trọng</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <span>In logo, in tên doanh nghiệp theo yêu cầu</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <span>Giao hàng toàn quốc, đúng hẹn</span>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon">✓</div>
+              <span>Hỗ trợ tư vấn 24/7 mọi thời điểm</span>
+            </div>
+          </div>
+          <a href="#order" class="btn btn-primary" id="about-cta-btn">Nhận Báo Giá Ngay →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="products-section" id="products">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-label">Bộ sưu tập quà tặng</div>
+        <h2 class="section-title">Các Món Quà Đặc Biệt Của Maison Gourmet</h2>
+        <p class="section-subtitle">Mỗi bộ quà là sự kết hợp hoàn hảo giữa hương vị tinh tế và thiết kế sang trọng, phù hợp làm quà tặng doanh nghiệp và cá nhân</p>
+      </div>
+
+      <!-- Product Filter Tabs -->
+      <div class="product-tabs" id="product-tabs">
+        <button class="tab-btn active" data-filter="all" id="tab-all">Tất cả sản phẩm</button>
+        <button class="tab-btn" data-filter="classic" id="tab-classic">Dòng Cổ Điển</button>
+        <button class="tab-btn" data-filter="premium" id="tab-premium">Dòng Premium</button>
+        <button class="tab-btn" data-filter="corp" id="tab-corp">Quà Doanh Nghiệp</button>
+      </div>
+
+      <div class="products-grid" id="products-grid">
+
+        <!-- Product 1 -->
+        <div class="product-card" data-category="classic" id="product-card-1">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag">Bán chạy nhất</span>
+            <img src="product1.png" alt="Hộp quà An Quý" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="1" data-name="Hộp quà An Quý" data-price="648000" data-img="product1.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Cổ Điển</div>
+            <h3 class="product-name">Hộp quà An Quý</h3>
+            <p class="product-desc">Hộp bao gồm: Sơn Tra - Dâu Tằm 130gr, Đậu Đen Da Xanh 120gr, Quy Tròn Vị Hạt Phi 115gr, Bánh Lưỡi Mèo EAR GRY 100gr, Táo Đỏ Hấp Không Hạt 100gr, Trà Shan Tuyết 48gr.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">648.000đ</span>
+                <span class="product-price-old">720.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-count">(128)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="1" data-name="Hộp quà An Quý" data-price="648000" data-img="product1.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-card" data-category="classic" id="product-card-2">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag bestseller">Mới nhất</span>
+            <img src="product2.png" alt="Hộp quà Dương Hòa" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="2" data-name="Hộp quà Dương Hòa" data-price="765000" data-img="product2.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Cổ Điển</div>
+            <h3 class="product-name">Hộp quà Dương Hòa</h3>
+            <p class="product-desc">Hộp bao gồm: Sơn Tra - Dâu Tằm 130gr, Táo Đỏ Hấp Không Hạt 100gr, Mận Sấy Mọng 130gr, Quy Tròn Hạnh Nhân 115gr, Bánh Lưỡi Mèo SOCOLA 100gr, Mật Ong Hồng Trà Cổ Thụ 30gr.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">765.000đ</span>
+                <span class="product-price-old">850.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-count">(95)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="2" data-name="Hộp quà Dương Hòa" data-price="765000" data-img="product2.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-card" data-category="premium" id="product-card-3">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag" style="background: linear-gradient(135deg, #8e24aa, #c0392b);">Premium</span>
+            <img src="product3.png" alt="Hộp quà Tài Lộc" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="3" data-name="Hộp quà Tài Lộc" data-price="855000" data-img="product3.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Premium</div>
+            <h3 class="product-name">Hộp quà Tài Lộc</h3>
+            <p class="product-desc">Hộp bao gồm: Sơn Tra - Dâu Tằm 130gr, Táo Đỏ Hấp Không Hạt 100gr, Mận Sấy Mọng 130gr, Trà Shan Tuyết 48gr, Bánh Lưỡi Mèo EAR GRY 100gr, Rượu Mơ - Haruka 500ml.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">855.000đ</span>
+                <span class="product-price-old">950.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-count">(204)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="3" data-name="Hộp quà Tài Lộc" data-price="855000" data-img="product3.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-card" data-category="premium" id="product-card-4">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag" style="background: linear-gradient(135deg, #e67e22, #c0392b);">Giới hạn</span>
+            <img src="product4.png" alt="Hộp quà Ngọc Quý" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="4" data-name="Hộp quà Ngọc Quý" data-price="990000" data-img="product4.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Premium</div>
+            <h3 class="product-name">Hộp quà Ngọc Quý</h3>
+            <p class="product-desc">Hộp bao gồm: Sơn Tra - Dâu Tằm 250gr, Táo Đỏ Hấp Không Hạt 180gr, Mận Sấy Mọng 250gr, Quy Tròn Vị Hạt Phi 165gr, Bánh Lưỡi Mèo SOCOLA 140gr, Hồng Trà Mật Ong Cổ Thụ 30gr.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">990.000đ</span>
+                <span class="product-price-old">1.100.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★☆</span>
+                <span class="rating-count">(67)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="4" data-name="Hộp quà Ngọc Quý" data-price="990000" data-img="product4.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-card" data-category="corp" id="product-card-5">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag bestseller">Doanh nghiệp</span>
+            <img src="product_set.png" alt="Hộp quà Vinh Hoa" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="5" data-name="Hộp quà Vinh Hoa" data-price="1395000" data-img="product_set.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Doanh nghiệp</div>
+            <h3 class="product-name">Hộp quà Vinh Hoa</h3>
+            <p class="product-desc">Hộp bao gồm: Táo Tươi Hấp Mềm 120gr, Sung Chín Nguyên Quả 130gr, Mận Sấy Mọng 130gr, Bánh Lưỡi Mèo Matcha 100gr, Quy Tròn Hạnh Nhân 115gr, Bánh Lưỡi Mèo EAR GRY 100gr, Trà Shan Tuyết 48gr, Vang ITALY BOTTE 750ml.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">1.395.000đ</span>
+                <span class="product-price-old">1.550.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-count">(42)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="5" data-name="Hộp quà Vinh Hoa" data-price="1395000" data-img="product_set.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+
+        <!-- Product 6 -->
+        <div class="product-card" data-category="corp" id="product-card-6">
+          <div class="product-image-wrap">
+            <span class="product-badge-tag bestseller">Vạn An</span>
+            <img src="hero_product.png" alt="Hộp quà Vạn An" class="product-img" />
+            <div class="product-overlay">
+              <button class="btn-overlay add-to-cart-btn" data-id="6" data-name="Hộp quà Vạn An" data-price="1620000" data-img="hero_product.png">Thêm vào giỏ</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <div class="product-category-tag">Dòng Doanh nghiệp</div>
+            <h3 class="product-name">Hộp quà Vạn An</h3>
+            <p class="product-desc">Hộp bao gồm: Sơn Tra - Dâu Tằm 250gr, Táo Đỏ Hấp Không Hạt 180gr, Sung Chín Nguyên Quả 250gr, Mận Sấy Mọng 250gr, Trà Phổ Nhĩ 48gr, Vang ITALY - Terre Forti 750ml.</p>
+            <div class="product-price-row">
+              <div>
+                <span class="product-price">1.620.000đ</span>
+                <span class="product-price-old">1.800.000đ</span>
+              </div>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-count">(185)</span>
+              </div>
+            </div>
+            <button class="btn btn-product add-to-cart-btn" data-id="6" data-name="Hộp quà Vạn An" data-price="1620000" data-img="hero_product.png">Thêm vào giỏ</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US SECTION -->
+  <section class="why-us-section" id="why-us">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-label">Cam kết chất lượng</div>
+        <h2 class="section-title">Tại Sao Chọn Maison Gourmet?</h2>
+        <p class="section-subtitle">Chúng tôi cam kết mang đến trải nghiệm quà tặng hoàn hảo nhất cho khách hàng</p>
+      </div>
+
+      <div class="reasons-grid">
+        <div class="reason-card" id="reason-1">
+          <div class="reason-icon">🏅</div>
+          <h3>Chất Lượng Đảm Bảo</h3>
+          <p>100% nguyên liệu nhập khẩu từ các thương hiệu uy tín châu Âu. Quy trình sản xuất đạt chuẩn ISO và HACCP quốc tế.</p>
+        </div>
+        <div class="reason-card" id="reason-2">
+          <div class="reason-icon">🎨</div>
+          <h3>Thiết Kế Độc Quyền</h3>
+          <p>Đội ngũ thiết kế chuyên nghiệp tạo ra bao bì đẳng cấp. Có thể tùy chỉnh theo phong cách và thương hiệu của bạn.</p>
+        </div>
+        <div class="reason-card" id="reason-3">
+          <div class="reason-icon">🚚</div>
+          <h3>Giao Hàng Đúng Hẹn</h3>
+          <p>Hệ thống logistics đối tác trên toàn quốc. Cam kết giao hàng đúng thời gian, bao bì nguyên vẹn.</p>
+        </div>
+        <div class="reason-card" id="reason-4">
+          <div class="reason-icon">💼</div>
+          <h3>Tư Vấn Chuyên Sâu</h3>
+          <p>Đội ngũ tư vấn dày dạn kinh nghiệm hỗ trợ 24/7. Giúp bạn chọn lựa quà tặng phù hợp nhất cho từng đối tượng.</p>
+        </div>
+        <div class="reason-card" id="reason-5">
+          <div class="reason-icon">💰</div>
+          <h3>Chiết Khấu Hấp Dẫn</h3>
+          <p>Chính sách giá ưu đãi cho đơn hàng số lượng lớn. Chiết khấu lên đến 30% cho đơn hàng từ 100 hộp trở lên.</p>
+        </div>
+        <div class="reason-card" id="reason-6">
+          <div class="reason-icon">♻️</div>
+          <h3>Bền Vững & Xanh</h3>
+          <p>Bao bì thân thiện môi trường, vật liệu tái chế cao cấp. Cam kết phát triển bền vững cùng cộng đồng.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section class="pricing-section" id="pricing">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-label">Chính sách giá</div>
+        <h2 class="section-title">Bảng Giá & Ưu Đãi Số Lượng</h2>
+        <p class="section-subtitle">Chiết khấu hấp dẫn cho đơn hàng doanh nghiệp. Liên hệ ngay để được tư vấn tốt nhất!</p>
+      </div>
+
+      <div class="pricing-table-wrap">
+        <table class="pricing-table" id="pricing-table">
+          <thead>
+            <tr>
+              <th>Số Lượng</th>
+              <th>Chiết Khấu</th>
+              <th>Ưu Đãi Thêm</th>
+              <th>Dịch Vụ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="qty-badge">1 – 9 hộp</span></td>
+              <td>Giá niêm yết</td>
+              <td>—</td>
+              <td>Giao hàng tiêu chuẩn</td>
+            </tr>
+            <tr>
+              <td><span class="qty-badge">10 – 49 hộp</span></td>
+              <td class="discount-cell">Giảm 10%</td>
+              <td>Thiệp chúc mừng miễn phí</td>
+              <td>Giao hàng ưu tiên</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><span class="qty-badge popular">50 – 99 hộp</span></td>
+              <td class="discount-cell">Giảm 20%</td>
+              <td>Thiệp + In thương hiệu</td>
+              <td>Giao hàng ưu tiên + Hỗ trợ setup</td>
+            </tr>
+            <tr>
+              <td><span class="qty-badge">100+ hộp</span></td>
+              <td class="discount-cell">Giảm 30%</td>
+              <td>Thiệp + Logo + Thiết kế bao bì</td>
+              <td>Dịch vụ trọn gói VIP</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS SECTION -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-label">Khách hàng nói gì</div>
+        <h2 class="section-title">Hơn 500 Doanh Nghiệp Đã Tin Dùng</h2>
+        <p class="section-subtitle">Cùng khám phá những chia sẻ từ khách hàng đã sử dụng quà tặng Maison Gourmet</p>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card" id="testimonial-1">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">Năm ngoái công ty chúng tôi đặt 200 hộp quà cho đối tác. Maison Gourmet tư vấn rất nhiệt tình, từ thiết kế bao bì đến in logo công ty. Đối tác đều khen ngợi. Chúng tôi đánh giá rất cao sự chuyên nghiệp của các bạn!</p>
+          <div class="testimonial-footer">
+            <div class="testimonial-avatar">
+              <div class="avatar-fallback">N</div>
+            </div>
+            <div class="testimonial-info">
+              <strong>Nguyễn Minh Tuấn</strong>
+              <span>Giám đốc Marketing – Công ty TechVision</span>
+              <div class="stars-sm">★★★★★</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card featured" id="testimonial-2">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">Chất lượng sản phẩm vượt mọi kỳ vọng! Chocolate của Maison Gourmet cực kỳ thơm ngon, bao bì đẹp đến nỗi khách hàng không nỡ mở hộp. Đây là lần thứ 3 chúng tôi chọn Maison Gourmet làm đối tác quà tặng cao cấp.</p>
+          <div class="testimonial-footer">
+            <div class="testimonial-avatar">
+              <div class="avatar-fallback">L</div>
+            </div>
+            <div class="testimonial-info">
+              <strong>Lê Thị Hương</strong>
+              <span>CEO – Tập đoàn Đại Phúc Group</span>
+              <div class="stars-sm">★★★★★</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" id="testimonial-3">
+          <div class="quote-icon">"</div>
+          <p class="testimonial-text">Dịch vụ giao hàng rất chuyên nghiệp. Đặt 50 hộp cho nhân viên toàn công ty, được giao đúng ngày, hộp quà còn nguyên vẹn và đẹp như ý. Giá cả hợp lý so với chất lượng. Sẽ tiếp tục ủng hộ!</p>
+          <div class="testimonial-footer">
+            <div class="testimonial-avatar">
+              <div class="avatar-fallback">P</div>
+            </div>
+            <div class="testimonial-info">
+              <strong>Phạm Quốc Dũng</strong>
+              <span>HR Manager – Vingroup Holdings</span>
+              <div class="stars-sm">★★★★★</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust Logos -->
+      <div class="trust-section">
+        <p class="trust-label">Được tin dùng bởi hơn 500 doanh nghiệp hàng đầu</p>
+        <div class="trust-logos" id="trust-logos">
+          <div class="trust-logo-item">Vingroup</div>
+          <div class="trust-logo-item">FPT Corp</div>
+          <div class="trust-logo-item">Masan Group</div>
+          <div class="trust-logo-item">Viettel</div>
+          <div class="trust-logo-item">Techcombank</div>
+          <div class="trust-logo-item">Grab Vietnam</div>
+          <div class="trust-logo-item">VPBank</div>
+          <div class="trust-logo-item">Sun Group</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDER FORM SECTION -->
+  <section class="order-section" id="order">
+    <div class="section-container">
+      <div class="order-grid">
+        <div class="order-info">
+          <div class="section-label">Liên hệ tư vấn</div>
+          <h2 class="section-title">Nhận Tư Vấn Trực Tiếp</h2>
+          <p class="order-desc">Để lại thông tin, đội ngũ nhân viên của chúng tôi sẽ liên hệ lại với bạn trong vòng <strong>15 phút</strong> (giờ hành chính).</p>
+
+          <div class="order-contact-items">
+            <div class="contact-item">
+              <div class="contact-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-1.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 15z"/></svg></div>
+              <div>
+                <strong>Hotline</strong>
+                <a href="tel:0985688366">0985 688 366</a>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <div>
+                <strong>Email</strong>
+                <a href="mailto:maisoncakevn@gmail.com">maisoncakevn@gmail.com</a>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+              <div>
+                <strong>Showroom</strong>
+                <span>Số 315 Trường Chinh, P.Khương Đình, Hà Nội</span>
+              </div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div>
+                <strong>Giờ làm việc</strong>
+                <span>08:00 – 18:00, Thứ 2 – Thứ 7</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-guarantee">
+            <div class="guarantee-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Thông tin bảo mật tuyệt đối</div>
+            <div class="guarantee-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Cam kết hoàn tiền nếu không hài lòng</div>
+            <div class="guarantee-item"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Miễn phí tư vấn không giới hạn</div>
+          </div>
+        </div>
+
+        <div class="order-form-wrap">
+          <div class="mid-autumn-teaser">
+            <div class="teaser-icon">🌕</div>
+            <h3 class="form-title">Sắp Ra Mắt: Trung Thu 2026</h3>
+            <p>Chúng tôi đang chuẩn bị những món quà đặc biệt nhất cho mùa trăng năm nay. Hãy chia sẻ mong muốn của bạn để nhận ngay <strong>Mã Giảm Giá 10%</strong>!</p>
+            <div class="teaser-benefits">
+              <div class="benefit-item">✨ Hộp quà tích hợp cao cấp</div>
+              <div class="benefit-item">✨ Vị bánh giới hạn độc bản</div>
+              <div class="benefit-item">✨ Thiết kế văn hóa đương đại</div>
+            </div>
+            <a href="khao-sat-trung-thu.html" class="btn btn-primary btn-full" style="margin-top: 20px;">
+              <span>Tham Gia Khảo Sát Ngay</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="logo-mark">
+              <svg width="40" height="40" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="17" stroke="#ce93d8" stroke-width="1.5"/>
+                <path d="M18 6 C12 10, 8 14, 8 18 C8 22, 12 26, 18 28 C24 26, 28 22, 28 18 C28 14, 24 10, 18 6Z" fill="#ce93d8" opacity="0.3"/>
+                <text x="18" y="23" text-anchor="middle" font-family="Playfair Display" font-size="13" font-weight="700" fill="#f48fb1">M</text>
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="logo-main" style="color:#f48fb1">MAISON</span>
+              <span class="logo-sub" style="color:#ce93d8">GOURMET</span>
+            </div>
+          </div>
+          <p class="footer-tagline">Nghệ thuật trong từng hộp quà. Trân trọng trong từng khoảnh khắc.</p>
+          <div class="footer-socials">
+            <a href="#" class="social-link" id="footer-fb" aria-label="Facebook">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="social-link" id="footer-ig" aria-label="Instagram">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="social-link" id="footer-zalo" aria-label="Zalo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><text x="2" y="18" font-family="Arial" font-weight="bold" font-size="11">Z</text></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sản phẩm</h4>
+          <ul>
+            <li><a href="khao-sat-trung-thu.html">Khảo sát Trung Thu</a></li>
+            <li><a href="#products">Hộp quà Tết</a></li>
+            <li><a href="#products">Quà Doanh Nghiệp</a></li>
+            <li><a href="#products">Thiết kế theo yêu cầu</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Dịch vụ</h4>
+          <ul>
+            <li><a href="#order">Tư vấn miễn phí</a></li>
+            <li><a href="#order">In logo thương hiệu</a></li>
+            <li><a href="#order">Giao hàng toàn quốc</a></li>
+            <li><a href="#order">Quà tặng VIP</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Liên hệ</h4>
+          <ul>
+            <li style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.7"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-1.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 15z"/></svg>0985 688 366</li>
+            <li style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.7"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>maisoncakevn@gmail.com</li>
+            <li style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.7"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Số 315 Trường Chinh, Hà Nội</li>
+            <li style="display:flex;align-items:center;gap:7px"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>T2–T7: 08:00 – 18:00</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 Maison Gourmet. Tất cả quyền được bảo lưu.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Chính sách bảo mật</a>
+          <a href="#">Điều khoản sử dụng</a>
+          <a href="#">Chính sách đổi trả</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- FLOATING CTA -->
+  <div class="floating-cta" id="floating-cta">
+    <a href="tel:0985688366" class="float-btn float-phone" id="float-phone-btn" aria-label="Gọi ngay">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-1.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.73 15z"/></svg>
+      <span class="float-tooltip">Gọi ngay</span>
+    </a>
+    <a href="https://zalo.me/0985688366" target="_blank" rel="noopener noreferrer" class="float-btn float-zalo" id="float-zalo-btn" aria-label="Chat Zalo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><text x="6" y="17" font-family="Arial" font-weight="bold" font-size="14">Z</text></svg>
+      <span class="float-tooltip">Chat Zalo</span>
+    </a>
+    <a href="#order" class="float-btn float-order" id="float-order-btn" aria-label="Đặt hàng">
+      <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+      <span class="float-tooltip">Đặt hàng</span>
+    </a>
+  </div>
+
+  <!-- BACK TO TOP -->
+  <button class="back-to-top" id="back-to-top" aria-label="Lên đầu trang">
+    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- CART SIDEBAR -->
+  <div class="cart-overlay" id="cart-overlay"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h3>Giỏ Hàng Của Bạn</h3>
+      <button class="close-cart" id="close-cart" aria-label="Đóng">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <!-- Items render trộng bằng JS -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Tổng cộng:</span>
+        <strong id="cart-total-price">0đ</strong>
+      </div>
+      <button type="button" class="btn btn-primary btn-full checkout-btn" id="checkout-btn">Thanh Toán Ngay</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

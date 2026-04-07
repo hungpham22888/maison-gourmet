@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Khảo sát ý kiến khách hàng cho Bộ sưu tập Bánh Trung Thu Maison 2026. Nhận ngay mã giảm giá 10%!" />
+  <title>Khảo Sát Bộ Sưu Tập Trung Thu | Maison Gourmet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --survey-bg: #fff;
+      --survey-card: #ffffff;
+      --gold: #d97706;
+      --primary-gradient: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 40%, var(--accent) 100%);
+    }
+
+    body.survey-page {
+      background: linear-gradient(135deg, #fdf0f6 0%, #fff 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .survey-hero {
+      padding: 100px 20px 40px;
+      text-align: center;
+      position: relative;
+    }
+
+    .moon-deco {
+      position: absolute;
+      top: 40px;
+      right: 15%;
+      width: 70px;
+      height: 70px;
+      background: #fef3c7;
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
+      z-index: -1;
+      animation: float-moon 6s ease-in-out infinite;
+      border: 1px solid rgba(251, 191, 36, 0.1);
+    }
+
+    @keyframes float-moon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .survey-container {
+      max-width: 800px;
+      margin: 0 auto 80px;
+      padding: 0 20px;
+    }
+
+    .survey-card {
+      background: var(--survey-card);
+      border: 1px solid rgba(194, 24, 91, 0.08);
+      border-radius: 24px;
+      padding: 45px;
+      box-shadow: var(--shadow-medium);
+      position: relative;
+    }
+
+    .survey-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .survey-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .survey-header p {
+      font-size: 1.05rem;
+      color: var(--text-medium);
+      line-height: 1.6;
+    }
+
+    .survey-form .form-group {
+      margin-bottom: 24px;
+    }
+
+    .survey-form .form-group label {
+      color: var(--text-dark);
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .survey-form input, 
+    .survey-form select, 
+    .survey-form textarea {
+      background: #fff;
+      border: 1.5px solid #eee;
+      color: var(--text-dark);
+      border-radius: 12px;
+      padding: 14px 18px;
+      width: 100%;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+    }
+
+    .survey-form input:focus, 
+    .survey-form select:focus, 
+    .survey-form textarea:focus {
+      border-color: var(--primary);
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(194, 24, 91, 0.05);
+      background: #fff;
+    }
+
+    .survey-form .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-weight: 700;
+      margin-top: 10px;
+      padding: 16px;
+      font-size: 1.1rem;
+    }
+
+    /* Success State */
+    .success-card {
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .success-card h2 {
+      color: var(--primary);
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+
+    .promo-box {
+      background: var(--pink-blush);
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      padding: 30px;
+      margin: 35px 0;
+    }
+
+    .promo-code {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--primary-dark);
+      display: block;
+      margin-top: 10px;
+    }
+
+    .lantern-deco {
+      position: fixed;
+      width: 30px;
+      height: 45px;
+      background: #f48fb1;
+      border-radius: 6px;
+      box-shadow: 0 4px 15px rgba(244, 143, 177, 0.3);
+      z-index: -1;
+      opacity: 0.25;
+    }
+
+    .lantern-1 { top: 120px; left: 8%; animation: sway 4s ease-in-out infinite; }
+    .lantern-2 { top: 350px; right: 8%; animation: sway 5s ease-in-out infinite; }
+    
+    @keyframes sway {
+      0%, 100% { transform: rotate(-4deg); }
+      50% { transform: rotate(4deg); }
+    }
+
+    @media (max-width: 640px) {
+      .survey-card { padding: 30px 20px; }
+      .survey-header h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body class="survey-page">
+
+  <!-- NAVIGATION -->
+  <nav class="navbar scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-mark">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="17" stroke="#c2185b" stroke-width="1.5"/>
+            <path d="M18 6 C12 10, 8 14, 8 18 C8 22, 12 26, 18 28 C24 26, 28 22, 28 18 C28 14, 24 10, 18 6Z" fill="#9c27b0" opacity="0.15"/>
+            <text x="18" y="23" text-anchor="middle" font-family="Playfair Display" font-size="13" font-weight="700" fill="#c2185b">M</text>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">MAISON</span>
+          <span class="logo-sub">GOURMET</span>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Về Trang Chủ</a>
+        <a href="index.html#order" class="nav-cta-link">Liên Hệ</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="survey-hero">
+    <div class="moon-deco"></div>
+    <div class="lantern-deco lantern-1"></div>
+    <div class="lantern-deco lantern-2"></div>
+    <div class="section-label">Hành trình hương vị</div>
+    <h1 style="color:var(--text-dark); font-family:'Playfair Display', serif; margin-top:10px">Bộ Sưu Tập Trung Thu 2026</h1>
+  </div>
+
+  <div class="survey-container">
+    <div class="survey-card" id="survey-card-content">
+      <div class="survey-header">
+        <h1>Khảo Sát Ý Kiến Khách Hàng</h1>
+        <p>Những đóng góp của bạn là món quà giúp Maison Gourmet kiến tạo nên mùa Trung Thu hoàn mỹ nhất. Hoàn thành khảo sát để nhận ngay ưu đãi tri ân!</p>
+      </div>
+
+      <form class="survey-form" id="mid-autumn-survey">
+        <div class="form-row" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:0">
+          <div class="form-group">
+            <label for="full-name">Họ và tên *</label>
+            <input type="text" id="full-name" name="Họ Tên" placeholder="Nguyễn Văn A" required />
+          </div>
+          <div class="form-group">
+            <label for="phone">Số điện thoại/ Zalo *</label>
+            <input type="tel" id="phone" name="Số Điện Thoại" placeholder="0985 688 366" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>1. Bạn thường mua bánh Trung Thu cho đối tượng nào? *</label>
+          <select name="Đối Tượng" required>
+            <option value="">Chọn đối tượng...</option>
+            <option value="Cá nhân/Gia đình">Cá nhân/Gia đình</option>
+            <option value="Biếu tặng đối tác/Khách hàng">Biếu tặng đối tác/Khách hàng</option>
+            <option value="Tặng nhân viên công ty">Tặng nhân viên công ty</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>2. Điều gì quan trọng nhất với bạn khi chọn mua bánh Trung Thu? *</label>
+          <select name="Tiêu Chí" required>
+            <option value="">Chọn tiêu chí...</option>
+            <option value="Hương vị bánh">Hương vị bánh (Truyền thống/Hiện đại)</option>
+            <option value="Thiết kế bao bì">Thiết kế bao bì (Sang trọng/Độc đáo)</option>
+            <option value="Thương hiệu">Thương hiệu uy tín</option>
+            <option value="Giá thành">Giá thành hợp lý</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>3. Bạn mong đợi điều gì nhất ở bộ sưu tập Maison năm nay? *</label>
+          <select name="Mong Đợi" required>
+            <option value="">Chọn mong đợi...</option>
+            <option value="Vị bánh mới">Vị bánh mới lạ (Earl Grey, Rượu Vang...)</option>
+            <option value="Hộp quà tích hợp">Hộp quà tích hợp (Kèm rượu, trà cao cấp)</option>
+            <option value="Thiết kế văn hóa">Thiết kế mang đậm nét văn hóa nghệ thuật</option>
+            <option value="Ưu đãi Early Bird">Chính sách ưu đãi tốt cho người đặt sớm</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="message">4. Ý kiến đóng góp hoặc mong muốn khác của bạn?</label>
+          <textarea id="message" name="Ghi Chú" rows="3" placeholder="Chia sẻ thêm với chúng tôi..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="submit-btn" style="width:100%">
+          <span>Gửi Khảo Sát & Nhận Mã Ưu Đãi</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+      </form>
+    </div>
+
+    <!-- Success Message -->
+    <div class="survey-card success-card" id="success-screen" style="display:none;">
+      <div class="success-icon" style="font-size: 4rem; margin-bottom: 20px;">🌹</div>
+      <h2>Cảm Ơn Bạn Đã Chia Sẻ!</h2>
+      <p>Maison Gourmet trân trọng những ý kiến đóng góp của bạn.</p>
+      
+      <div class="promo-box">
+        <p style="color:var(--text-medium); font-weight:600">QUÀ TẶNG TRI ÂN DÀNH CHO BẠN:</p>
+        <span style="font-weight: 700; text-transform: uppercase; color:var(--primary); margin-top:10px; display:block">Mã Giảm Giá 10% Đặc Biệt</span>
+        <span class="promo-code" id="promo-code">MAISONTT10</span>
+        <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8; color: var(--text-light)">* Mã áp dụng cho Bộ sưu tập Trung Thu 2026 ngay khi chính thức mở bán.</p>
+      </div>
+
+      <a href="index.html" class="btn btn-primary">Quay về Trang chủ</a>
+    </div>
+  </div>
+
+  <footer class="footer" style="background:#fff; border-top: 1px solid rgba(194, 24, 91, 0.08); padding: 40px 20px; text-align:center">
+    <p style="color:var(--text-light); font-size: 0.9rem">© 2025 Maison Gourmet. Trân trọng trong từng khoảnh khắc.</p>
+  </footer>
+
+  <script>
+    document.getElementById('mid-autumn-survey').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const cardContent = document.getElementById('survey-card-content');
+      const successScreen = document.getElementById('success-screen');
+      
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Đang gửi ý kiến...</span>';
+
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz4XemJZUHikmBMio-_Q6be1WepCybM0nEdW4S21bc0lLIydZvGpvNlPtv5qGdo8mj2/exec";
+      
+      const formData = new FormData(this);
+      const params = new URLSearchParams();
+      for (const pair of formData.entries()) {
+        params.append(pair[0], pair[1]);
+      }
+
+      fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        body: params,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      })
+      .then(() => {
+        cardContent.style.display = 'none';
+        successScreen.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Có lỗi xảy ra khi gửi form. Vui lòng thử lại!");
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Gửi Khảo Sát & Nhận Mã Ưu Đãi</span>';
+      });
+    });
+  </script>
+</body>
+</html>

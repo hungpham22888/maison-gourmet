@@ -1,0 +1,13 @@
+[build]
+  publish = "."
+
+[dev]
+  port = 8888
+  publish = "."
+
+# Custom redirects if needed
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false

@@ -2574,3 +2574,43 @@ input, select, textarea { font-family: inherit; }
     border-radius: 0;
   }
 }
+
+.chatbot-input-area {
+  padding: 12px 20px;
+  background: var(--white);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#chatbot-input {
+  flex: 1;
+  background: var(--pink-light);
+  border: 1px solid rgba(156, 39, 176, 0.1);
+  padding: 10px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  outline: none;
+  transition: var(--transition);
+}
+
+#chatbot-input:focus {
+  border-color: var(--accent);
+  background: var(--white);
+  box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);
+}
+
+#chatbot-send {
+  background: transparent;
+  color: var(--primary);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#chatbot-send:hover {
+  color: var(--accent);
+  transform: scale(1.1) translateX(2px);
+}

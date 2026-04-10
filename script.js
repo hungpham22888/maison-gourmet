@@ -799,6 +799,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Manual Input Handling
+  const chatbotInput = document.getElementById('chatbot-input');
+  const chatbotSend = document.getElementById('chatbot-send');
+
+  function handleManualInput() {
+    const text = chatbotInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    chatbotInput.value = '';
+
+    // Giả lập bot đang suy nghĩ
+    chatbotFooter.innerHTML = '<span style="font-size:0.8rem; color:var(--text-light); padding:8px">Đang suy nghĩ...</span>';
+
+    setTimeout(() => {
+      // Tìm kiếm từ khóa đơn giản
+      const lowerText = text.toLowerCase();
+      let bestMatch = null;
+
+      // Danh sách từ khóa và mapping tới câu hỏi trong kịch bản
+      const keywordMap = [
+        { keywords: ['giá', 'bao nhiêu', 'chi phí', 'tiền'], index: 1 },
+        { keywords: ['mẫu', 'loại nào', 'vạn an', 'an quý', 'sản phẩm'], index: 0 },
+        { keywords: ['chiết khấu', 'giảm giá', 'số lượng lớn', 'ưu đãi'], index: 2 },
+        { keywords: ['in logo', 'thương hiệu', 'bao bì'], index: 3 },
+        { keywords: ['giao hàng', 'vận chuyển', 'bao lâu', 'ship'], index: 4 },
+        { keywords: ['chất lượng', 'nguyên liệu', 'an toàn', 'iso'], index: 5 },
+        { keywords: ['thay đổi', 'tùy chỉnh', 'combo riêng'], index: 6 },
+        { keywords: ['túi xách', 'thiệp'], index: 7 },
+        { keywords: ['phí ship', 'miễn phí vận chuyển'], index: 8 },
+        { keywords: ['trung thu', '2026'], index: 9 }
+      ];
+
+      for (const entry of keywordMap) {
+        if (entry.keywords.some(kw => lowerText.includes(kw))) {
+          bestMatch = salesScript.questions[entry.index];
+          break;
+        }
+      }
+
+      if (bestMatch) {
+        addMessage(bestMatch.a, "bot");
+        setTimeout(() => renderQuickReplies('closing'), 500);
+      } else {
+        addMessage("Dạ, Maison Assistant chưa hiểu ý mình lắm ạ. Anh/chị có thể chọn một trong các chủ đề dưới đây để em tư vấn kỹ hơn nhé!", "bot");
+        setTimeout(() => renderQuickReplies('questions'), 500);
+      }
+    }, 1000);
+  }
+
+  if (chatbotSend) {
+    chatbotSend.addEventListener('click', handleManualInput);
+  }
+
+  if (chatbotInput) {
+    chatbotInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleManualInput();
+    });
+  }
+
   // Đóng chat khi click ra ngoài (tùy chọn)
   document.addEventListener('mousedown', (e) => {
     if (chatbotWindow.classList.contains('open') && 

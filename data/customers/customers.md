@@ -12,15 +12,22 @@
 
 ## 3. Khách hàng: Phạm Quốc Dũng
 - **Chức vụ:** HR Manager – Vingroup Holdings
-- **Feedback:** "Dịch vụ giao hàng rất chuyên nghiệp. Đặt 50 hộp cho nhân viên toàn công ty, được giao đúng ngày, hộp quà còn nguyên vẹn và đẹp như ý. Giá cả hợp lý so với chất lượng. Sẽ tiếp tục ủng hộ!"
+- **Feedback:** "Dịch vụ giao hàng rất chuyên nghiệp. Đặt 50 hộp cho nhân viên toàn công ty, được giao đúng ngày, hộp quà còn nguyên vẹn và đẹp như ý."
 - **Đánh giá:** 5 sao ⭐⭐⭐⭐⭐
 
-## 4. Các đối tác tiêu biểu
-- Vingroup
-- FPT Corp
-- Masan Group
-- Viettel
-- Techcombank
-- Grab Vietnam
-- VPBank
-- Sun Group
+## 4. Khách hàng: Trương Thùy Linh
+- **Chức vụ:** HR Manager
+- **Feedback:** "Maison Gourmet đã đồng hành cùng chúng tôi nhiều mùa Tết. Sản phẩm đa dạng, bao bì cực sang trọng, dịch vụ hỗ trợ in logo rất nhanh và đẹp. Rất yên tâm khi chọn Maison!"
+- **Đánh giá:** 5 sao ⭐⭐⭐⭐⭐
+
+## 5. Khách hàng: Ngọc Phạm
+- **Chức vụ:** CEO – Kangen Store
+- **Feedback:** "Đã nhận đủ quà cho đối tác VIP. Hộp quà năm nay thiết kế rất ấn tượng, mang đậm nét văn hóa mà vẫn hiện đại. Cảm ơn đội ngũ Maison đã tư vấn tận tình!"
+- **Đánh giá:** 5 sao ⭐⭐⭐⭐⭐
+
+## Đối tác tiêu biểu
+Maison Gourmet tự hào là đối tác của hơn **3.000 doanh nghiệp** và các thương hiệu trong hệ sinh thái của **Golden Gate Group**:
+- **Khối Ngân hàng:** Techcombank, VPBank, MB Bank, Vietcombank.
+- **Khối Tập đoàn:** Vingroup, FPT Corp, Masan Group, Viettel, Sun Group.
+- **Hệ thống F&B (Golden Gate):** Sumo BBQ, GoGi House, Manwah, Hutong, Ashima, Kichi-Kichi.
+- **Khác:** Grab Vietnam, Shopee, Samsung.

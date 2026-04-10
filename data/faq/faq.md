@@ -1,7 +1,7 @@
 # Câu Hỏi Thường Gặp (FAQ) - Maison Gourmet
 
 ## 1. Tôi muốn đặt số lượng lớn cho công ty thì chiết khấu như thế nào?
-Maison Gourmet có chính sách chiết khấu rất hấp dẫn cho doanh nghiệp:
+Maison Gourmet có chính sách chiết khấu rất hấp dẫn cho doanh nghiệp, đã và đang là đối tác tin cậy của hơn **3.000 doanh nghiệp** trên toàn quốc:
 - Từ 10 - 49 hộp: Chiết khấu 10%.
 - Từ 50 - 99 hộp: Chiết khấu 20%.
 - Trên 100 hộp: Chiết khấu lên đến 30%.
@@ -16,10 +16,16 @@ Dạ có ạ. Với các đơn hàng từ 50 hộp trở lên, bên em sẽ hỗ
 Bên em cam kết giao hàng đúng hẹn và đảm bảo bao bì nguyên vẹn.
 
 ## 4. Các sản phẩm của Maison Gourmet có đảm bảo an toàn thực phẩm không?
-Hoàn toàn đảm bảo ạ. Các nguyên liệu của bên em được nhập khẩu cao cấp từ Châu Âu (Pháp, Bỉ...). Quy trình sản xuất đạt chuẩn ISO và HACCP quốc tế, đảm bảo an toàn vệ sinh thực phẩm tuyệt đối.
+Hoàn toàn đảm bảo ạ. Maison Gourmet là thương hiệu thuộc **Golden Gate Group**, các nguyên liệu được lựa chọn khắt khe, nhập khẩu cao cấp từ Châu Âu (Pháp, Bỉ...). Toàn bộ quy trình sản xuất và đóng gói đều đạt chuẩn quốc tế **HACCP** và **ISO 22000**, đảm bảo an toàn vệ sinh thực phẩm tuyệt đối cho sức khỏe người tiêu dùng.
 
 ## 5. Tôi có thể tự chọn các món trong hộp quà được không?
 Với các đơn hàng doanh nghiệp số lượng lớn, Maison Gourmet hỗ trợ tùy chỉnh thành phần bên trong hộp quà để phù hợp với ngân sách và sở thích riêng của bên mình. Vui lòng liên hệ hotline 0985 688 366 để được tư vấn chi tiết.
 
 ## 6. Phí vận chuyển được tính như thế nào?
 Maison Gourmet miễn phí vận chuyển cho các đơn hàng từ 20 hộp trở lên trên toàn quốc. Với đơn lẻ, phí ship sẽ được tính theo bảng giá của đơn vị vận chuyển đối tác.
+
+## 7. Tôi có thể đến xem mẫu trực tiếp ở đâu?
+Dạ anh/chị có thể ghé qua văn phòng trưng bày mẫu của bên em tại:
+- **Địa chỉ:** 315 Trường Chinh, Khương Mai, Thanh Xuân, Hà Nội.
+- **Hotline:** 0985 688 366 (Hà Nội) | 094 883 996 (TP.HCM).
+- **Website:** www.maisoncake.com

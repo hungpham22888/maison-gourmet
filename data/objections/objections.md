@@ -1,8 +1,8 @@
 # Xử Lý Từ Chối (Objections) - Maison Gourmet
 
 ## 1. Giá cao quá, mình thấy chỗ khác rẻ hơn
-- **Cách xử lý:** Nhấn mạnh vào giá trị cốt lõi. 
-- **Nội dung:** "Dạ em hiểu ngân sách là vấn đề quan trọng. Tuy nhiên, giá của Maison Gourmet phản ánh chất lượng nguyên liệu nhập khẩu Châu Âu và quy trình sản xuất ISO/HACCP. Bên em còn tặng kèm dịch vụ in logo, thiệp và bao bì độc bản sang trọng dành riêng cho doanh nghiệp, giúp tăng giá trị món quà trong mắt người nhận. Nếu quy ra tổng chi phí bao gồm cả quà, hộp và in ấn thì bên em lại rất tối ưu ạ."
+- **Cách xử lý:** Nhấn mạnh vào giá trị cốt lõi và uy tín tập đoàn.
+- **Nội dung:** "Dạ em hiểu ngân sách là vấn đề quan trọng. Tuy nhiên, Maison Gourmet là thương hiệu cao cấp thuộc **Golden Gate Group**, giá của bên em phản ánh chất lượng nguyên liệu nhập khẩu Châu Âu và quy trình sản xuất **HACCP/ISO 22000**. Hơn **3.000 doanh nghiệp** đã tin tưởng chọn bên em cũng vì sự đảm bảo về an toàn, sang trọng và năng lực cung ứng ổn định. Nếu quy ra tổng chi phí gồm cả quà, hộp và in ấn đồng bộ, bên em tin rằng đây là mức giá tối ưu nhất cho một sản phẩm đẳng cấp ạ."
 
 ## 2. Lo ngại về hương vị, không biết có ngon không
 - **Cách xử lý:** Cam kết chất lượng và liệt kê đối tác lớn.
@@ -18,4 +18,4 @@
 
 ## 5. Bên mình đã có đối tác quà tặng lâu năm rồi
 - **Cách xử lý:** Đề nghị trải nghiệm mẫu thử hoặc sự mới lạ.
-- **Nội dung:** "Dạ em rất trân trọng đối tác hiện tại của anh/chị. Tuy nhiên, Maison Gourmet luôn cập nhật các mẫu thiết kế mới mang xu hướng hiện đại và độc đáo hơn mỗi năm. Em xin phép gửi anh/chị xem qua catalogue năm nay hoặc gửi tặng anh/chị một mẫu dùng thử để mình có thêm lựa chọn mới mẻ cho đối tác nhé ạ."
+- **Nội dung:** "Dạ em rất trân trọng đối tác hiện tại của anh/chị. Tuy nhiên, với hành trình hơn **10 năm** bền bỉ trong lĩnh vực quà tặng ẩm thực, Maison Gourmet luôn cập nhật các mẫu thiết kế mang xu hướng hiện đại của quốc tế. Em xin phép gửi tặng anh/chị mẫu dùng thử để mình có thêm lựa chọn mới mẻ, đẳng cấp hơn cho đối tác quan trọng và đổi mới hình ảnh quà tặng năm nay của bên mình nhé ạ."

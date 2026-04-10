@@ -1,7 +1,20 @@
 # Danh Sách Sản Phẩm Maison Gourmet
 
+> [!NOTE]
+> Maison Gourmet tự hào là thương hiệu quà tặng cao cấp được bảo trợ bởi **Golden Gate Group** – Tập đoàn F&B hàng đầu Việt Nam (sở hữu các chuỗi GoGi House, Sumo BBQ, Manwah, Hutong, Ashima...).
+
+## 0. Hộp quà Gia Quý
+- **Giá:** 560.000đ
+- **Danh mục:** Dòng Phổ Thông
+- **Mô tả:** Bộ quà tặng nhập môn tinh tế, gói trọn hương vị ẩm thực đặc sắc của Maison.
+- **Thành phần:** 
+  - Nước quả Hibiscus 300ml
+  - Trà Shan Tuyết viên 48gr
+  - Quy Tròn Hạnh Nhân 115gr
+  - Mứt Dâu Tằm/Táo Đỏ 100gr
+
 ## 1. Hộp quà An Quý
-- **Giá:** 648.000đ (Giá cũ: 720.000đ)
+- **Giá:** 720.000đ (Ưu đãi còn: 648.000đ)
 - **Danh mục:** Dòng Cổ Điển
 - **Mô tả:** Bộ quà tặng tinh tế với sự kết hợp hài hòa giữa các loại hạt và trà.
 - **Thành phần:** 
@@ -13,7 +26,7 @@
   - Trà Shan Tuyết 48gr
 
 ## 2. Hộp quà Dương Hòa
-- **Giá:** 765.000đ (Giá cũ: 850.000đ)
+- **Giá:** 850.000đ (Ưu đãi còn: 765.000đ)
 - **Danh mục:** Dòng Cổ Điển
 - **Mô tả:** Lựa chọn mới nhất, kết hợp vị ngọt tự nhiên của trái cây sấy và bánh quy cao cấp.
 - **Thành phần:** 
@@ -25,7 +38,7 @@
   - Mật Ong Hồng Trà Cổ Thụ 30gr
 
 ## 3. Hộp quà Tài Lộc
-- **Giá:** 855.000đ (Giá cũ: 950.000đ)
+- **Giá:** 950.000đ (Ưu đãi còn: 855.000đ)
 - **Danh mục:** Dòng Premium
 - **Mô tả:** Bộ quà tặng cao cấp có kèm rượu mơ Haruka, mang lời chúc thịnh vượng.
 - **Thành phần:** 
@@ -37,7 +50,7 @@
   - Rượu Mơ - Haruka 500ml
 
 ## 4. Hộp quà Ngọc Quý
-- **Giá:** 990.000đ (Giá cũ: 1.100.000đ)
+- **Giá:** 1.100.000đ (Ưu đãi còn: 990.000đ)
 - **Danh mục:** Dòng Premium
 - **Mô tả:** Dòng sản phẩm giới hạn với các loại bánh quy và trà đặc sản.
 - **Thành phần:** 
@@ -49,7 +62,7 @@
   - Hồng Trà Mật Ong Cổ Thụ 30gr
 
 ## 5. Hộp quà Vinh Hoa
-- **Giá:** 1.395.000đ (Giá cũ: 1.550.000đ)
+- **Giá:** 1.550.000đ (Ưu đãi còn: 1.395.000đ)
 - **Danh mục:** Dòng Doanh nghiệp
 - **Mô tả:** Bộ sưu tập đẳng cấp dành cho doanh nghiệp, đi kèm vang ITALY BOTTE 750ml.
 - **Thành phần:** 
@@ -63,7 +76,7 @@
   - Vang ITALY BOTTE 750ml
 
 ## 6. Hộp quà Vạn An
-- **Giá:** 1.620.000đ (Giá cũ: 1.800.000đ)
+- **Giá:** 1.800.000đ (Ưu đãi còn: 1.620.000đ)
 - **Danh mục:** Dòng Doanh nghiệp
 - **Mô tả:** Hộp quà bán chạy nhất dành cho đối tác VIP, sang trọng và đầy đủ.
 - **Thành phần:** 

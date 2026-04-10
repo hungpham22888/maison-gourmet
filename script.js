@@ -861,19 +861,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getBotResponse(userText) {
     const normalized = normalizeText(userText);
-    
-    // 🔍 1. KIỂM TRA ĐẶC BIỆT CHO TRƯỜNG HỢP GỘP (SOP BƯỚC 5: GIÁ + LOGO)
-    const hasPrice = /\b(gia|bao nhieu|tien)\b/i.test(normalized);
-    const hasLogo = /\b(logo|in)\b/i.test(normalized);
-    const hasDiscount = /\b(chiet khau|giam gia|uu dai)\b/i.test(normalized);
-
-    if (hasPrice && hasLogo) {
-      return "Dạ, về giá cả thì các mẫu quà bên em dao động từ **560k đến 1.8M** ạ. Đặc biệt, với các đơn hàng doanh nghiệp từ 50 hộp, bên em sẽ xin phép hỗ trợ **in logo thương hiệu hoàn toàn miễn phí** cho mình luôn ạ!";
-    }
-    
-    if (hasLogo && hasDiscount) {
-      return "Dạ, bên em có chính sách **chiết khấu lên đến 30%** cho số lượng lớn và vẫn hỗ trợ **in logo doanh nghiệp miễn phí** (cho đơn từ 50 hộp) Anh/Chị nhé ạ. Anh/Chị dự kiến đặt số lượng bao nhiêu để em báo mức ưu đãi tốt nhất ạ?";
-    }
 
     // 🔍 2. THU THẬP TẤT CẢ Ý ĐỊNH KHỚP
     let matchedIntents = [];
@@ -890,7 +877,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (matchedIntents.length > 0) {
       // Nếu có nhiều hơn 1 ý định, loại bỏ các ý định phụ như Chào hỏi/Xã giao để tập trung nội dung chính
       if (matchedIntents.length > 1) {
-        const filtered = matchedIntents.filter(i => i.id !== 'GREETING' && i.id !== 'SMALL_TALK_GOOD');
+        const filtered = matchedIntents.filter(i => i.id !== 'GREETING' && i.id !== 'ORDER_INTENT' && i.id !== 'LEAD_FORM');
         if (filtered.length > 0) matchedIntents = filtered;
       }
 

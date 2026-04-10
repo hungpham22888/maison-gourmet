@@ -862,7 +862,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function getBotResponse(userText) {
     const normalized = normalizeText(userText);
 
-    // 🔍 2. THU THẬP TẤT CẢ Ý ĐỊNH KHỚP
+    // Thu thập tất cả ý định khớp
     let matchedIntents = [];
     for (const intent of chatbotBrain.intents) {
       if (intent.keywords.some(kw => {
@@ -875,30 +875,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (matchedIntents.length > 0) {
-      // Nếu có nhiều hơn 1 ý định, loại bỏ các ý định phụ như Chào hỏi/Xã giao để tập trung nội dung chính
+      const allIds = matchedIntents.map(i => i.id);
+
+      // Tách riêng các FAQ chính và các intent hỗ trợ
       if (matchedIntents.length > 1) {
         const filtered = matchedIntents.filter(i => i.id !== 'GREETING' && i.id !== 'ORDER_INTENT' && i.id !== 'LEAD_FORM');
         if (filtered.length > 0) matchedIntents = filtered;
       }
 
+      let responseText;
       if (matchedIntents.length === 1) {
-        return matchedIntents[0].responses[0];
+        responseText = matchedIntents[0].responses[0];
+      } else {
+        // Lắp ghép câu trả lời đa ý định
+        responseText = matchedIntents[0].responses[0];
+        for (let i = 1; i < matchedIntents.length; i++) {
+          let part = matchedIntents[i].responses[0].replace(/^Dạ, /, "").replace(/^Dạ có ạ, /, "").replace(/^Dạ có ạ. /, "").replace(/^Dạ được ạ. /, "");
+          part = part.charAt(0).toLowerCase() + part.slice(1);
+          responseText += " Ngoài ra, " + part;
+        }
       }
-
-      // Lắp ghép câu trả lời đa ý định (Synthesis)
-      let combinedResponse = matchedIntents[0].responses[0];
-      for (let i = 1; i < matchedIntents.length; i++) {
-        // Loại bỏ phần chào "Dạ," ở các câu sau để nối cho tự nhiên
-        let part = matchedIntents[i].responses[0].replace(/^Dạ, /, "");
-        // Viết thường chữ cái đầu của phần nối
-        part = part.charAt(0).toLowerCase() + part.slice(1);
-        combinedResponse += " Ngoài ra, " + part;
-      }
-      return combinedResponse;
+      return { text: responseText, matchedIds: allIds };
     }
 
-    // 🔍 3. FALLBACK KHÔNG BIẾT Ý ĐỊNH
-    return chatbotBrain.fallback;
+    // Fallback
+    return { text: chatbotBrain.fallback, matchedIds: [] };
   }
 
   // 15.3. CHAT UI LOGIC
@@ -924,6 +925,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function addCTAButton(type) {
+    setTimeout(() => {
+      const cta = document.createElement('a');
+      if (type === 'order') {
+        cta.href = '#order';
+        cta.className = 'chat-cta-btn';
+        cta.innerHTML = '🛒 Đặt Hàng Ngay';
+      } else if (type === 'waitlist') {
+        cta.href = 'khao-sat-trung-thu.html';
+        cta.className = 'chat-cta-btn';
+        cta.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+        cta.innerHTML = '📋 Đăng Ký Nhận Tư Vấn';
+      }
+      cta.onclick = () => chatbotWindow.classList.remove('open');
+      chatbotMessages.appendChild(cta);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }, 500);
+  }
+
   function handleManualInput() {
     const text = chatbotInput.value.trim();
     if (!text) return;
@@ -934,20 +954,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setTimeout(() => {
       showBotTyping(false);
-      const botResponse = getBotResponse(text);
-      addMessage(botResponse, "bot");
-      
-      // Auto-suggest CTA if relevant
-      if (text.toLowerCase().includes('dat hang') || text.toLowerCase().includes('mua')) {
-        setTimeout(() => {
-          const cta = document.createElement('a');
-          cta.href = '#order';
-          cta.className = 'chat-cta-btn';
-          cta.innerText = "Đi tới Form Đặt hàng";
-          cta.onclick = () => chatbotWindow.classList.remove('open');
-          chatbotMessages.appendChild(cta);
-          chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-        }, 500);
+      const result = getBotResponse(text);
+      addMessage(result.text, "bot");
+
+      // Hiện nút CTA dựa trên ý định khách hàng
+      if (result.matchedIds.includes('ORDER_INTENT')) {
+        addCTAButton('order');
+      } else if (result.matchedIds.includes('LEAD_FORM')) {
+        addCTAButton('waitlist');
       }
     }, 1000);
   }

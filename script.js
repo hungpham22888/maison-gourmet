@@ -679,19 +679,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatbotInput = document.getElementById('chatbot-input');
   const chatbotSend = document.getElementById('chatbot-send');
 
-  // 15.1. KNOWLEDGE BASE & INTENT MAPPING
+  // 15.1. KNOWLEDGE BASE & INTENT MAPPING (Ưu tiên ý định đặc thù trước)
   const chatbotBrain = {
     intents: [
-      {
-        id: 'GREETING',
-        keywords: ['chào', 'hi', 'hello', 'alo', 'ê', 'hey', 'start', 'bắt đầu'],
-        responses: ["Dạ, Maison Gourmet em xin chào Anh/Chị ạ! Em rất hân hạnh được hỗ trợ mình tìm kiếm Bộ quà tặng Tết 2026 hoàn hảo nhất ạ."]
-      },
-      {
-        id: 'PRICE_GENERAL',
-        keywords: ['giá', 'bao nhiêu', 'tiền', 'nhiêu', 'báo giá', 'chi phí', 'ngân sách', 'tầm tiền'],
-        responses: ["Dạ, các bộ quà tặng cao cấp nhà Maison Gourmet có mức giá niêm yết linh hoạt từ **560.000đ đến hơn 1.800.000đ** ạ. Nếu Anh/Chị đặt số lượng lớn cho doanh nghiệp, em xin phép được áp dụng chiết khấu ưu đãi lên đến **30%** ạ."]
-      },
       {
         id: 'PRODUCT_SANG_VIP',
         keywords: ['vạn an', 'vip', 'sang nhất', 'đắt nhất', 'cao cấp nhất', 'đối tác lớn', '1800', '1.800'],
@@ -706,6 +696,11 @@ document.addEventListener('DOMContentLoaded', () => {
         id: 'PRODUCT_POPULAR',
         keywords: ['an quý', 'duyên hòa', 'tài lộc', 'ngọc quý', 'vinh hoa', 'phổ biến', 'nhiều người mua'],
         responses: ["Dạ, các dòng như **An Quý** (720k) hay **Tài Lộc** (950k) hiện đang là những mẫu 'bán chạy' nhất vì sự cân bằng giữa chất lượng và giá thành ạ. Anh/Chị có muốn em gửi ảnh chi tiết các mẫu này cho mình xem không ạ?"]
+      },
+      {
+        id: 'PRICE_GENERAL',
+        keywords: ['giá', 'bao nhiêu', 'tiền', 'nhiêu', 'báo giá', 'chi phí', 'ngân sách', 'tầm tiền'],
+        responses: ["Dạ, các bộ quà tặng cao cấp nhà Maison Gourmet có mức giá niêm yết linh hoạt từ **560.000đ đến hơn 1.800.000đ** ạ. Nếu Anh/Chị đặt số lượng lớn cho doanh nghiệp, em xin phép được áp dụng chiết khấu ưu đãi lên đến **30%** ạ."]
       },
       {
         id: 'SERVICE_LOGO',
@@ -738,6 +733,11 @@ document.addEventListener('DOMContentLoaded', () => {
         responses: ["Dạ tuyệt vời quá ạ! Để hỗ trợ Anh/Chị lên đơn hàng nhanh nhất, Anh/Chị có thể để lại số điện thoại hoặc nhắn em số lượng cụ thể, nhân viên của bên em sẽ gọi lại hỗ trợ Anh/Chị ngay lập tức ạ."]
       },
       {
+        id: 'GREETING',
+        keywords: ['chào', 'hi', 'hello', 'alo', 'hey', 'start', 'bắt đầu'],
+        responses: ["Dạ, Maison Gourmet em xin chào Anh/Chị ạ! Em rất hân hạnh được hỗ trợ mình tìm kiếm Bộ quà tặng Tết 2026 hoàn hảo nhất ạ."]
+      },
+      {
         id: 'SMALL_TALK_GOOD',
         keywords: ['tốt', 'hay', 'đẹp', 'cảm ơn', 'thanks', 'ok', 'hiểu rồi', 'giỏi'],
         responses: ["Dạ, em rất vui khi giúp ích được cho Anh/Chị ạ! Nếu mình cần thêm bất kỳ thông tin nào khác, Anh/Chị cứ nhắn em nhé ạ."]
@@ -756,28 +756,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getBotResponse(userText) {
     const normalized = normalizeText(userText);
-    let matchedIntents = [];
+    let matchedIntent = null;
 
-    chatbotBrain.intents.forEach(intent => {
-      if (intent.keywords.some(kw => normalized.includes(normalizeText(kw)))) {
-        matchedIntents.push(intent);
+    // Duyệt qua các Intent theo thứ tự ưu tiên (Specific -> Greeting)
+    for (const intent of chatbotBrain.intents) {
+      if (intent.keywords.some(kw => {
+        const normalizedKw = normalizeText(kw);
+        // Sử dụng Regex với ranh giới từ \b để chỉ khớp các từ nguyên vẹn
+        const regex = new RegExp(`\\b${normalizedKw}\\b`, 'i');
+        return regex.test(normalized);
+      })) {
+        matchedIntent = intent;
+        break; // Dừng lại ở Intent đầu tiên khớp (ưu tiên cao nhất)
       }
-    });
-
-    if (matchedIntents.length > 0) {
-      // Pick first matching intent response (could be improved to combine)
-      let response = matchedIntents[0].responses[0];
-      // If multiple intents, try to bridge them (limited logic here for simplicity)
-      if (matchedIntents.length > 1) {
-        // Simple logic to add another part if relevant
-        // response += " Ngoài ra, " + matchedIntents[1].responses[0].replace(/^Dạ, /, "");
-      }
-      return response;
     }
 
-    // Special check for combined questions (e.g., price AND logo)
-    const hasPrice = normalized.includes('gia') || normalized.includes('bao nhieu');
-    const hasLogo = normalized.includes('logo') || normalized.includes('in');
+    if (matchedIntent) {
+      return matchedIntent.responses[0];
+    }
+
+    // Kiểm tra đặc biệt cho các câu hỏi kết hợp (giá VÀ in logo)
+    const hasPrice = /\b(gia|bao nhieu|tien)\b/i.test(normalized);
+    const hasLogo = /\b(logo|in)\b/i.test(normalized);
     
     if (hasPrice && hasLogo) {
       return "Dạ, về giá cả thì các mẫu quà bên em dao động từ 560k đến 1.8M ạ. Đặc biệt, với đơn từ 50 hộp, bên em sẽ xin phép hỗ trợ in logo doanh nghiệp hoàn toàn miễn phí cho Anh/Chị luôn ạ!";

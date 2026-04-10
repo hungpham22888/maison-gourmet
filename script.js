@@ -707,18 +707,12 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
   }
 
-  function renderQuickReplies(mode = 'questions') {
+  function renderQuickReplies(mode = 'none') {
     chatbotFooter.innerHTML = '';
+    chatbotFooter.style.display = 'none';
     
-    if (mode === 'questions') {
-      salesScript.questions.forEach((item, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'quick-reply-btn';
-        btn.innerText = item.q;
-        btn.onclick = () => handleUserAction(index);
-        chatbotFooter.appendChild(btn);
-      });
-    } else if (mode === 'closing') {
+    if (mode === 'closing') {
+      chatbotFooter.style.display = 'flex';
       const btnBuy = document.createElement('button');
       btnBuy.className = 'quick-reply-btn';
       btnBuy.innerText = "Em muốn đặt hàng ngay";
@@ -733,7 +727,7 @@ document.addEventListener('DOMContentLoaded', () => {
           cta.onclick = () => chatbotWindow.classList.remove('open');
           chatbotMessages.appendChild(cta);
           chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-          renderQuickReplies('start_over');
+          renderQuickReplies('none');
         }, 600);
       };
       
@@ -750,18 +744,12 @@ document.addEventListener('DOMContentLoaded', () => {
           cta.innerText = "Đăng ký nhận ưu đãi mới";
           chatbotMessages.appendChild(cta);
           chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-          renderQuickReplies('start_over');
+          renderQuickReplies('none');
         }, 600);
       };
       
       chatbotFooter.appendChild(btnBuy);
       chatbotFooter.appendChild(btnThink);
-    } else if (mode === 'start_over') {
-      const btnBack = document.createElement('button');
-      btnBack.className = 'quick-reply-btn';
-      btnBack.innerText = "Quay lại danh sách câu hỏi";
-      btnBack.onclick = () => renderQuickReplies('questions');
-      chatbotFooter.appendChild(btnBack);
     }
   }
 
@@ -832,6 +820,10 @@ document.addEventListener('DOMContentLoaded', () => {
         { keywords: ['trung thu', '2026'], index: 9 }
       ];
 
+      // Ý định đặt hàng trực tiếp
+      const buyKeywords = ['đặt hàng', 'mua', 'lấy', 'order', 'chốt'];
+      const isBuyIntent = buyKeywords.some(kw => lowerText.includes(kw));
+
       for (const entry of keywordMap) {
         if (entry.keywords.some(kw => lowerText.includes(kw))) {
           bestMatch = salesScript.questions[entry.index];
@@ -842,9 +834,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (bestMatch) {
         addMessage(bestMatch.a, "bot");
         setTimeout(() => renderQuickReplies('closing'), 500);
+      } else if (isBuyIntent) {
+        addMessage(salesScript.closing, "bot");
+        setTimeout(() => renderQuickReplies('closing'), 500);
       } else {
-        addMessage("Dạ, Maison Assistant chưa hiểu ý mình lắm ạ. Anh/chị có thể chọn một trong các chủ đề dưới đây để em tư vấn kỹ hơn nhé!", "bot");
-        setTimeout(() => renderQuickReplies('questions'), 500);
+        addMessage("Dạ, Maison Assistant chưa hiểu ý mình lắm ạ. Anh/chị có thể mô tả kỹ hơn nhu cầu (mẫu quà, số lượng, ngân sách...) để em tư vấn tốt nhất không ạ?", "bot");
       }
     }, 1000);
   }

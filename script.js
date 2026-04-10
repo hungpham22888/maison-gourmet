@@ -683,67 +683,172 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatbotBrain = {
     intents: [
       {
-        id: 'PRODUCT_SANG_VIP',
-        keywords: ['vạn an', 'vip', 'sang nhất', 'đắt nhất', 'cao cấp nhất', 'đối tác lớn', '1800', '1.800'],
-        responses: ["Dạ, để biếu đối tác VIP thì mẫu **Vạn An (1.800.000đ)** là lựa chọn đẳng cấp nhất ạ. Hộp quà mang vẻ đẹp sang trọng kỳ vĩ, đi kèm là chai vang Ý Terre Forti tuyệt hảo, chắc chắn sẽ tạo ấn tượng mạnh mẽ với người nhận ạ."]
+        id: 'FAQ_1',
+        keywords: ['vừa phải', 'sang trọng', 'thấp nhất', 'gia quý', 'phổ thông', '560', 'giá thấp'],
+        responses: ["Dạ có ạ, Anh/Chị có thể tham khảo mẫu hộp **Gia Quý** (giá 560.000đ). Mặc dù là dòng phổ thông nhưng bao bì vẫn được thiết kế rất chỉn chu, đầy đủ các thành phần trà, bánh và nước quả, rất phù hợp để làm quà tặng số lượng lớn ạ."]
       },
       {
-        id: 'PRODUCT_ECONOMY',
-        keywords: ['gia quý', 'rẻ nhất', 'thấp nhất', 'bình dân', '560', '560.000'],
-        responses: ["Dạ, nếu mình cần mẫu quà tinh tế với mức giá tối ưu nhất, em xin phép giới thiệu hộp **Gia Quý (560.000đ)** ạ. Dù giá phải chăng nhưng mẫu này vẫn rất được lòng khách hàng nhờ thiết kế chỉn chu và đầy đủ trà bánh ạ."]
+        id: 'FAQ_2',
+        keywords: ['an quý', 'khác biệt', '720', 'ăn quý', 'so sánh'],
+        responses: ["Dạ, hộp An Quý (giá 720.000đ) sẽ có thành phần cao cấp hơn một chút với các loại bánh quy đặc sản và trà Shan Tuyết cổ thụ ạ. Nếu Anh/Chị dự định tặng cấp quản lý hoặc đối tác thân thiết thì mẫu An Quý sẽ mang tính trang trọng hơn ạ."]
       },
       {
-        id: 'PRODUCT_POPULAR',
-        keywords: ['an quý', 'duyên hòa', 'tài lộc', 'ngọc quý', 'vinh hoa', 'phổ biến', 'nhiều người mua'],
-        responses: ["Dạ, các dòng như **An Quý** (720k) hay **Tài Lộc** (950k) hiện đang là những mẫu 'bán chạy' nhất vì sự cân bằng giữa chất lượng và giá thành ạ. Anh/Chị có muốn em gửi ảnh chi tiết các mẫu này cho mình xem không ạ?"]
+        id: 'FAQ_3',
+        keywords: ['đẳng cấp nhất', 'vạn an', '1800', '1.800', 'vip', 'doanh nghiệp lớn', 'biếu đối tác'],
+        responses: ["Dạ, Anh/Chị nên lựa chọn mẫu **Vạn An** (giá 1.800.000đ) ạ. Đây là dòng sản phẩm cao cấp nhất của bên em, đi kèm với vang Ý Terre Forti hảo hạng và thiết kế hộp quà vô cùng đẳng cấp, chắc chắn sẽ làm hài lòng các đối tác quan trọng của bên mình ạ."]
       },
       {
-        id: 'PRICE_GENERAL',
-        keywords: ['giá', 'bao nhiêu', 'tiền', 'nhiêu', 'báo giá', 'chi phí', 'ngân sách', 'tầm tiền'],
-        responses: ["Dạ, các bộ quà tặng cao cấp nhà Maison Gourmet có mức giá niêm yết linh hoạt từ **560.000đ đến hơn 1.800.000đ** ạ. Nếu Anh/Chị đặt số lượng lớn cho doanh nghiệp, em xin phép được áp dụng chiết khấu ưu đãi lên đến **30%** ạ."]
+        id: 'FAQ_4',
+        keywords: ['tài lộc', 'rượu mơ', 'haruka', 'nồng độ'],
+        responses: ["Dạ, trong hộp Tài Lộc bên em sử dụng rượu mơ Haruka 500ml ạ. Loại rượu này có nồng độ vừa phải, hương vị thơm nhẹ, rất dễ dùng cho cả nam và nữ nên được rất nhiều khách hàng lựa chọn để biếu tặng gia đình ạ."]
       },
       {
-        id: 'SERVICE_LOGO',
-        keywords: ['in logo', 'thương hiệu', 'khắc tên', 'lên hộp', 'miễn phí in', 'thiết kế riêng'],
-        responses: ["Dạ có ạ! Với các đơn hàng từ **50 hộp trở lên**, Maison Gourmet xin phép hỗ trợ thiết kế và in ấn logo doanh nghiệp hoàn toàn **miễn phí** lên bao bì và thiệp chúc mừng để tăng tính nhận diện thương hiệu cho bên mình ạ."]
+        id: 'FAQ_5',
+        keywords: ['giá chính xác', 'niêm yết', 'website không khớp', 'thực tế'],
+        responses: ["Dạ, mức giá trên website là giá niêm yết chưa bao gồm ưu đãi ạ. Nếu Anh/Chị đặt hàng sớm hoặc đặt số lượng lớn, em xin phép được áp dụng chính sách chiết khấu tốt nhất dành riêng cho bên mình ạ. Không biết dự kiến bên mình sẽ lấy khoảng bao nhiêu hộp ạ?"]
       },
       {
-        id: 'SERVICE_DISCOUNT',
-        keywords: ['chiết khấu', 'giảm giá', 'ưu đãi', 'giảm thêm', 'mua nhiều', 'số lượng lớn', '30%'],
-        responses: ["Dạ, bên em luôn có chính sách chiết khấu rất tốt cho doanh nghiệp ạ: đạt mốc từ 10% đến **30%** tùy theo số lượng đơn hàng ạ. Anh/Chị dự kiến đặt khoảng bao nhiêu bộ để em xin phép báo mức giá tốt nhất cho mình ạ?"]
+        id: 'FAQ_6',
+        keywords: ['vinh hoa', 'botte', '750ml', 'vang ý'],
+        responses: ["Dạ, hộp Vinh Hoa nổi bật với sự kết hợp của vang Ý Botte 750ml và các loại bánh trái cao cấp ạ. Thiết kế của dòng này mang phong cách chuyên nghiệp, rất được các quý doanh nghiệp ưa chuộng để làm quà tặng đối tác trong các dịp Lễ Tết ạ."]
       },
       {
-        id: 'QUALITY_TRUST',
-        keywords: ['uy tín', 'chất lượng', 'an toàn', 'iso', 'haccp', 'golden gate', 'nguồn gốc', 'vệ sinh'],
-        responses: ["Dạ, Anh/Chị hoàn toàn có thể yên tâm ạ. Maison Gourmet là thương hiệu thuộc tập đoàn **Golden Gate Group**, mọi sản phẩm đều đạt chứng chỉ quốc tế **ISO 22000 & HACCP**. Bên em đã phục vụ hơn 3000 doanh nghiệp lớn nên uy tín luôn là ưu tiên hàng đầu ạ."]
+        id: 'FAQ_7',
+        keywords: ['bánh quy', 'thủ công', 'bơ pháp', 'giòn tan'],
+        responses: ["Dạ, bánh quy bên em là dòng bánh thủ công cao cấp được làm từ nguyên liệu tuyển chọn ạ. Bánh có độ giòn tan, vị ngọt thanh tự nhiên và hương thơm đặc trưng của bơ Pháp, nên được rất nhiều khách hàng cũ phản hồi rất tốt ạ."]
       },
       {
-        id: 'LOGISTICS',
-        keywords: ['giao hàng', 'vận chuyển', 'ship', 'bao lâu', 'hà nội', 'tỉnh xa', 'phí ship'],
-        responses: ["Dạ, khu vực Hà Nội bên em giao nhanh trong **24h** ạ. Với các đơn hàng từ 20 hộp trở lên, Maison Gourmet xin phép **miễn phí vận chuyển** toàn quốc cho mình ạ. Bên em có quy trình đóng gói 3 lớp cực kỳ chắc chắn nên ship tỉnh thoải mái ạ."]
+        id: 'FAQ_8',
+        keywords: ['uy tín', 'golden gate', 'tập đoàn', 'thương hiệu'],
+        responses: ["Dạ, Maison Gourmet là thương hiệu quà tặng trực thuộc tập đoàn F&B hàng đầu **Golden Gate Group** ạ. Với bề dày kinh nghiệm và uy tín từ tập đoàn mẹ, bên em luôn cam kết mang đến những sản phẩm và dịch vụ chuyên nghiệp nhất cho Anh/Chị ạ."]
       },
       {
-        id: 'LOCATION',
-        keywords: ['địa chỉ', 'đâu', 'ở đâu', 'xem mẫu', 'trực tiếp', 'trường chinh', 'văn phòng', 'showroom'],
-        responses: ["Dạ, em mời Anh/Chị ghé qua văn phòng trưng bày mẫu của bên em tại **315 Trường Chinh, Khương Mai, Thanh Xuân, Hà Nội** để xem và trải nghiệm sản phẩm trực tiếp ạ. Bên em luôn sẵn sàng đón tiếp mình ạ."]
+        id: 'FAQ_9',
+        keywords: ['chứng chỉ', 'haccp', 'iso 22000', 'an toàn', 'vệ sinh', 'nguồn gốc'],
+        responses: ["Dạ có ạ, toàn bộ quy trình sản xuất và đóng gói của Maison Gourmet đều đạt tiêu chuẩn quốc tế **HACCP** và **ISO 22000** ạ. Anh/Chị hoàn toàn có thể yên tâm về chất lượng và độ an toàn vệ sinh thực phẩm khi biếu tặng ạ."]
       },
       {
-        id: 'ORDER_INTENT',
-        keywords: ['đặt hàng', 'mua', 'lấy', 'chốt đơn', 'order', 'thủ tục', 'thanh toán'],
-        responses: ["Dạ tuyệt vời quá ạ! Để hỗ trợ Anh/Chị lên đơn hàng nhanh nhất, Anh/Chị có thể để lại số điện thoại hoặc nhắn em số lượng cụ thể, nhân viên của bên em sẽ gọi lại hỗ trợ Anh/Chị ngay lập tức ạ."]
+        id: 'FAQ_10',
+        keywords: ['doanh nghiệp lớn', 'liệt kê', 'vingroup', 'fpt', 'viettel', 'techcombank'],
+        responses: ["Dạ, Maison Gourmet đã có cơ hội phục vụ hơn 3.000 doanh nghiệp lớn nhỏ ạ. Trong đó có thể kể đến các đối tác thân thiết như Vingroup, FPT, Viettel, Techcombank, Masan... và nhiều tập đoàn lớn khác ạ."]
+      },
+      {
+        id: 'FAQ_11',
+        keywords: ['hóa đơn', 'vat', 'chứng từ', 'hợp đồng', 'thanh toán doanh nghiệp'],
+        responses: ["Dạ có ạ. Bên em hỗ trợ xuất hóa đơn VAT và cung cấp đầy đủ các giấy tờ, hợp đồng liên quan cho quý doanh nghiệp để thuận tiện cho quá trình thanh toán ạ."]
+      },
+      {
+        id: 'FAQ_12',
+        keywords: ['bao lâu', 'thời gian', 'hoàn thiện', 'in logo mất bao lâu'],
+        responses: ["Dạ, thông thường quy trình in ấn sẽ mất khoảng từ 3 đến 5 ngày làm việc ạ. Tuy nhiên, nếu Anh/Chị đang cần gấp cho sự kiện, xin hãy nhắn em để em xin phép báo bộ phận sản xuất ưu tiên xử lý sớm nhất cho bên mình ạ."]
+      },
+      {
+        id: 'FAQ_13',
+        keywords: ['chi phí in', 'miễn phí in', '50 hộp', 'logo phí'],
+        responses: ["Dạ, với các đơn hàng từ 50 hộp trở lên, Maison Gourmet xin phép được **miễn phí hoàn toàn** chi phí thiết kế và in ấn logo lên hộp quà cho bên mình ạ. Với số lượng ít hơn, em sẽ báo mức phí hỗ trợ tối ưu nhất cho Anh/Chị ạ."]
+      },
+      {
+        id: 'FAQ_14',
+        keywords: ['thay đổi thành phần', 'yêu cầu riêng', 'tùy chỉnh', 'combo riêng'],
+        responses: ["Dạ có ạ. Để phù hợp nhất với ngân sách và sở thích của bên mình, em xin phép được tư vấn và hỗ trợ phối lại các combo thành phần riêng biệt dành cho đơn hàng doanh nghiệp ạ."]
+      },
+      {
+        id: 'FAQ_15',
+        keywords: ['thiệp', 'lời chúc', 'đi kèm'],
+        responses: ["Dạ có ạ. Mỗi bộ quà tặng đều bao gồm thiệp chúc mừng thiết kế trang trọng và đồng bộ ạ. Nếu Anh/Chị có nội dung lời chúc riêng, em xin phép được hỗ trợ in thiệp cho bên mình luôn ạ."]
+      },
+      {
+        id: 'FAQ_16',
+        keywords: ['giao hàng nhanh', 'trong ngày', '24h', 'nội thành'],
+        responses: ["Dạ, với khu vực nội thành Hà Nội, bên em xin phép hỗ trợ giao hàng nhanh trong vòng 24h ạ. Anh/Chị chỉ cần chốt mẫu, mọi khâu giao nhận em sẽ lo chu đáo ạ."]
+      },
+      {
+        id: 'FAQ_17',
+        keywords: ['phí vận chuyển', 'ship đi tỉnh', 'miễn phí vận chuyển', '20 hộp'],
+        responses: ["Dạ, Maison Gourmet xin phép **miễn phí vận chuyển** toàn quốc cho các đơn hàng quà tặng từ 20 hộp trở lên ạ. Với các đơn lẻ, em sẽ xin phép báo mức phí hỗ trợ nhất cho Anh/Chị tùy theo khu vực ạ."]
+      },
+      {
+        id: 'FAQ_18',
+        keywords: ['móp méo', 'đóng gói', '3 lớp', 'bi xa', 'an toàn vận chuyển'],
+        responses: ["Dạ có ạ. Với các đơn hàng đi tỉnh, bên em sử dụng quy trình đóng gói 3 lớp chuyên dụng cho quà tặng cao cấp, đảm bảo hộp quà đến tay Anh/Chị vẫn giữ được vẻ đẹp hoàn hảo ạ."]
+      },
+      {
+        id: 'FAQ_19',
+        keywords: ['đổi trả', 'hỏng hóc', 'lỗi sản xuất', 'đổi mới'],
+        responses: ["Dạ, nếu có bất kỳ vấn đề gì về lỗi sản xuất hoặc hỏng hóc do vận chuyển, bên em cam kết sẽ **đổi mới 100%** sản phẩm cho Anh/Chị ngay lập tức ạ. Sự hài lòng của Anh/Chị là ưu tiên hàng đầu của bên em ạ."]
+      },
+      {
+        id: 'FAQ_20',
+        keywords: ['thanh toán sau', 'nhận hàng', 'cod', 'kiểm tra sản phẩm'],
+        responses: ["Dạ được ạ. Đối với khách cá nhân, Anh/Chị hoàn toàn có thể kiểm tra sản phẩm và thanh toán cho nhân viên giao hàng ạ. Với khách doanh nghiệp, bên em sẽ thực hiện theo quy trình tạm ứng và thanh toán linh hoạt trong hợp đồng ạ."]
+      },
+      {
+        id: 'FAQ_21',
+        keywords: ['chiết khấu tối đa', '30%', 'giảm giá nhiều nhất'],
+        responses: ["Dạ, tùy vào số lượng đơn hàng mà bên em có chính sách chiết khấu rất linh hoạt, có thể lên đến **30%** ạ. Anh/Chị vui lòng cho em biết số lượng dự kiến để em xin phép gửi bảng báo giá tốt nhất cho bên mình ạ."]
+      },
+      {
+        id: 'FAQ_22',
+        keywords: ['hibiscus', ' vitamin', 'nước quả', 'vị'],
+        responses: ["Dạ, nước quả Hibiscus là sản phẩm đặc trưng của Maison Gourmet, có vị chua ngọt thanh mát và rất giàu vitamin ạ. Đây không chỉ là thức uống ngon mà còn rất tốt cho sức khỏe, mang lại nét độc đáo cho món quà của bên mình ạ."]
+      },
+      {
+        id: 'FAQ_23',
+        keywords: ['showroom', 'địa chỉ', 'trực tiếp', 'trường chinh'],
+        responses: ["Dạ, em mời Anh/Chị ghé qua địa chỉ văn phòng trưng bày của bên em tại: **315 Trường Chinh, Khương Mai, Thanh Xuân, Hà Nội** ạ. Em rất hân hạnh được đón tiếp Anh/Chị ạ."]
+      },
+      {
+        id: 'FAQ_24',
+        keywords: ['ngọc quý', 'không có rượu', '1.100', '1.100.000'],
+        responses: ["Dạ, Ngọc Quý (giá 1.100.000đ) tập trung vào các dòng bánh quy đặc biệt và hồng trà cổ thụ, không bao gồm rượu ạ. Đây là lựa chọn lý tưởng nếu Anh/Chị muốn một set quà thanh lịch, nhẹ nhàng mà vẫn rất đẳng cấp ạ."]
+      },
+      {
+        id: 'FAQ_25',
+        keywords: ['viết tay', 'chân thành'],
+        responses: ["Dạ có ạ, nếu Anh/Chị có yêu cầu đặc biệt muốn viết tay để tăng sự chân thành, em rất sẵn lòng hỗ trợ Anh/Chị ạ."]
+      },
+      {
+        id: 'FAQ_26',
+        keywords: ['bán lẻ', 'dùng thử', 'trải nghiệm'],
+        responses: ["Dạ có ạ. Anh/Chị có thể đặt mua lẻ các loại trà, bánh hoặc nước quả để trải nghiệm chất lượng trước khi quyết định đặt số lượng lớn ạ."]
+      },
+      {
+        id: 'FAQ_27',
+        keywords: ['người lớn tuổi', 'ông bà', 'cha mẹ', 'trà và hạt'],
+        responses: ["Dạ, Anh/Chị có thể tham khảo hộp **An Quý** hoặc **Ngọc Quý** ạ. Hai dòng này tập trung nhiều vào trà Shan Tuyết cổ thụ và các loại hạt dinh dưỡng, rất phù hợp và ý nghĩa để tặng ông bà, cha mẹ ạ."]
+      },
+      {
+        id: 'FAQ_28',
+        keywords: ['sếp nữ', 'dương hòa', 'trang nhã', 'mộc mạc'],
+        responses: ["Dạ, Anh/Chị có thể cân nhắc hộp **Dương Hòa** hoặc **Ngọc Quý** ạ. Hai mẫu này có thiết kế rất trang nhã, mộc mạc và thành phần bánh trái ngọt thanh, chắc chắn sẽ tạo được ấn tượng tốt đẹp với sếp ạ."]
+      },
+      {
+        id: 'FAQ_29',
+        keywords: ['catalogue', 'zalo', 'năm mới 2026'],
+        responses: ["Dạ đã có bản mềm rồi ạ. Anh/Chị vui lòng để lại thông tin hoặc số zalo, em xin phép gửi catalogue chi tiết và các chương trình ưu đãi mới nhất cho bên mình tham khảo ạ."]
+      },
+      {
+        id: 'FAQ_30',
+        keywords: ['tại sao', 'khác biệt', 'tận tâm', 'chọn maison'],
+        responses: ["Dạ, Maison Gourmet không chỉ cam kết về chất lượng sản phẩm đạt chuẩn quốc tế mà còn luôn chú trọng vào trải nghiệm dịch vụ tận tâm ạ. Với sự bảo trợ từ **Golden Gate Group**, bên em tự tin có thể đáp ứng tốt mọi yêu cầu khắt khe nhất của Anh/Chị về quà tặng cao cấp ạ."]
       },
       {
         id: 'GREETING',
-        keywords: ['chào', 'hi', 'hello', 'alo', 'hey', 'start', 'bắt đầu'],
-        responses: ["Dạ, Maison Gourmet em xin chào Anh/Chị ạ! Em rất hân hạnh được hỗ trợ mình tìm kiếm Bộ quà tặng Tết 2026 hoàn hảo nhất ạ."]
+        keywords: ['chào', 'hi', 'hello', 'hey', 'start', 'bắt đầu'],
+        responses: ["Dạ, Maison Gourmet em xin chào Anh/Chị ạ! Anh/Chị đang quan tâm đến mẫu quà tặng dành cho đối tác hay quà tặng nhân viên để em xin phép được hỗ trợ tư vấn cho mình ạ?"]
       },
       {
-        id: 'SMALL_TALK_GOOD',
-        keywords: ['tốt', 'hay', 'đẹp', 'cảm ơn', 'thanks', 'ok', 'hiểu rồi', 'giỏi'],
-        responses: ["Dạ, em rất vui khi giúp ích được cho Anh/Chị ạ! Nếu mình cần thêm bất kỳ thông tin nào khác, Anh/Chị cứ nhắn em nhé ạ."]
+        id: 'ORDER_INTENT',
+        keywords: ['đặt hàng', 'mua', 'lấy', 'chốt đơn', 'xác nhận'],
+        responses: ["Dạ vâng, với những yêu cầu của Anh/Chị thì mẫu em vừa tư vấn là vô cùng phù hợp ạ. Em xin phép được xác nhận lại số lượng để chuẩn bị đơn hàng cho bên mình một cách chu đáo nhất nhé ạ?"]
+      },
+      {
+        id: 'LEAD_FORM',
+        keywords: ['suy nghĩ thêm', 'chưa sẵn sàng', 'đăng ký', 'form'],
+        responses: ["Dạ không sao đâu ạ, Anh/Chị cứ thong thả cân nhắc thêm nhé ạ. Nếu Anh/Chị muốn nhận thêm các mẫu thiết kế mới hoặc catalogue cập nhật nhất, Anh/Chị có thể điền thông tin tại đây để em xin phép được hỗ trợ gửi mình sớm nhất ạ."]
       }
     ],
-    fallback: "Dạ, em xin phép được lắng nghe kỹ hơn yêu cầu của Anh/Chị ạ. Hiện Maison Gourmet đang có ưu đãi chiết khấu 30% và hỗ trợ in logo miễn phí cho các mẫu quà Tết 2026 cao cấp. Không biết Anh/Chị cần em tư vấn thêm về mẫu quà, bảng giá hay chính sách vận chuyển ạ?"
+    fallback: "Dạ, hiện em chỉ hỗ trợ giải đáp các thắc mắc trong bộ 30 câu hỏi về sản phẩm, bảng giá và chính sách quà tặng Tết 2026 ạ. Không biết Anh/Chị đang cần tìm hiểu về mẫu quà nào hay chính sách in logo cho doanh nghiệp ạ?"
   };
 
   // 15.2. BRAIN HELPERS

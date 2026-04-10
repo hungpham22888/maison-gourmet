@@ -669,57 +669,162 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ======================================================
-     15. CHATBOT LOGIC
+     15. CHATBOT 'BRAIN' UPGRADE (Intent-based NLP)
      ====================================================== */
   const chatbotToggle = document.getElementById('chatbot-toggle');
   const chatbotWindow = document.getElementById('chatbot-window');
   const chatbotClose = document.getElementById('chatbot-close');
   const chatbotMessages = document.getElementById('chatbot-messages');
   const chatbotFooter = document.getElementById('chatbot-footer');
+  const chatbotInput = document.getElementById('chatbot-input');
+  const chatbotSend = document.getElementById('chatbot-send');
 
-  const salesScript = {
-    greeting: "Dạ, Maison Gourmet xin chào anh/chị ạ! Anh/chị đang cần tìm bộ quà tặng cao cấp dành cho đối tác hay quà tặng cho nhân viên ạ? Anh/chị cứ nhắn cho em, em xin phép được tư vấn mẫu phù hợp nhất với nhu cầu và ngân sách của bên mình ạ!",
-    questions: [
-      { q: "Mẫu quà nào tiêu biểu nhất?", a: "Dạ, hiện tại bên em có hai dòng được khách hàng lựa chọn nhiều nhất là hộp **Vạn An** (sang trọng, dành cho đối tác VIP) và hộp **An Quý** (tinh tế, phù hợp cho nhân viên). Anh/chị muốn xem chi tiết mẫu nào, em xin phép gửi ảnh thật để mình tham khảo ạ?" },
-      { q: "Giá cả các bộ quà tặng?", a: "Dạ, các mẫu quà nhà em có mức giá từ **648.000đ đến hơn 1.600.000đ** tùy theo thành phần ạ. Hiện bên em đang có ưu đãi cho dòng sản phẩm mới nên giá rất tốt. Anh/chị dự kiến ngân sách khoảng bao nhiêu cho mỗi phần quà để em tư vấn mẫu tối ưu nhất ạ?" },
-      { q: "Chiết khấu số lượng lớn?", a: "Dạ, bên em luôn có chính sách ưu đãi cho các đơn hàng số lượng lớn ạ. Cụ thể: từ 10 hộp giảm 10%, từ 50 hộp giảm 20% và trên 100 hộp chiết khấu lên đến 30%. Bên mình đặt số lượng bao nhiêu để em áp dụng mức chiết khấu tốt nhất ạ?" },
-      { q: "In logo công ty?", a: "Dạ có ạ. Với các đơn hàng từ 50 hộp trở lên, bên em sẽ hỗ trợ thiết kế và in ấn logo, tên thương hiệu của anh/chị lên bao bì và thiệp chúc mừng hoàn toàn miễn phí để tăng tính chuyên nghiệp ạ." },
-      { q: "Thời gian giao hàng?", a: "Dạ, tại Hà Nội bên em hỗ trợ giao nhanh trong vòng 24h. Với các tỉnh thành khác, thời gian giao hàng khoảng từ 2-4 ngày làm việc. Bên em cam kết đóng gói kỹ lưỡng, đảm bảo hộp quà nguyên vẹn khi đến tay anh/chị ạ." },
-      { q: "Chất lượng nguyên liệu?", a: "Dạ anh/chị hoàn toàn yên tâm ạ. Các nguyên liệu của bên em đều được nhập khẩu cao cấp từ Pháp, Bỉ... và sản xuất theo quy trình chuẩn ISO/HACCP quốc tế, đảm bảo an toàn vệ sinh thực phẩm và hương vị thơm ngon ạ." },
-      { q: "Tùy chỉnh thành phần?", a: "Dạ được ạ. Với các đơn hàng doanh nghiệp, bên em rất sẵn sàng tùy chỉnh thành phần bên trong để phù hợp nhất với ngân sách và sở thích của bên mình. Anh/chị cứ chia sẻ yêu cầu, em sẽ lên phương án combo riêng ạ." },
-      { q: "Túi xách và thiệp?", a: "Dạ có đầy đủ ạ. Mỗi bộ quà tặng đều bao gồm: Hộp quà cao cấp, túi xách đồng bộ và thiệp chúc mừng lịch sự. Anh/chị có thể dùng để biếu tặng ngay mà không cần chuẩn bị thêm gì ạ." },
-      { q: "Phí vận chuyển?", a: "Dạ, với các đơn hàng từ 20 hộp trở lên, bên em sẽ miễn phí vận chuyển toàn quốc cho mình ạ. Với các đơn hàng lẻ, em sẽ hỗ trợ tìm đơn vị vận chuyển có chi phí tiết kiệm nhất cho anh/chị ạ." },
-      { q: "Quà Trung Thu 2026?", a: "Dạ, bên em đang chuẩn bị ra mắt Bộ sưu tập Trung Thu 2026 với nhiều mẫu độc đáo. Nếu anh/chị muốn nhận thông tin sớm và hưởng ưu đãi đặt trước 10%, anh/chị vui lòng để lại lời nhắn 'TRUNG THU' giúp em nhé ạ." }
+  // 15.1. KNOWLEDGE BASE & INTENT MAPPING
+  const chatbotBrain = {
+    intents: [
+      {
+        id: 'GREETING',
+        keywords: ['chào', 'hi', 'hello', 'alo', 'ê', 'hey', 'start', 'bắt đầu'],
+        responses: ["Dạ, Maison Gourmet em xin chào Anh/Chị ạ! Em rất hân hạnh được hỗ trợ mình tìm kiếm Bộ quà tặng Tết 2026 hoàn hảo nhất ạ."]
+      },
+      {
+        id: 'PRICE_GENERAL',
+        keywords: ['giá', 'bao nhiêu', 'tiền', 'nhiêu', 'báo giá', 'chi phí', 'ngân sách', 'tầm tiền'],
+        responses: ["Dạ, các bộ quà tặng cao cấp nhà Maison Gourmet có mức giá niêm yết linh hoạt từ **560.000đ đến hơn 1.800.000đ** ạ. Nếu Anh/Chị đặt số lượng lớn cho doanh nghiệp, em xin phép được áp dụng chiết khấu ưu đãi lên đến **30%** ạ."]
+      },
+      {
+        id: 'PRODUCT_SANG_VIP',
+        keywords: ['vạn an', 'vip', 'sang nhất', 'đắt nhất', 'cao cấp nhất', 'đối tác lớn', '1800', '1.800'],
+        responses: ["Dạ, để biếu đối tác VIP thì mẫu **Vạn An (1.800.000đ)** là lựa chọn đẳng cấp nhất ạ. Hộp quà mang vẻ đẹp sang trọng kỳ vĩ, đi kèm là chai vang Ý Terre Forti tuyệt hảo, chắc chắn sẽ tạo ấn tượng mạnh mẽ với người nhận ạ."]
+      },
+      {
+        id: 'PRODUCT_ECONOMY',
+        keywords: ['gia quý', 'rẻ nhất', 'thấp nhất', 'bình dân', '560', '560.000'],
+        responses: ["Dạ, nếu mình cần mẫu quà tinh tế với mức giá tối ưu nhất, em xin phép giới thiệu hộp **Gia Quý (560.000đ)** ạ. Dù giá phải chăng nhưng mẫu này vẫn rất được lòng khách hàng nhờ thiết kế chỉn chu và đầy đủ trà bánh ạ."]
+      },
+      {
+        id: 'PRODUCT_POPULAR',
+        keywords: ['an quý', 'duyên hòa', 'tài lộc', 'ngọc quý', 'vinh hoa', 'phổ biến', 'nhiều người mua'],
+        responses: ["Dạ, các dòng như **An Quý** (720k) hay **Tài Lộc** (950k) hiện đang là những mẫu 'bán chạy' nhất vì sự cân bằng giữa chất lượng và giá thành ạ. Anh/Chị có muốn em gửi ảnh chi tiết các mẫu này cho mình xem không ạ?"]
+      },
+      {
+        id: 'SERVICE_LOGO',
+        keywords: ['in logo', 'thương hiệu', 'khắc tên', 'lên hộp', 'miễn phí in', 'thiết kế riêng'],
+        responses: ["Dạ có ạ! Với các đơn hàng từ **50 hộp trở lên**, Maison Gourmet xin phép hỗ trợ thiết kế và in ấn logo doanh nghiệp hoàn toàn **miễn phí** lên bao bì và thiệp chúc mừng để tăng tính nhận diện thương hiệu cho bên mình ạ."]
+      },
+      {
+        id: 'SERVICE_DISCOUNT',
+        keywords: ['chiết khấu', 'giảm giá', 'ưu đãi', 'giảm thêm', 'mua nhiều', 'số lượng lớn', '30%'],
+        responses: ["Dạ, bên em luôn có chính sách chiết khấu rất tốt cho doanh nghiệp ạ: đạt mốc từ 10% đến **30%** tùy theo số lượng đơn hàng ạ. Anh/Chị dự kiến đặt khoảng bao nhiêu bộ để em xin phép báo mức giá tốt nhất cho mình ạ?"]
+      },
+      {
+        id: 'QUALITY_TRUST',
+        keywords: ['uy tín', 'chất lượng', 'an toàn', 'iso', 'haccp', 'golden gate', 'nguồn gốc', 'vệ sinh'],
+        responses: ["Dạ, Anh/Chị hoàn toàn có thể yên tâm ạ. Maison Gourmet là thương hiệu thuộc tập đoàn **Golden Gate Group**, mọi sản phẩm đều đạt chứng chỉ quốc tế **ISO 22000 & HACCP**. Bên em đã phục vụ hơn 3000 doanh nghiệp lớn nên uy tín luôn là ưu tiên hàng đầu ạ."]
+      },
+      {
+        id: 'LOGISTICS',
+        keywords: ['giao hàng', 'vận chuyển', 'ship', 'bao lâu', 'hà nội', 'tỉnh xa', 'phí ship'],
+        responses: ["Dạ, khu vực Hà Nội bên em giao nhanh trong **24h** ạ. Với các đơn hàng từ 20 hộp trở lên, Maison Gourmet xin phép **miễn phí vận chuyển** toàn quốc cho mình ạ. Bên em có quy trình đóng gói 3 lớp cực kỳ chắc chắn nên ship tỉnh thoải mái ạ."]
+      },
+      {
+        id: 'LOCATION',
+        keywords: ['địa chỉ', 'đâu', 'ở đâu', 'xem mẫu', 'trực tiếp', 'trường chinh', 'văn phòng', 'showroom'],
+        responses: ["Dạ, em mời Anh/Chị ghé qua văn phòng trưng bày mẫu của bên em tại **315 Trường Chinh, Khương Mai, Thanh Xuân, Hà Nội** để xem và trải nghiệm sản phẩm trực tiếp ạ. Bên em luôn sẵn sàng đón tiếp mình ạ."]
+      },
+      {
+        id: 'ORDER_INTENT',
+        keywords: ['đặt hàng', 'mua', 'lấy', 'chốt đơn', 'order', 'thủ tục', 'thanh toán'],
+        responses: ["Dạ tuyệt vời quá ạ! Để hỗ trợ Anh/Chị lên đơn hàng nhanh nhất, Anh/Chị có thể để lại số điện thoại hoặc nhắn em số lượng cụ thể, nhân viên của bên em sẽ gọi lại hỗ trợ Anh/Chị ngay lập tức ạ."]
+      },
+      {
+        id: 'SMALL_TALK_GOOD',
+        keywords: ['tốt', 'hay', 'đẹp', 'cảm ơn', 'thanks', 'ok', 'hiểu rồi', 'giỏi'],
+        responses: ["Dạ, em rất vui khi giúp ích được cho Anh/Chị ạ! Nếu mình cần thêm bất kỳ thông tin nào khác, Anh/Chị cứ nhắn em nhé ạ."]
+      }
     ],
-    closing: "Dạ, mẫu này hiện đang được rất nhiều khách hàng quan tâm và số lượng có hạn ạ. Anh/chị dự kiến lấy số lượng bao nhiêu để em kịp thời giữ kho và chuẩn bị đơn hàng chu đáo nhất cho mình ạ?",
-    formLead: "Dạ không sao ạ, anh/chị cứ dành thêm thời gian cân nhắc kỹ nhé ạ. Nếu anh/chị muốn nhận các chương trình ưu đãi đặc biệt hoặc thông báo khi có Bộ sưu tập mới, anh/chị có thể tham gia danh sách chờ của bên em nhé!"
+    fallback: "Dạ, em xin phép được lắng nghe kỹ hơn yêu cầu của Anh/Chị ạ. Hiện Maison Gourmet đang có ưu đãi chiết khấu 30% và hỗ trợ in logo miễn phí cho các mẫu quà Tết 2026 cao cấp. Không biết Anh/Chị cần em tư vấn thêm về mẫu quà, bảng giá hay chính sách vận chuyển ạ?"
   };
 
+  // 15.2. BRAIN HELPERS
+  function normalizeText(text) {
+    return text.toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")      // Remove punctuation
+      .trim();
+  }
+
+  function getBotResponse(userText) {
+    const normalized = normalizeText(userText);
+    let matchedIntents = [];
+
+    chatbotBrain.intents.forEach(intent => {
+      if (intent.keywords.some(kw => normalized.includes(normalizeText(kw)))) {
+        matchedIntents.push(intent);
+      }
+    });
+
+    if (matchedIntents.length > 0) {
+      // Pick first matching intent response (could be improved to combine)
+      let response = matchedIntents[0].responses[0];
+      // If multiple intents, try to bridge them (limited logic here for simplicity)
+      if (matchedIntents.length > 1) {
+        // Simple logic to add another part if relevant
+        // response += " Ngoài ra, " + matchedIntents[1].responses[0].replace(/^Dạ, /, "");
+      }
+      return response;
+    }
+
+    // Special check for combined questions (e.g., price AND logo)
+    const hasPrice = normalized.includes('gia') || normalized.includes('bao nhieu');
+    const hasLogo = normalized.includes('logo') || normalized.includes('in');
+    
+    if (hasPrice && hasLogo) {
+      return "Dạ, về giá cả thì các mẫu quà bên em dao động từ 560k đến 1.8M ạ. Đặc biệt, với đơn từ 50 hộp, bên em sẽ xin phép hỗ trợ in logo doanh nghiệp hoàn toàn miễn phí cho Anh/Chị luôn ạ!";
+    }
+
+    return chatbotBrain.fallback;
+  }
+
+  // 15.3. CHAT UI LOGIC
   let chatStarted = false;
 
   function addMessage(text, type) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `chat-msg msg-${type}`;
-    // Chuyển đổi markdown đơn giản sang HTML (cho in đậm **)
+    // Simple markdown formatting for bold **
     const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     msgDiv.innerHTML = formattedText;
     chatbotMessages.appendChild(msgDiv);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
   }
 
-  function renderQuickReplies(mode = 'none') {
-    chatbotFooter.innerHTML = '';
-    chatbotFooter.style.display = 'none';
-    
-    if (mode === 'closing') {
-      chatbotFooter.style.display = 'flex';
-      const btnBuy = document.createElement('button');
-      btnBuy.className = 'quick-reply-btn';
-      btnBuy.innerText = "Em muốn đặt hàng ngay";
-      btnBuy.onclick = () => {
-        addMessage("Em muốn đặt hàng ngay", "user");
+  function showBotTyping(show = true) {
+    if (show) {
+      chatbotFooter.innerHTML = '<span class="typing-indicator" style="font-size:0.8rem; color:var(--text-light); padding:8px">Maison Assistant đang suy nghĩ...</span>';
+      chatbotFooter.style.display = 'block';
+    } else {
+      chatbotFooter.innerHTML = '';
+      chatbotFooter.style.display = 'none';
+    }
+  }
+
+  function handleManualInput() {
+    const text = chatbotInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    chatbotInput.value = '';
+    showBotTyping(true);
+
+    setTimeout(() => {
+      showBotTyping(false);
+      const botResponse = getBotResponse(text);
+      addMessage(botResponse, "bot");
+      
+      // Auto-suggest CTA if relevant
+      if (text.toLowerCase().includes('dat hang') || text.toLowerCase().includes('mua')) {
         setTimeout(() => {
-          addMessage("Dạ tuyệt quá ạ! Mời anh/chị điền thông tin vào mẫu khảo sát/liên hệ bên dưới để em lên đơn ngay cho mình nhé.", "bot");
           const cta = document.createElement('a');
           cta.href = '#order';
           cta.className = 'chat-cta-btn';
@@ -727,56 +832,21 @@ document.addEventListener('DOMContentLoaded', () => {
           cta.onclick = () => chatbotWindow.classList.remove('open');
           chatbotMessages.appendChild(cta);
           chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-          renderQuickReplies('none');
-        }, 600);
-      };
-      
-      const btnThink = document.createElement('button');
-      btnThink.className = 'quick-reply-btn';
-      btnThink.innerText = "Để mình cân nhắc thêm";
-      btnThink.onclick = () => {
-        addMessage("Để mình cân nhắc thêm", "user");
-        setTimeout(() => {
-          addMessage(salesScript.formLead, "bot");
-          const cta = document.createElement('a');
-          cta.href = 'khao-sat-trung-thu.html';
-          cta.className = 'chat-cta-btn';
-          cta.innerText = "Đăng ký nhận ưu đãi mới";
-          chatbotMessages.appendChild(cta);
-          chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-          renderQuickReplies('none');
-        }, 600);
-      };
-      
-      chatbotFooter.appendChild(btnBuy);
-      chatbotFooter.appendChild(btnThink);
-    }
-  }
-
-  function handleUserAction(index) {
-    const item = salesScript.questions[index];
-    addMessage(item.q, "user");
-    
-    // Giả lập bot đang "typing"
-    chatbotFooter.innerHTML = '<span style="font-size:0.8rem; color:var(--text-light); padding:8px">Đang trả lời...</span>';
-    
-    setTimeout(() => {
-      addMessage(item.a, "bot");
-      setTimeout(() => {
-        renderQuickReplies('closing');
-      }, 500);
-    }, 800);
+        }, 500);
+      }
+    }, 1000);
   }
 
   if (chatbotToggle) {
-    chatbotToggle.addEventListener('click', () => {
+     chatbotToggle.addEventListener('click', () => {
       const isOpen = chatbotWindow.classList.toggle('open');
       if (isOpen && !chatStarted) {
         chatStarted = true;
+        showBotTyping(true);
         setTimeout(() => {
-          addMessage(salesScript.greeting, "bot");
-          renderQuickReplies('questions');
-        }, 400);
+          showBotTyping(false);
+          addMessage("Dạ, Maison Gourmet em xin kính chào Anh/Chị ạ! Rất vui được đón tiếp mình. Không biết Anh/Chị đang quan tâm đến các mẫu quà Tết cao cấp hay cần em hỗ trợ tư vấn về chính sách cho doanh nghiệp ạ?", "bot");
+        }, 800);
       }
     });
   }
@@ -785,62 +855,6 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotClose.addEventListener('click', () => {
       chatbotWindow.classList.remove('open');
     });
-  }
-
-  // Manual Input Handling
-  const chatbotInput = document.getElementById('chatbot-input');
-  const chatbotSend = document.getElementById('chatbot-send');
-
-  function handleManualInput() {
-    const text = chatbotInput.value.trim();
-    if (!text) return;
-
-    addMessage(text, 'user');
-    chatbotInput.value = '';
-
-    // Giả lập bot đang suy nghĩ
-    chatbotFooter.innerHTML = '<span style="font-size:0.8rem; color:var(--text-light); padding:8px">Đang suy nghĩ...</span>';
-
-    setTimeout(() => {
-      // Tìm kiếm từ khóa đơn giản
-      const lowerText = text.toLowerCase();
-      let bestMatch = null;
-
-      // Danh sách từ khóa và mapping tới câu hỏi trong kịch bản
-      const keywordMap = [
-        { keywords: ['giá', 'bao nhiêu', 'chi phí', 'tiền'], index: 1 },
-        { keywords: ['mẫu', 'loại nào', 'vạn an', 'an quý', 'sản phẩm'], index: 0 },
-        { keywords: ['chiết khấu', 'giảm giá', 'số lượng lớn', 'ưu đãi'], index: 2 },
-        { keywords: ['in logo', 'thương hiệu', 'bao bì'], index: 3 },
-        { keywords: ['giao hàng', 'vận chuyển', 'bao lâu', 'ship'], index: 4 },
-        { keywords: ['chất lượng', 'nguyên liệu', 'an toàn', 'iso'], index: 5 },
-        { keywords: ['thay đổi', 'tùy chỉnh', 'combo riêng'], index: 6 },
-        { keywords: ['túi xách', 'thiệp'], index: 7 },
-        { keywords: ['phí ship', 'miễn phí vận chuyển'], index: 8 },
-        { keywords: ['trung thu', '2026'], index: 9 }
-      ];
-
-      // Ý định đặt hàng trực tiếp
-      const buyKeywords = ['đặt hàng', 'mua', 'lấy', 'order', 'chốt'];
-      const isBuyIntent = buyKeywords.some(kw => lowerText.includes(kw));
-
-      for (const entry of keywordMap) {
-        if (entry.keywords.some(kw => lowerText.includes(kw))) {
-          bestMatch = salesScript.questions[entry.index];
-          break;
-        }
-      }
-
-      if (bestMatch) {
-        addMessage(bestMatch.a, "bot");
-        setTimeout(() => renderQuickReplies('closing'), 500);
-      } else if (isBuyIntent) {
-        addMessage(salesScript.closing, "bot");
-        setTimeout(() => renderQuickReplies('closing'), 500);
-      } else {
-        addMessage("Dạ, Maison Assistant chưa hiểu ý mình lắm ạ. Anh/chị có thể mô tả kỹ hơn nhu cầu (mẫu quà, số lượng, ngân sách...) để em tư vấn tốt nhất không ạ?", "bot");
-      }
-    }, 1000);
   }
 
   if (chatbotSend) {
@@ -853,14 +867,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Đóng chat khi click ra ngoài (tùy chọn)
+  // Handle outside click to close
   document.addEventListener('mousedown', (e) => {
-    if (chatbotWindow.classList.contains('open') && 
+    if (chatbotWindow && chatbotWindow.classList.contains('open') && 
         !chatbotWindow.contains(e.target) && 
         !chatbotToggle.contains(e.target)) {
       chatbotWindow.classList.remove('open');
     }
   });
 
-  console.log('🎁 Maison Gourmet Landing Page & Sales Chatbot loaded successfully!');
+  console.log('🎁 Maison Gourmet Smart Chatbot Engine Ready!');
 });

@@ -756,33 +756,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getBotResponse(userText) {
     const normalized = normalizeText(userText);
-    let matchedIntent = null;
+    
+    // 🔍 1. KIỂM TRA ĐẶC BIỆT CHO TRƯỜNG HỢP GỘP (SOP BƯỚC 5: GIÁ + LOGO)
+    const hasPrice = /\b(gia|bao nhieu|tien)\b/i.test(normalized);
+    const hasLogo = /\b(logo|in)\b/i.test(normalized);
+    const hasDiscount = /\b(chiet khau|giam gia|uu dai)\b/i.test(normalized);
 
-    // Duyệt qua các Intent theo thứ tự ưu tiên (Specific -> Greeting)
+    if (hasPrice && hasLogo) {
+      return "Dạ, về giá cả thì các mẫu quà bên em dao động từ **560k đến 1.8M** ạ. Đặc biệt, với các đơn hàng doanh nghiệp từ 50 hộp, bên em sẽ xin phép hỗ trợ **in logo thương hiệu hoàn toàn miễn phí** cho mình luôn ạ!";
+    }
+    
+    if (hasLogo && hasDiscount) {
+      return "Dạ, bên em có chính sách **chiết khấu lên đến 30%** cho số lượng lớn và vẫn hỗ trợ **in logo doanh nghiệp miễn phí** (cho đơn từ 50 hộp) Anh/Chị nhé ạ. Anh/Chị dự kiến đặt số lượng bao nhiêu để em báo mức ưu đãi tốt nhất ạ?";
+    }
+
+    // 🔍 2. THU THẬP TẤT CẢ Ý ĐỊNH KHỚP
+    let matchedIntents = [];
     for (const intent of chatbotBrain.intents) {
       if (intent.keywords.some(kw => {
         const normalizedKw = normalizeText(kw);
-        // Sử dụng Regex với ranh giới từ \b để chỉ khớp các từ nguyên vẹn
         const regex = new RegExp(`\\b${normalizedKw}\\b`, 'i');
         return regex.test(normalized);
       })) {
-        matchedIntent = intent;
-        break; // Dừng lại ở Intent đầu tiên khớp (ưu tiên cao nhất)
+        matchedIntents.push(intent);
       }
     }
 
-    if (matchedIntent) {
-      return matchedIntent.responses[0];
+    if (matchedIntents.length > 0) {
+      // Nếu có nhiều hơn 1 ý định, loại bỏ các ý định phụ như Chào hỏi/Xã giao để tập trung nội dung chính
+      if (matchedIntents.length > 1) {
+        const filtered = matchedIntents.filter(i => i.id !== 'GREETING' && i.id !== 'SMALL_TALK_GOOD');
+        if (filtered.length > 0) matchedIntents = filtered;
+      }
+
+      if (matchedIntents.length === 1) {
+        return matchedIntents[0].responses[0];
+      }
+
+      // Lắp ghép câu trả lời đa ý định (Synthesis)
+      let combinedResponse = matchedIntents[0].responses[0];
+      for (let i = 1; i < matchedIntents.length; i++) {
+        // Loại bỏ phần chào "Dạ," ở các câu sau để nối cho tự nhiên
+        let part = matchedIntents[i].responses[0].replace(/^Dạ, /, "");
+        // Viết thường chữ cái đầu của phần nối
+        part = part.charAt(0).toLowerCase() + part.slice(1);
+        combinedResponse += " Ngoài ra, " + part;
+      }
+      return combinedResponse;
     }
 
-    // Kiểm tra đặc biệt cho các câu hỏi kết hợp (giá VÀ in logo)
-    const hasPrice = /\b(gia|bao nhieu|tien)\b/i.test(normalized);
-    const hasLogo = /\b(logo|in)\b/i.test(normalized);
-    
-    if (hasPrice && hasLogo) {
-      return "Dạ, về giá cả thì các mẫu quà bên em dao động từ 560k đến 1.8M ạ. Đặc biệt, với đơn từ 50 hộp, bên em sẽ xin phép hỗ trợ in logo doanh nghiệp hoàn toàn miễn phí cho Anh/Chị luôn ạ!";
-    }
-
+    // 🔍 3. FALLBACK KHÔNG BIẾT Ý ĐỊNH
     return chatbotBrain.fallback;
   }
 

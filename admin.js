@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="form-group"><label>Họ và tên</label><input type="text" name="name" required></div>
             <div class="form-group"><label>Số điện thoại</label><input type="text" name="phone"></div>
             <div class="form-group"><label>Email</label><input type="email" name="email"></div>
+            <div class="form-group"><label>Địa chỉ</label><input type="text" name="address"></div>
             <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu khách hàng</button>
         `;
     } else if (type === 'product') {
@@ -208,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '';
     data.customers.forEach(cust => {
       const row = document.createElement('tr');
-      row.innerHTML = `<td class="customer-name">${cust.name}</td><td>${cust.phone || 'N/A'}</td><td>${cust.email || 'N/A'}</td><td><span class="badge badge-completed">${cust.source || 'website'}</span></td><td>${cust.registered_at.split(' ')[0]}</td>`;
+      row.innerHTML = `<td class="customer-name">${cust.name}</td><td>${cust.phone || 'N/A'}</td><td>${cust.email || 'N/A'}</td><td>${cust.address || ''}</td><td><span class="badge badge-completed">${cust.source || 'website'}</span></td><td>${cust.registered_at.split(' ')[0]}</td>`;
       tableBody.appendChild(row);
     });
   }

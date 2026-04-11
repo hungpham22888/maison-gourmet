@@ -44,9 +44,9 @@ def add_customer():
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO customers (name, phone, email, source, registered_at)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (data['name'], data['phone'], data['email'], 'manual_entry', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            INSERT INTO customers (name, phone, email, address, source, registered_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (data['name'], data['phone'], data['email'], data.get('address', ''), 'manual_entry', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
         conn.close()
         run_sync()

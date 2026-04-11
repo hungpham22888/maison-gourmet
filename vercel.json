@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/checkout", "destination": "/checkout.html" }
   ]

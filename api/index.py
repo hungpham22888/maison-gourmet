@@ -121,31 +121,44 @@ def manage_orders():
     if request.method == 'OPTIONS':
         return '', 200
         
-    conn = get_db_connection()
-    cur = conn.cursor()
-    
-    if request.method == 'GET':
-        cur.execute("SELECT * FROM orders ORDER BY id DESC")
-        orders = cur.fetchall()
-        cur.close()
-        conn.close()
-        return jsonify(orders)
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
         
-    if request.method == 'POST':
-        data = request.json
-        order_code = data.get('order_code') or f"MGM-{datetime.now().strftime('%m%d%H%M')}"
-        status = data.get('status', 'pending')
-        
-        cur.execute('''
-            INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method, order_date, updated_at)
-            VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
-            RETURNING id
-        ''', (order_code, data['customer_name'], data['product_name'], data['amount'], status, data.get('payment_method', 'Bank')))
-        new_id = cur.fetchone()['id']
-        conn.commit()
-        cur.close()
-        conn.close()
-        return jsonify({"success": True, "order_code": order_code, "id": new_id}), 201
+        if request.method == 'GET':
+            cur.execute("SELECT * FROM orders ORDER BY id DESC")
+            orders = cur.fetchall()
+            cur.close()
+            conn.close()
+            return jsonify(orders)
+            
+        if request.method == 'POST':
+            data = request.json
+            order_code = data.get('order_code') or f"MGM-{datetime.now().strftime('%m%d%H%M')}"
+            status = data.get('status', 'pending')
+            payment_method = data.get('payment_method', 'Bank')
+            
+            cur.execute('''
+                INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method, quantity, order_date, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
+                RETURNING id
+            ''', (
+                order_code, 
+                data['customer_name'], 
+                data['product_name'], 
+                data['amount'], 
+                status, 
+                payment_method,
+                data.get('quantity', 1)
+            ))
+            new_id = cur.fetchone()['id']
+            conn.commit()
+            cur.close()
+            conn.close()
+            return jsonify({"success": True, "order_code": order_code, "id": new_id}), 201
+    except Exception as e:
+        print(f"ERROR in manage_orders: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # WEBHOOK for SEPAY
 @app.route('/api/webhook/sepay', methods=['POST'])

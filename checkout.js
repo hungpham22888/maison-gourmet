@@ -279,14 +279,20 @@ document.addEventListener('DOMContentLoaded', () => {
         payment_method: paymentMethod
       };
 
-      await fetch(`${API_BASE}/orders`, {
+      const response = await fetch(`${API_BASE}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
-      console.log(`Order (${paymentMethod}) saved to DB successfully`);
+
+      if (response.ok) {
+        console.log(`Order (${paymentMethod}) saved to DB successfully`);
+      } else {
+        const errData = await response.json();
+        console.error(`Failed to save order: ${errData.error || response.statusText}`);
+      }
     } catch (err) {
-      console.error('Failed to save order to local DB:', err);
+      console.error('Network error saving order:', err);
     }
   }
 

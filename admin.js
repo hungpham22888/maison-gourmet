@@ -91,6 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         console.log("✅ Data loaded from Cloud API");
       } else {
+        console.warn("⚠️ API error, falling back to data_sync.json. Statuses:", 
+          productsRes.status, customersRes.status, ordersRes.status);
+        
         // Fallback: Static sync file
         const response = await fetch('data_sync.json?t=' + new Date().getTime());
         globalData = await response.json();
@@ -193,14 +196,16 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       if (response.ok) {
-        alert(isEdit ? 'Cập nhật thành công!' : 'Đã thêm thành công!');
+        console.log(`Record saved successfully`);
         closeModal();
         loadDashboardData();
       } else {
         const err = await response.json();
+        console.error(`Failed to save record: ${err.error || response.statusText}`);
         alert('Lỗi: ' + (err.error || 'Không rõ lỗi'));
       }
     } catch (error) {
+      console.error('Network error while saving record:', error);
       alert('Lỗi kết nối API!');
     } finally {
       submitBtn.disabled = false;

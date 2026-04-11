@@ -266,9 +266,34 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ===== STEP 2: QR PAYMENT =================== */
   /* ============================================ */
 
+  async function saveOrderToDB() {
+    try {
+      const orderData = {
+        order_code: orderId,
+        customer_name: savedFormData.fullName,
+        product_name: cart.length > 1 ? `${cart[0].name} và ${cart.length - 1} món khác` : cart[0].name,
+        amount: total,
+        status: 'pending',
+        payment_method: 'Bank'
+      };
+
+      await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      console.log('Order saved to DB successfully');
+    } catch (err) {
+      console.error('Failed to save order to local DB:', err);
+    }
+  }
+
   function goToQRStep() {
     showStep(stepQR);
     updateStatusBar(2);
+    
+    // Save to DB for automation
+    saveOrderToDB();
 
     const qrImg = document.getElementById('sepay-qr-img');
     const qrLoading = document.getElementById('qr-loading');

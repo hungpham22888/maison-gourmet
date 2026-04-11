@@ -1,5 +1,5 @@
 {
-  "last_sync": "2026-04-11 21:52:15",
+  "last_sync": "2026-04-11 22:16:00",
   "products": [
     {
       "id": 6,
@@ -112,11 +112,28 @@
       "address": null
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": 1,
+      "order_code": "MG04115375",
+      "customer_id": null,
+      "customer_name": "Khách hàng Test 2k",
+      "customer_phone": null,
+      "product_id": null,
+      "product_name": "Set Quà Demo (Test 2k)",
+      "quantity": 1,
+      "amount": 2000.0,
+      "payment_method": "Bank",
+      "status": "pending",
+      "notes": null,
+      "order_date": "2026-04-11 22:10:03",
+      "updated_at": "2026-04-11 22:10:03"
+    }
+  ],
   "stats": {
-    "total_revenue": 0,
-    "total_orders": 0,
+    "total_revenue": 2000.0,
+    "total_orders": 1,
     "total_customers": 3,
-    "pending_orders": 0
+    "pending_orders": 1
   }
 }

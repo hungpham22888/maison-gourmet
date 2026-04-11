@@ -60,12 +60,19 @@ def add_order():
     try:
         conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
-        # For manual orders, generate MG code
-        order_code = f"MGM-{datetime.now().strftime('%m%d%H%M')}"
+        
+        # Support both manual admin entry and web checkout entry
+        order_code = data.get('order_code')
+        if not order_code:
+            order_code = f"MGM-{datetime.now().strftime('%m%d%H%M')}"
+            
+        status = data.get('status', 'completed') # Default to completed for admin manual entry
+        payment_method = data.get('payment_method', 'manual')
+        
         cursor.execute('''
             INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method, order_date)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (order_code, data['customer_name'], data['product_name'], data['amount'], 'completed', 'manual', datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        ''', (order_code, data['customer_name'], data['product_name'], data['amount'], status, payment_method, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
         conn.close()
         run_sync()

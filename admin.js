@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let globalData = null;
   let currentModalType = '';
-  let editingId = null; // Track if we are editing an existing record
+  let editingId = null; 
+  const API_BASE = '/api'; // Use relative path for Vercel deployment
 
   // Theme Management
   const currentTheme = localStorage.getItem('admin_theme') || 'light';
@@ -58,20 +59,52 @@ document.addEventListener('DOMContentLoaded', () => {
   // Data Loading
   async function loadDashboardData() {
     try {
-      const response = await fetch('data_sync.json?t=' + new Date().getTime());
-      if (!response.ok) throw new Error('Sync file not found');
+      // Priority 1: Fetch live data from Cloud API
+      const [productsRes, customersRes, ordersRes] = await Promise.all([
+          fetch(`${API_BASE}/products`),
+          fetch(`${API_BASE}/customers`),
+          fetch(`${API_BASE}/orders`)
+      ]);
       
-      const data = await response.json();
-      globalData = data;
-      renderDashboard(data);
-      if (lastSyncEl) lastSyncEl.textContent = `Cập nhật: ${data.last_sync}`;
+      if (productsRes.ok && customersRes.ok && ordersRes.ok) {
+        const [products, customers, orders] = await Promise.all([
+            productsRes.json(),
+            customersRes.json(),
+            ordersRes.json()
+        ]);
+        
+        // Calculate stats on the fly since we moved away from local sync script
+        const totalRevenue = orders.reduce((sum, o) => sum + o.amount, 0);
+        const pendingOrders = orders.filter(o => o.status === 'pending').length;
+        
+        globalData = {
+          products,
+          customers,
+          orders,
+          stats: {
+            total_revenue: totalRevenue,
+            total_orders: orders.length,
+            total_customers: customers.length,
+            pending_orders: pendingOrders
+          },
+          last_sync: new Date().toLocaleString('vi-VN')
+        };
+        console.log("✅ Data loaded from Cloud API");
+      } else {
+        // Fallback: Static sync file
+        const response = await fetch('data_sync.json?t=' + new Date().getTime());
+        globalData = await response.json();
+      }
+      
+      renderDashboard(globalData);
+      if (lastSyncEl) lastSyncEl.textContent = `Live: ${globalData.last_sync}`;
       
       const activeTabLink = document.querySelector('.nav-link.active');
       if (activeTabLink) {
         const tabId = activeTabLink.getAttribute('data-tab');
-        if (tabId === 'orders') renderFullOrders(data);
-        if (tabId === 'customers') renderFullCustomers(data);
-        if (tabId === 'products') renderFullProducts(data);
+        if (tabId === 'orders') renderFullOrders(globalData);
+        if (tabId === 'customers') renderFullCustomers(globalData);
+        if (tabId === 'products') renderFullProducts(globalData);
       }
     } catch (error) {
       console.error('Error loading admin data:', error);
@@ -150,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const isEdit = editingId !== null;
       const endpoint = isEdit 
-        ? `http://127.0.0.1:5000/api/${currentModalType}s/${editingId}`
-        : `http://127.0.0.1:5000/api/${currentModalType}s`;
+        ? `${API_BASE}/${currentModalType}s/${editingId}`
+        : `${API_BASE}/${currentModalType}s`;
       
       const response = await fetch(endpoint, {
         method: isEdit ? 'PUT' : 'POST',

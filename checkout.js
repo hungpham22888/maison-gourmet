@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const summaryItems = document.getElementById('checkout-summary-items');
   const subtotalEl = document.getElementById('checkout-subtotal');
   const totalEl = document.getElementById('checkout-total');
+  const API_BASE = '/api'; 
 
   // Steps
   const stepForm = document.getElementById('checkout-step-form');
@@ -154,11 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function startPolling() {
     pollingInterval = setInterval(async () => {
       try {
-        const response = await fetch('data_sync.json?t=' + new Date().getTime());
-        const data = await response.json();
+        // Fetch live status from Cloud API instead of data_sync.json
+        const response = await fetch(`${API_BASE}/orders`);
+        const orders = await response.json();
         
-        // Find current order in sync data
-        const currentOrder = data.orders.find(o => o.order_code === orderId);
+        // Find current order in live data
+        const currentOrder = orders.find(o => o.order_code === orderId);
         
         if (currentOrder && currentOrder.status === 'completed') {
           clearInterval(paymentTimer);
@@ -277,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
         payment_method: 'Bank'
       };
 
-      await fetch('http://localhost:5000/api/orders', {
+      await fetch(`${API_BASE}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)

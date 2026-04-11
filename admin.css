@@ -343,8 +343,8 @@ tr:last-child td {
   animation: fadeIn 0.3s ease;
 }
 
-.tab-content.hidden {
-  display: none;
+.hidden {
+  display: none !important;
 }
 
 @keyframes fadeIn {

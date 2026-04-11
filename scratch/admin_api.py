@@ -5,6 +5,11 @@ import subprocess
 import os
 from datetime import datetime
 
+import sys
+
+# Set encoding for Windows console
+sys.stdout.reconfigure(encoding='utf-8')
+
 app = Flask(__name__)
 CORS(app) # Enable CORS for admin.html to call this API
 
@@ -69,5 +74,5 @@ def add_order():
         return jsonify({"success": False, "error": str(e)}), 400
 
 if __name__ == '__main__':
-    print("🚀 Admin CRUD API is running on http://127.0.0.1:5000")
+    print(">>> Admin CRUD API is running on http://127.0.0.1:5000")
     app.run(port=5000, debug=False)

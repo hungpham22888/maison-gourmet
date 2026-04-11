@@ -1,5 +1,5 @@
 {
-  "last_sync": "2026-04-11 22:53:32",
+  "last_sync": "2026-04-11 22:58:53",
   "products": [
     {
       "id": 6,
@@ -101,10 +101,10 @@
     },
     {
       "id": 1,
-      "name": "Nguyễn Văn Anh",
+      "name": "Khách hàng Test 2k",
       "phone": "0912345678",
       "zalo": "0912345678",
-      "email": "anh.nguyen@example.com",
+      "email": "",
       "source": "waitlist",
       "notes": null,
       "registered_at": "2026-04-11 17:47:50",

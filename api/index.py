@@ -137,8 +137,8 @@ def manage_orders():
         status = data.get('status', 'pending')
         
         cur.execute('''
-            INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method, order_date, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, NOW(), NOW())
             RETURNING id
         ''', (order_code, data['customer_name'], data['product_name'], data['amount'], status, data.get('payment_method', 'Bank')))
         new_id = cur.fetchone()['id']

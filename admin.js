@@ -339,4 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   loadDashboardData();
+  
+  // Auto-refresh every 30 seconds to show new orders immediately
+  setInterval(loadDashboardData, 30000);
 });

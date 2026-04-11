@@ -294,8 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showStep(stepQR);
     updateStatusBar(2);
     
-    // Save to DB for automation
-    saveOrderToDB('Bank');
+    // Save to DB immediately so it appears in Admin as 'pending'
+    saveOrderToDB('Bank').then(() => {
+        console.log("Order synced to Cloud Admin (Pending)");
+    });
 
     const qrImg = document.getElementById('sepay-qr-img');
     const qrLoading = document.getElementById('qr-loading');

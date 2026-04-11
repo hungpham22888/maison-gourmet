@@ -1,10 +1,10 @@
 {
-  "last_sync": "2026-04-11 21:30:58",
+  "last_sync": "2026-04-11 21:52:15",
   "products": [
     {
       "id": 6,
-      "name": "Set Quà Demo (Test 1k)",
-      "price": 1000.0,
+      "name": "Set Quà Demo (Test 2k)",
+      "price": 2000.0,
       "description": null,
       "quantity": 999,
       "category": "Demo",
@@ -84,7 +84,8 @@
       "source": "waitlist",
       "notes": null,
       "registered_at": "2026-04-11 17:47:50",
-      "updated_at": "2026-04-11 17:47:50"
+      "updated_at": "2026-04-11 17:47:50",
+      "address": null
     },
     {
       "id": 2,
@@ -95,7 +96,8 @@
       "source": "waitlist",
       "notes": null,
       "registered_at": "2026-04-11 17:47:50",
-      "updated_at": "2026-04-11 17:47:50"
+      "updated_at": "2026-04-11 17:47:50",
+      "address": null
     },
     {
       "id": 1,
@@ -106,7 +108,8 @@
       "source": "waitlist",
       "notes": null,
       "registered_at": "2026-04-11 17:47:50",
-      "updated_at": "2026-04-11 17:47:50"
+      "updated_at": "2026-04-11 17:47:50",
+      "address": null
     }
   ],
   "orders": [],

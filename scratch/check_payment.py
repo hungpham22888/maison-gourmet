@@ -8,7 +8,7 @@ from datetime import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
 # CONFIG
-API_TOKEN = 'spsk_live_LtRB1q9WGEVGapGFMMPeSG12xTaJ1c2t'
+API_TOKEN = '81GX0VQWFDUOIPKLECYLVQIRKMTHZFMTM3IUYQ5DFJLJS2CPLHT2PCCTUZP1U6BN'
 DB_PATH = r'c:\Users\phamh\Desktop\AI Agent\maison-gourmet\brain.db'
 
 def check_sepay_payments():

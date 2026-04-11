@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const syncBtn = document.getElementById('sync-btn');
   const themeToggle = document.getElementById('theme-toggle');
   const lastSyncEl = document.getElementById('last-sync-time');
+  const navLinks = document.querySelectorAll('.nav-link[data-tab]');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  let globalData = null;
 
   // Theme Management
   const currentTheme = localStorage.getItem('admin_theme') || 'light';
@@ -21,19 +25,44 @@ document.addEventListener('DOMContentLoaded', () => {
       : '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
   }
 
+  // Tab Switching
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tabId = link.getAttribute('data-tab');
+      switchTab(tabId);
+    });
+  });
+
+  function switchTab(tabId) {
+    // Update Sidebar
+    navLinks.forEach(l => l.classList.remove('active'));
+    document.querySelector(`.nav-link[data-tab="${tabId}"]`).classList.add('active');
+
+    // Update Content
+    tabContents.forEach(c => c.classList.add('hidden'));
+    document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+    // Re-render specifically for target tab if needed
+    if (globalData) {
+      if (tabId === 'orders') renderFullOrders(globalData);
+      if (tabId === 'customers') renderFullCustomers(globalData);
+      if (tabId === 'products') renderFullProducts(globalData);
+    }
+  }
+
   // Data Loading
   async function loadDashboardData() {
     try {
-      // Small delay to simulate network
       const response = await fetch('data_sync.json');
       if (!response.ok) throw new Error('Sync file not found');
       
       const data = await response.json();
+      globalData = data;
       renderDashboard(data);
       if (lastSyncEl) lastSyncEl.textContent = `Cập nhật: ${data.last_sync}`;
     } catch (error) {
       console.error('Error loading admin data:', error);
-      // Show error state in placeholders if needed
     }
   }
 
@@ -45,11 +74,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('total-customers').innerText = stats.total_customers || 0;
     document.getElementById('pending-orders').innerText = stats.pending_orders || 0;
 
-    // 2. Orders Table
-    const tableBody = document.getElementById('orders-table-body');
+    // 2. Recent Orders Table
+    const tableBody = document.getElementById('dashboard-orders-table');
     if (tableBody) {
       tableBody.innerHTML = '';
-      const recentOrders = data.orders.slice(0, 10); // Show max 10
+      const recentOrders = data.orders.slice(0, 5);
       
       if (recentOrders.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">Chưa có đơn hàng nào</td></tr>';
@@ -68,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // 3. Activity List (Products/Customers)
+    // 3. Notable Products
     const productList = document.getElementById('recent-products');
     if (productList) {
       productList.innerHTML = '';
@@ -86,8 +115,67 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 4. Activity Chart
     renderChart(data.orders);
+  }
+
+  function renderFullOrders(data) {
+    const tableBody = document.getElementById('all-orders-table');
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    data.orders.forEach(order => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${order.order_date}</td>
+        <td>#${order.order_code}</td>
+        <td class="customer-name">${order.customer_name}</td>
+        <td>${order.product_name}</td>
+        <td>${order.amount.toLocaleString('vi-VN')}đ</td>
+        <td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  function renderFullCustomers(data) {
+    const tableBody = document.getElementById('customers-table-body');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+    data.customers.forEach(cust => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="customer-name">${cust.name}</td>
+        <td>${cust.phone || 'N/A'}</td>
+        <td>${cust.email || 'N/A'}</td>
+        <td><span class="badge badge-completed">${cust.source || 'website'}</span></td>
+        <td>${cust.registered_at.split(' ')[0]}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  function renderFullProducts(data) {
+    const tableBody = document.getElementById('products-table-body');
+    if (!tableBody) return;
+
+    tableBody.innerHTML = '';
+    data.products.forEach(p => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>
+           <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${p.image}" style="width:30px; border-radius:5px;">
+              <span>${p.name}</span>
+           </div>
+        </td>
+        <td>${p.category}</td>
+        <td>${p.price.toLocaleString('vi-VN')}đ</td>
+        <td>${p.quantity}</td>
+        <td><span class="badge badge-completed">${p.status}</span></td>
+      `;
+      tableBody.appendChild(row);
+    });
   }
 
   function translateStatus(status) {
@@ -103,12 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = document.getElementById('revenue-chart');
     if (!ctx) return;
 
-    // Group revenue by date (last 7 days)
     const dailyData = {};
     const labels = [];
     const values = [];
 
-    // Simple grouping logic
     orders.forEach(o => {
       const date = o.order_date.split(' ')[0];
       dailyData[date] = (dailyData[date] || 0) + o.amount;
@@ -120,11 +206,13 @@ document.addEventListener('DOMContentLoaded', () => {
       values.push(dailyData[d]);
     });
 
-    // Chart.js config
-    new Chart(ctx, {
+    // Destroy existing chart if it exists to prevent overlap
+    if (window.myChart) window.myChart.destroy();
+
+    window.myChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels.length ? labels : ['Chưa có dữ liệu'],
+        labels: labels.length ? labels : ['Chưa có liệu'],
         datasets: [{
           label: 'Doanh thu (VNĐ)',
           data: values.length ? values : [0],
@@ -144,29 +232,20 @@ document.addEventListener('DOMContentLoaded', () => {
           legend: { display: false }
         },
         scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: 'rgba(0,0,0,0.05)' }
-          },
-          x: {
-            grid: { display: false }
-          }
+          y: { beginAtZero: true },
+          x: { grid: { display: false } }
         }
       }
     });
   }
 
-  // Sync animation
   syncBtn.addEventListener('click', () => {
     syncBtn.classList.add('loading');
-    // Note: In this static env, syncBtn won't actually trigger sync_admin.py 
-    // unless the user runs it. We just simulate visual feedback.
     setTimeout(() => {
       loadDashboardData();
       syncBtn.classList.remove('loading');
     }, 1000);
   });
 
-  // Initial load
   loadDashboardData();
 });

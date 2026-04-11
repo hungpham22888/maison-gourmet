@@ -1,6 +1,18 @@
 {
-  "last_sync": "2026-04-11 17:54:31",
+  "last_sync": "2026-04-11 21:30:58",
   "products": [
+    {
+      "id": 6,
+      "name": "Set Quà Demo (Test 1k)",
+      "price": 1000.0,
+      "description": null,
+      "quantity": 999,
+      "category": "Demo",
+      "image": "product_set.png",
+      "status": "active",
+      "created_at": "2026-04-11 21:30:35",
+      "updated_at": "2026-04-11 21:30:35"
+    },
     {
       "id": 5,
       "name": "Set Quà Doanh Nghiệp (B2B)",

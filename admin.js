@@ -4,8 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const lastSyncEl = document.getElementById('last-sync-time');
   const navLinks = document.querySelectorAll('.nav-link[data-tab]');
   const tabContents = document.querySelectorAll('.tab-content');
+  const adminModal = document.getElementById('admin-modal');
+  const adminForm = document.getElementById('admin-form');
+  const modalTitle = document.getElementById('modal-title');
 
   let globalData = null;
+  let currentModalType = '';
 
   // Theme Management
   const currentTheme = localStorage.getItem('admin_theme') || 'light';
@@ -35,15 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function switchTab(tabId) {
-    // Update Sidebar
     navLinks.forEach(l => l.classList.remove('active'));
-    document.querySelector(`.nav-link[data-tab="${tabId}"]`).classList.add('active');
+    const activeLink = document.querySelector(`.nav-link[data-tab="${tabId}"]`);
+    if (activeLink) activeLink.classList.add('active');
 
-    // Update Content
     tabContents.forEach(c => c.classList.add('hidden'));
-    document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+    const activeTab = document.getElementById(`tab-${tabId}`);
+    if (activeTab) activeTab.classList.remove('hidden');
 
-    // Re-render specifically for target tab if needed
     if (globalData) {
       if (tabId === 'orders') renderFullOrders(globalData);
       if (tabId === 'customers') renderFullCustomers(globalData);
@@ -54,85 +57,147 @@ document.addEventListener('DOMContentLoaded', () => {
   // Data Loading
   async function loadDashboardData() {
     try {
-      const response = await fetch('data_sync.json');
+      const response = await fetch('data_sync.json?t=' + new Date().getTime());
       if (!response.ok) throw new Error('Sync file not found');
       
       const data = await response.json();
       globalData = data;
       renderDashboard(data);
       if (lastSyncEl) lastSyncEl.textContent = `Cập nhật: ${data.last_sync}`;
+      
+      // Update tables if on a specific tab
+      const activeTabLink = document.querySelector('.nav-link.active');
+      if (activeTabLink) {
+        const tabId = activeTabLink.getAttribute('data-tab');
+        if (tabId === 'orders') renderFullOrders(data);
+        if (tabId === 'customers') renderFullCustomers(data);
+        if (tabId === 'products') renderFullProducts(data);
+      }
     } catch (error) {
       console.error('Error loading admin data:', error);
     }
   }
 
+  // CRUD MODAL LOGIC
+  window.openModal = (type) => {
+    currentModalType = type;
+    adminModal.classList.remove('hidden');
+    adminForm.innerHTML = '';
+    
+    if (type === 'order') {
+        modalTitle.innerText = 'Thêm đơn hàng thủ công';
+        adminForm.innerHTML = `
+            <div class="form-group"><label>Tên khách hàng</label><input type="text" name="customer_name" required></div>
+            <div class="form-group"><label>Sản phẩm</label><input type="text" name="product_name" required></div>
+            <div class="form-group"><label>Số tiền (VNĐ)</label><input type="number" name="amount" required></div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu đơn hàng</button>
+        `;
+    } else if (type === 'customer') {
+        modalTitle.innerText = 'Thêm khách hàng mới';
+        adminForm.innerHTML = `
+            <div class="form-group"><label>Họ và tên</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Số điện thoại</label><input type="text" name="phone"></div>
+            <div class="form-group"><label>Email</label><input type="email" name="email"></div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu khách hàng</button>
+        `;
+    } else if (type === 'product') {
+        modalTitle.innerText = 'Thêm sản phẩm mới';
+        adminForm.innerHTML = `
+            <div class="form-group"><label>Tên sản phẩm</label><input type="text" name="name" required></div>
+            <div class="form-group"><label>Hạng mục</label>
+                <select name="category">
+                    <option value="classic">Cổ Điển</option>
+                    <option value="premium">Premium</option>
+                    <option value="corp">Doanh nghiệp</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Giá (VNĐ)</label><input type="number" name="price" required></div>
+            <div class="form-group"><label>Số lượng tồn</label><input type="number" name="quantity" required></div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu sản phẩm</button>
+        `;
+    }
+  };
+
+  window.closeModal = () => {
+    adminModal.classList.add('hidden');
+  };
+
+  adminForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(adminForm);
+    const data = Object.fromEntries(formData.entries());
+    
+    const submitBtn = adminForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerText = 'Đang lưu...';
+
+    try {
+      const endpoint = `http://127.0.0.1:5000/api/${currentModalType}s`;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      
+      if (response.ok) {
+        alert('Đã thêm thành công!');
+        closeModal();
+        loadDashboardData(); // Refresh data
+      } else {
+        const err = await response.json();
+        alert('Lỗi: ' + (err.error || 'Không rõ lỗi'));
+      }
+    } catch (error) {
+      alert('Không thể kết nối với Admin API. Hãy chắc chắn script scratch/admin_api.py đang chạy!');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerText = 'Lưu';
+    }
+  });
+
+  // Rendering functions (as before)
   function renderDashboard(data) {
-    // 1. Stats Cards
     const stats = data.stats;
     document.getElementById('total-revenue').innerText = (stats.total_revenue || 0).toLocaleString('vi-VN') + 'đ';
     document.getElementById('total-orders').innerText = stats.total_orders || 0;
     document.getElementById('total-customers').innerText = stats.total_customers || 0;
     document.getElementById('pending-orders').innerText = stats.pending_orders || 0;
 
-    // 2. Recent Orders Table
     const tableBody = document.getElementById('dashboard-orders-table');
     if (tableBody) {
       tableBody.innerHTML = '';
       const recentOrders = data.orders.slice(0, 5);
-      
       if (recentOrders.length === 0) {
         tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">Chưa có đơn hàng nào</td></tr>';
       } else {
         recentOrders.forEach(order => {
           const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>#${order.order_code}</td>
-            <td class="customer-name">${order.customer_name}</td>
-            <td>${order.product_name}</td>
-            <td>${order.amount.toLocaleString('vi-VN')}đ</td>
-            <td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>
-          `;
+          row.innerHTML = `<td>#${order.order_code}</td><td class="customer-name">${order.customer_name}</td><td>${order.product_name}</td><td>${order.amount.toLocaleString('vi-VN')}đ</td><td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>`;
           tableBody.appendChild(row);
         });
       }
     }
 
-    // 3. Notable Products
     const productList = document.getElementById('recent-products');
     if (productList) {
       productList.innerHTML = '';
       data.products.slice(0, 5).forEach(product => {
         const item = document.createElement('li');
         item.className = 'activity-item';
-        item.innerHTML = `
-          <img src="${product.image || 'product_set.png'}" alt="" class="activity-img">
-          <div class="activity-info">
-            <h4>${product.name}</h4>
-            <p>${product.price.toLocaleString('vi-VN')}đ • Tồn kho: ${product.quantity}</p>
-          </div>
-        `;
+        item.innerHTML = `<img src="${product.image || 'product_set.png'}" alt="" class="activity-img"><div class="activity-info"><h4>${product.name}</h4><p>${product.price.toLocaleString('vi-VN')}đ • Tồn kho: ${product.quantity}</p></div>`;
         productList.appendChild(item);
       });
     }
-
     renderChart(data.orders);
   }
 
   function renderFullOrders(data) {
     const tableBody = document.getElementById('all-orders-table');
     if (!tableBody) return;
-    
     tableBody.innerHTML = '';
     data.orders.forEach(order => {
       const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${order.order_date}</td>
-        <td>#${order.order_code}</td>
-        <td class="customer-name">${order.customer_name}</td>
-        <td>${order.product_name}</td>
-        <td>${order.amount.toLocaleString('vi-VN')}đ</td>
-        <td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>
-      `;
+      row.innerHTML = `<td>${order.order_date}</td><td>#${order.order_code}</td><td class="customer-name">${order.customer_name}</td><td>${order.product_name}</td><td>${order.amount.toLocaleString('vi-VN')}đ</td><td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>`;
       tableBody.appendChild(row);
     });
   }
@@ -140,17 +205,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderFullCustomers(data) {
     const tableBody = document.getElementById('customers-table-body');
     if (!tableBody) return;
-
     tableBody.innerHTML = '';
     data.customers.forEach(cust => {
       const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="customer-name">${cust.name}</td>
-        <td>${cust.phone || 'N/A'}</td>
-        <td>${cust.email || 'N/A'}</td>
-        <td><span class="badge badge-completed">${cust.source || 'website'}</span></td>
-        <td>${cust.registered_at.split(' ')[0]}</td>
-      `;
+      row.innerHTML = `<td class="customer-name">${cust.name}</td><td>${cust.phone || 'N/A'}</td><td>${cust.email || 'N/A'}</td><td><span class="badge badge-completed">${cust.source || 'website'}</span></td><td>${cust.registered_at.split(' ')[0]}</td>`;
       tableBody.appendChild(row);
     });
   }
@@ -158,61 +216,35 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderFullProducts(data) {
     const tableBody = document.getElementById('products-table-body');
     if (!tableBody) return;
-
     tableBody.innerHTML = '';
     data.products.forEach(p => {
       const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>
-           <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${p.image}" style="width:30px; border-radius:5px;">
-              <span>${p.name}</span>
-           </div>
-        </td>
-        <td>${p.category}</td>
-        <td>${p.price.toLocaleString('vi-VN')}đ</td>
-        <td>${p.quantity}</td>
-        <td><span class="badge badge-completed">${p.status}</span></td>
-      `;
+      row.innerHTML = `<td><div style="display:flex; align-items:center; gap:10px;"><img src="${p.image}" style="width:30px; border-radius:5px;"><span>${p.name}</span></div></td><td>${p.category}</td><td>${p.price.toLocaleString('vi-VN')}đ</td><td>${p.quantity}</td><td><span class="badge badge-completed">${p.status}</span></td>`;
       tableBody.appendChild(row);
     });
   }
 
   function translateStatus(status) {
-    const statuses = {
-      'pending': 'Đang chờ',
-      'completed': 'Hoàn thành',
-      'cancelled': 'Đã hủy'
-    };
+    const statuses = { 'pending': 'Đang chờ', 'completed': 'Hoàn thành', 'cancelled': 'Đã hủy' };
     return statuses[status.toLowerCase()] || status;
   }
 
   function renderChart(orders) {
     const ctx = document.getElementById('revenue-chart');
     if (!ctx) return;
-
     const dailyData = {};
-    const labels = [];
-    const values = [];
-
     orders.forEach(o => {
       const date = o.order_date.split(' ')[0];
       dailyData[date] = (dailyData[date] || 0) + o.amount;
     });
-
     const dates = Object.keys(dailyData).sort().slice(-7);
-    dates.forEach(d => {
-      labels.push(d);
-      values.push(dailyData[d]);
-    });
-
-    // Destroy existing chart if it exists to prevent overlap
+    const labels = dates;
+    const values = dates.map(d => dailyData[d]);
     if (window.myChart) window.myChart.destroy();
-
     window.myChart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels.length ? labels : ['Chưa có liệu'],
+        labels: labels.length ? labels : ['Chưa có dữ liệu'],
         datasets: [{
           label: 'Doanh thu (VNĐ)',
           data: values.length ? values : [0],
@@ -220,22 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
           backgroundColor: 'rgba(156, 39, 176, 0.1)',
           borderWidth: 3,
           tension: 0.4,
-          fill: true,
-          pointBackgroundColor: '#9c27b0',
-          pointRadius: 4
+          fill: true
         }]
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: { beginAtZero: true },
-          x: { grid: { display: false } }
-        }
-      }
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
     });
   }
 
@@ -244,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       loadDashboardData();
       syncBtn.classList.remove('loading');
-    }, 1000);
+    }, 800);
   });
 
   loadDashboardData();

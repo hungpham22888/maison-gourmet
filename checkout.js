@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ===== STEP 2: QR PAYMENT =================== */
   /* ============================================ */
 
-  async function saveOrderToDB() {
+  async function saveOrderToDB(paymentMethod = 'Bank') {
     try {
       const orderData = {
         order_code: orderId,
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         product_name: cart.length > 1 ? `${cart[0].name} và ${cart.length - 1} món khác` : cart[0].name,
         amount: total,
         status: 'pending',
-        payment_method: 'Bank'
+        payment_method: paymentMethod
       };
 
       await fetch(`${API_BASE}/orders`, {
@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
-      console.log('Order saved to DB successfully');
+      console.log(`Order (${paymentMethod}) saved to DB successfully`);
     } catch (err) {
       console.error('Failed to save order to local DB:', err);
     }
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStatusBar(2);
     
     // Save to DB for automation
-    saveOrderToDB();
+    saveOrderToDB('Bank');
 
     const qrImg = document.getElementById('sepay-qr-img');
     const qrLoading = document.getElementById('qr-loading');
@@ -341,18 +341,21 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.innerHTML = '<span>Đang xử lý...</span>';
     submitBtn.style.opacity = '0.7';
 
-    sendOrderEmail(savedFormData, 'COD')
-      .then(response => {
-        if (response.ok) {
+    // NEW: Save order to DB first so it appears in Admin as 'pending'
+    saveOrderToDB('COD').finally(() => {
+      sendOrderEmail(savedFormData, 'COD')
+        .then(response => {
+          if (response.ok) {
+            goToSuccess('COD');
+          } else {
+            throw new Error('Email send failed');
+          }
+        })
+        .catch(err => {
+          console.error('Email error:', err);
           goToSuccess('COD');
-        } else {
-          throw new Error('Email send failed');
-        }
-      })
-      .catch(err => {
-        console.error('Email error:', err);
-        goToSuccess('COD');
-      });
+        });
+    });
   }
 
   /* ============================================ */

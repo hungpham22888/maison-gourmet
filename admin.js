@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let globalData = null;
   let currentModalType = '';
+  let editingId = null; // Track if we are editing an existing record
 
   // Theme Management
   const currentTheme = localStorage.getItem('admin_theme') || 'light';
@@ -65,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
       renderDashboard(data);
       if (lastSyncEl) lastSyncEl.textContent = `Cập nhật: ${data.last_sync}`;
       
-      // Update tables if on a specific tab
       const activeTabLink = document.querySelector('.nav-link.active');
       if (activeTabLink) {
         const tabId = activeTabLink.getAttribute('data-tab');
@@ -79,48 +79,63 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // CRUD MODAL LOGIC
-  window.openModal = (type) => {
+  window.openModal = (type, id = null) => {
     currentModalType = type;
+    editingId = id;
     adminModal.classList.remove('hidden');
     adminForm.innerHTML = '';
     
+    let record = null;
+    if (id && globalData) {
+        const listType = type === 'product' ? 'products' : type === 'customer' ? 'customers' : 'orders';
+        record = globalData[listType].find(item => item.id === id);
+    }
+
     if (type === 'order') {
-        modalTitle.innerText = 'Thêm đơn hàng thủ công';
+        modalTitle.innerText = id ? 'Chỉnh sửa đơn hàng' : 'Thêm đơn hàng thủ công';
         adminForm.innerHTML = `
-            <div class="form-group"><label>Tên khách hàng</label><input type="text" name="customer_name" required></div>
-            <div class="form-group"><label>Sản phẩm</label><input type="text" name="product_name" required></div>
-            <div class="form-group"><label>Số tiền (VNĐ)</label><input type="number" name="amount" required></div>
-            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu đơn hàng</button>
-        `;
-    } else if (type === 'customer') {
-        modalTitle.innerText = 'Thêm khách hàng mới';
-        adminForm.innerHTML = `
-            <div class="form-group"><label>Họ và tên</label><input type="text" name="name" required></div>
-            <div class="form-group"><label>Số điện thoại</label><input type="text" name="phone"></div>
-            <div class="form-group"><label>Email</label><input type="email" name="email"></div>
-            <div class="form-group"><label>Địa chỉ</label><input type="text" name="address"></div>
-            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu khách hàng</button>
-        `;
-    } else if (type === 'product') {
-        modalTitle.innerText = 'Thêm sản phẩm mới';
-        adminForm.innerHTML = `
-            <div class="form-group"><label>Tên sản phẩm</label><input type="text" name="name" required></div>
-            <div class="form-group"><label>Hạng mục</label>
-                <select name="category">
-                    <option value="classic">Cổ Điển</option>
-                    <option value="premium">Premium</option>
-                    <option value="corp">Doanh nghiệp</option>
+            <div class="form-group"><label>Tên khách hàng</label><input type="text" name="customer_name" value="${record ? record.customer_name : ''}" required></div>
+            <div class="form-group"><label>Sản phẩm</label><input type="text" name="product_name" value="${record ? record.product_name : ''}" required></div>
+            <div class="form-group"><label>Số tiền (VNĐ)</label><input type="number" name="amount" value="${record ? record.amount : ''}" required></div>
+            <div class="form-group"><label>Trạng thái</label>
+                <select name="status">
+                    <option value="pending" ${record && record.status === 'pending' ? 'selected' : ''}>Đang chờ</option>
+                    <option value="completed" ${record && record.status === 'completed' ? 'selected' : ''}>Hoàn thành</option>
+                    <option value="cancelled" ${record && record.status === 'cancelled' ? 'selected' : ''}>Đã hủy</option>
                 </select>
             </div>
-            <div class="form-group"><label>Giá (VNĐ)</label><input type="number" name="price" required></div>
-            <div class="form-group"><label>Số lượng tồn</label><input type="number" name="quantity" required></div>
-            <button type="submit" class="btn btn-primary" style="margin-top:10px;">Lưu sản phẩm</button>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">${id ? 'Cập nhật' : 'Lưu đơn hàng'}</button>
+        `;
+    } else if (type === 'customer') {
+        modalTitle.innerText = id ? 'Chỉnh sửa khách hàng' : 'Thêm khách hàng mới';
+        adminForm.innerHTML = `
+            <div class="form-group"><label>Họ và tên</label><input type="text" name="name" value="${record ? record.name : ''}" required></div>
+            <div class="form-group"><label>Số điện thoại</label><input type="text" name="phone" value="${record ? record.phone : ''}"></div>
+            <div class="form-group"><label>Email</label><input type="email" name="email" value="${record ? (record.email || '') : ''}"></div>
+            <div class="form-group"><label>Địa chỉ</label><input type="text" name="address" value="${record ? (record.address || '') : ''}"></div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">${id ? 'Cập nhật' : 'Lưu khách hàng'}</button>
+        `;
+    } else if (type === 'product') {
+        modalTitle.innerText = id ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới';
+        adminForm.innerHTML = `
+            <div class="form-group"><label>Tên sản phẩm</label><input type="text" name="name" value="${record ? record.name : ''}" required></div>
+            <div class="form-group"><label>Hạng mục</label>
+                <select name="category">
+                    <option value="classic" ${record && record.category === 'classic' ? 'selected' : ''}>Cổ Điển</option>
+                    <option value="premium" ${record && record.category === 'premium' ? 'selected' : ''}>Premium</option>
+                    <option value="corp" ${record && record.category === 'corp' ? 'selected' : ''}>Doanh nghiệp</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Giá (VNĐ)</label><input type="number" name="price" value="${record ? record.price : ''}" required></div>
+            <div class="form-group"><label>Số lượng tồn</label><input type="number" name="quantity" value="${record ? record.quantity : ''}" required></div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px;">${id ? 'Cập nhật' : 'Lưu sản phẩm'}</button>
         `;
     }
   };
 
   window.closeModal = () => {
     adminModal.classList.add('hidden');
+    editingId = null;
   };
 
   adminForm.addEventListener('submit', async (e) => {
@@ -133,30 +148,34 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.innerText = 'Đang lưu...';
 
     try {
-      const endpoint = `http://127.0.0.1:5000/api/${currentModalType}s`;
+      const isEdit = editingId !== null;
+      const endpoint = isEdit 
+        ? `http://127.0.0.1:5000/api/${currentModalType}s/${editingId}`
+        : `http://127.0.0.1:5000/api/${currentModalType}s`;
+      
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: isEdit ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
       
       if (response.ok) {
-        alert('Đã thêm thành công!');
+        alert(isEdit ? 'Cập nhật thành công!' : 'Đã thêm thành công!');
         closeModal();
-        loadDashboardData(); // Refresh data
+        loadDashboardData();
       } else {
         const err = await response.json();
         alert('Lỗi: ' + (err.error || 'Không rõ lỗi'));
       }
     } catch (error) {
-      alert('Không thể kết nối với Admin API. Hãy chắc chắn script scratch/admin_api.py đang chạy!');
+      alert('Lỗi kết nối API!');
     } finally {
       submitBtn.disabled = false;
       submitBtn.innerText = 'Lưu';
     }
   });
 
-  // Rendering functions (as before)
+  // Rendering functions
   function renderDashboard(data) {
     const stats = data.stats;
     document.getElementById('total-revenue').innerText = (stats.total_revenue || 0).toLocaleString('vi-VN') + 'đ';
@@ -167,16 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('dashboard-orders-table');
     if (tableBody) {
       tableBody.innerHTML = '';
-      const recentOrders = data.orders.slice(0, 5);
-      if (recentOrders.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 30px;">Chưa có đơn hàng nào</td></tr>';
-      } else {
-        recentOrders.forEach(order => {
-          const row = document.createElement('tr');
-          row.innerHTML = `<td>#${order.order_code}</td><td class="customer-name">${order.customer_name}</td><td>${order.product_name}</td><td>${order.amount.toLocaleString('vi-VN')}đ</td><td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>`;
-          tableBody.appendChild(row);
-        });
-      }
+      data.orders.slice(0, 5).forEach(order => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>#${order.order_code}</td><td class="customer-name">${order.customer_name}</td><td>${order.product_name}</td><td>${order.amount.toLocaleString('vi-VN')}đ</td><td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>`;
+        tableBody.appendChild(row);
+      });
     }
 
     const productList = document.getElementById('recent-products');
@@ -198,7 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '';
     data.orders.forEach(order => {
       const row = document.createElement('tr');
-      row.innerHTML = `<td>${order.order_date}</td><td>#${order.order_code}</td><td class="customer-name">${order.customer_name}</td><td>${order.product_name}</td><td>${order.amount.toLocaleString('vi-VN')}đ</td><td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>`;
+      row.innerHTML = `
+        <td>${order.order_date}</td>
+        <td>#${order.order_code}</td>
+        <td class="customer-name">${order.customer_name}</td>
+        <td>${order.product_name}</td>
+        <td>${order.amount.toLocaleString('vi-VN')}đ</td>
+        <td><span class="badge badge-${order.status}">${translateStatus(order.status)}</span></td>
+        <td><button class="btn-sync" onclick="openModal('order', ${order.id})" title="Chỉnh sửa"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button></td>
+      `;
       tableBody.appendChild(row);
     });
   }
@@ -209,7 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '';
     data.customers.forEach(cust => {
       const row = document.createElement('tr');
-      row.innerHTML = `<td class="customer-name">${cust.name}</td><td>${cust.phone || 'N/A'}</td><td>${cust.email || 'N/A'}</td><td>${cust.address || ''}</td><td><span class="badge badge-completed">${cust.source || 'website'}</span></td><td>${cust.registered_at.split(' ')[0]}</td>`;
+      row.innerHTML = `
+        <td class="customer-name">${cust.name}</td>
+        <td>${cust.phone || 'N/A'}</td>
+        <td>${cust.email || 'N/A'}</td>
+        <td>${cust.address || ''}</td>
+        <td><span class="badge badge-completed">${cust.source || 'website'}</span></td>
+        <td>${cust.registered_at.split(' ')[0]}</td>
+        <td><button class="btn-sync" onclick="openModal('customer', ${cust.id})" title="Chỉnh sửa"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button></td>
+      `;
       tableBody.appendChild(row);
     });
   }
@@ -220,7 +250,14 @@ document.addEventListener('DOMContentLoaded', () => {
     tableBody.innerHTML = '';
     data.products.forEach(p => {
       const row = document.createElement('tr');
-      row.innerHTML = `<td><div style="display:flex; align-items:center; gap:10px;"><img src="${p.image}" style="width:30px; border-radius:5px;"><span>${p.name}</span></div></td><td>${p.category}</td><td>${p.price.toLocaleString('vi-VN')}đ</td><td>${p.quantity}</td><td><span class="badge badge-completed">${p.status}</span></td>`;
+      row.innerHTML = `
+        <td><div style="display:flex; align-items:center; gap:10px;"><img src="${p.image}" style="width:30px; border-radius:5px;"><span>${p.name}</span></div></td>
+        <td>${p.category}</td>
+        <td>${p.price.toLocaleString('vi-VN')}đ</td>
+        <td>${p.quantity}</td>
+        <td><span class="badge badge-completed">${p.status}</span></td>
+        <td><button class="btn-sync" onclick="openModal('product', ${p.id})" title="Chỉnh sửa"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button></td>
+      `;
       tableBody.appendChild(row);
     });
   }

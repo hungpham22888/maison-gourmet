@@ -13,7 +13,7 @@ def fix_order():
     customer_name = 'Khách hàng Test 2k'
     product_name = 'Set Quà Demo (Test 2k)'
     amount = 2000
-    status = 'pending'
+    status = 'completed'
     payment_method = 'Bank'
     order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     

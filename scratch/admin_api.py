@@ -11,7 +11,8 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 app = Flask(__name__)
-CORS(app) # Enable CORS for admin.html to call this API
+# Enable CORS globally for all routes
+CORS(app) 
 
 DB_PATH = r'c:\Users\phamh\Desktop\AI Agent\maison-gourmet\brain.db'
 SYNC_SCRIPT = r'c:\Users\phamh\Desktop\AI Agent\maison-gourmet\scratch\sync_admin.py'
@@ -77,6 +78,60 @@ def add_order():
         conn.close()
         run_sync()
         return jsonify({"success": True, "order_code": order_code}), 201
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/products/<int:prod_id>', methods=['PUT'])
+def update_product(prod_id):
+    data = request.json
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE products 
+            SET name = ?, category = ?, price = ?, quantity = ?
+            WHERE id = ?
+        ''', (data['name'], data['category'], data['price'], data['quantity'], prod_id))
+        conn.commit()
+        conn.close()
+        run_sync()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/customers/<int:cust_id>', methods=['PUT'])
+def update_customer(cust_id):
+    data = request.json
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE customers 
+            SET name = ?, phone = ?, email = ?, address = ?
+            WHERE id = ?
+        ''', (data['name'], data['phone'], data['email'], data.get('address', ''), cust_id))
+        conn.commit()
+        conn.close()
+        run_sync()
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+@app.route('/api/orders/<int:order_id>', methods=['PUT'])
+def update_order(order_id):
+    data = request.json
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE orders 
+            SET customer_name = ?, product_name = ?, amount = ?, status = ?
+            WHERE id = ?
+        ''', (data['customer_name'], data['product_name'], data['amount'], data['status'], order_id))
+        conn.commit()
+        conn.close()
+        run_sync()
+        return jsonify({"success": True}), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 

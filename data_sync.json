@@ -1,13 +1,13 @@
 {
-  "last_sync": "2026-04-11 22:16:00",
+  "last_sync": "2026-04-11 22:53:32",
   "products": [
     {
       "id": 6,
       "name": "Set Quà Demo (Test 2k)",
-      "price": 2000.0,
+      "price": 2400.0,
       "description": null,
       "quantity": 999,
-      "category": "Demo",
+      "category": "classic",
       "image": "product_set.png",
       "status": "active",
       "created_at": "2026-04-11 21:30:35",
@@ -109,7 +109,7 @@
       "notes": null,
       "registered_at": "2026-04-11 17:47:50",
       "updated_at": "2026-04-11 17:47:50",
-      "address": null
+      "address": "456 Giai Phong, Ha Noi"
     }
   ],
   "orders": [
@@ -124,7 +124,7 @@
       "quantity": 1,
       "amount": 2000.0,
       "payment_method": "Bank",
-      "status": "pending",
+      "status": "completed",
       "notes": null,
       "order_date": "2026-04-11 22:10:03",
       "updated_at": "2026-04-11 22:10:03"
@@ -134,6 +134,6 @@
     "total_revenue": 2000.0,
     "total_orders": 1,
     "total_customers": 3,
-    "pending_orders": 1
+    "pending_orders": 0
   }
 }

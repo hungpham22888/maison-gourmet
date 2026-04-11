@@ -431,6 +431,40 @@ tr:last-child td {
   .header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
   }
+}
+
+/* Connection Status Badge */
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.status-badge.loading {
+    background: rgba(156, 39, 176, 0.1);
+    color: #9c27b0;
+}
+
+.status-badge.success {
+    background: rgba(46, 204, 113, 0.1);
+    color: #2ecc71;
+}
+
+.status-badge.error {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    animation: pulse-red-admin 2s infinite;
+}
+
+@keyframes pulse-red-admin {
+    0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
 }

@@ -11,10 +11,11 @@ CORS(app)
 # Database connection helper
 def get_db_connection():
     # In Vercel, this will be set via Environment Variables
-    # Format: "postgres://user:password@host:port/dbname"
     conn_str = os.environ.get('DATABASE_URL')
     if not conn_str:
+        print("CRITICAL: DATABASE_URL environment variable is NOT set")
         raise Exception("DATABASE_URL environment variable is not set")
+    print(f"Connecting to DB...")
     return psycopg2.connect(conn_str, cursor_factory=RealDictCursor)
 
 @app.route('/api/status', methods=['GET'])
@@ -127,6 +128,8 @@ def manage_orders():
         
         if request.method == 'GET':
             cur.execute("SELECT * FROM orders ORDER BY id DESC")
+            orders = cur.fetchall()
+            print(f"Fetched {len(orders)} orders from DB")
             response = make_response(jsonify(orders))
             response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             cur.close()
@@ -135,10 +138,12 @@ def manage_orders():
             
         if request.method == 'POST':
             data = request.json
+            print(f"Processing POST /api/orders for customer: {data.get('customer_name')}")
             order_code = data.get('order_code') or f"MGM-{datetime.now().strftime('%m%d%H%M')}"
             status = data.get('status', 'pending')
             payment_method = data.get('payment_method', 'Bank')
             
+            print(f"Executing INSERT for order {order_code}")
             cur.execute('''
                 INSERT INTO orders (order_code, customer_name, product_name, amount, status, payment_method, quantity, order_date, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())

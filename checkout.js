@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         const errData = await response.json();
         console.error(`Failed to save order: ${errData.error || response.statusText}`);
+        alert(`Lỗi hệ thống: Không thể lưu đơn hàng vào danh sách quản trị (${errData.error || 'Lỗi không rõ'}). Tuy nhiên, email đơn hàng vẫn sẽ được gửi.`);
       }
     } catch (err) {
       console.error('Network error saving order:', err);

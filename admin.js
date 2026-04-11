@@ -88,16 +88,28 @@ document.addEventListener('DOMContentLoaded', () => {
             total_customers: customers.length,
             pending_orders: pendingOrders
           },
-          last_sync: new Date().toLocaleString('vi-VN')
+          last_sync: new Date().toLocaleString('vi-VN') + " (Live Cloud)"
         };
+        const statusEl = document.getElementById('connection-status');
+        if (statusEl) {
+            statusEl.innerText = "☁️ Kết nối Cloud: OK";
+            statusEl.className = "status-badge success";
+        }
         console.log("✅ Data loaded from Cloud API");
       } else {
-        console.warn("⚠️ API error, falling back to data_sync.json. Statuses:", 
-          productsRes.status, customersRes.status, ordersRes.status);
+        const errorMsg = `LỖI API: Products:${productsRes.status}, Customers:${customersRes.status}, Orders:${ordersRes.status}`;
+        console.error("🛑 STOP: API FAILED!", errorMsg);
         
+        const statusEl = document.getElementById('connection-status');
+        if (statusEl) {
+            statusEl.innerText = "⚠️ Mất kết nối Cloud - Đang xem dữ liệu cũ";
+            statusEl.className = "status-badge error";
+        }
+
         // Fallback: Static sync file
         const response = await fetch('data_sync.json?t=' + new Date().getTime());
         globalData = await response.json();
+        globalData.last_sync += " (Dữ liệu cũ/Offline)";
       }
       
       renderDashboard(globalData);

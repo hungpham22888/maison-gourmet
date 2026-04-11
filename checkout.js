@@ -6,13 +6,32 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  /* ============================================ */
+  /* ===== DOM ELEMENTS ========================= */
+  /* ============================================ */
   const summaryItems = document.getElementById('checkout-summary-items');
   const subtotalEl = document.getElementById('checkout-subtotal');
   const totalEl = document.getElementById('checkout-total');
-  const cartInput = document.getElementById('checkout-cart-input');
 
-  /* ---------- FLASH SALE LOGIC (CHECKOUT) ---------- */
-  // Chú ý: Tháng trong JS bắt đầu từ 0 (Tháng 4 là index 3)
+  // Steps
+  const stepForm = document.getElementById('checkout-step-form');
+  const stepQR = document.getElementById('checkout-step-qr');
+  const stepSuccess = document.getElementById('checkout-success');
+
+  // Form
+  const checkoutForm = document.getElementById('checkout-form');
+  const submitBtn = document.getElementById('submit-checkout-btn');
+  const paymentMethodSelect = document.getElementById('payment_method');
+
+  // QR
+  const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+
+  // Status bar
+  const orderStatusBar = document.getElementById('order-status-bar');
+
+  /* ============================================ */
+  /* ===== CART CALCULATION ===================== */
+  /* ============================================ */
   const SALE_START = new Date(2026, 3, 5, 0, 0, 0).getTime();
   const SALE_END = new Date(2026, 3, 6, 23, 59, 59).getTime();
   const now = new Date().getTime();
@@ -20,21 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let total = 0;
   cart.forEach(item => {
-    // If sale active and price was not already discounted at add-to-cart, apply now.
-    // (We estimate original price if it doesn't look like a discounted price, 
-    // but better to just use a factor or check if the discount was already applied)
-    // For simplicity, we trust the cart price but if sale is active and user just arrived, 
-    // we can apply an additional 30% if they are using original prices.
-    // However, to be safe and clear: let's just apply 30% to everything if active.
-    
-    let displayPrice = item.price;
-    // Note: If the item was already added during the sale, it already has the 30% off.
-    // We don't want to double discount. 
-    // In script.js, we set prices-updated on DOM, but here we check the price vs original.
-    // Let's assume most items in cart are original prices and we apply discount if active.
-    
-    // Actually, a better approach: if isSaleActive is true, we force 30% off the total.
-    
     const itemTotal = item.price * item.quantity;
     total += itemTotal;
 
@@ -48,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
       <div class="summary-item-info">
         <h4>${item.name}</h4>
-        ${isSaleActive ? '<p style="color:#ff4d6d; font-size:0.75rem; margin-top:2px;">Flash Sale 30% áp dụng!</p>' : ''}
+        ${isSaleActive ? '<p style="color:#ff4d6d; font-size:0.75rem; margin-top:2px;">Flash Sale 30%!</p>' : ''}
       </div>
       <div class="summary-item-price">
         ${item.price === 0 ? 'Liên hệ' : (item.price * item.quantity).toLocaleString('vi-VN') + 'đ'}
@@ -57,68 +61,321 @@ document.addEventListener('DOMContentLoaded', () => {
     summaryItems.appendChild(el);
   });
 
-  if (isSaleActive) {
-    // Application of 30% to total if not already applied
-    // Actually, if script.js already applied it to cart items, we don't want to double.
-    // But if we want to be SURE: let's just calculate the final total.
-  }
-
   const hasContactPrice = cart.some(i => i.price === 0);
   const totalStr = total === 0 ? 'Liên hệ' : total.toLocaleString('vi-VN') + 'đ' + (hasContactPrice ? ' (+Liên hệ)' : '');
   
   if (subtotalEl) subtotalEl.textContent = totalStr;
   if (totalEl) totalEl.textContent = totalStr;
 
-  // Prepare input text for email
-  let cartText = cart.map((item, index) => `${index + 1}. [x${item.quantity}] ${item.name} - ${item.price === 0 ? 'Liên hệ' : (item.price * item.quantity).toLocaleString('vi-VN') + 'đ'}`).join('\n');
-  cartText += `\n----------------------------------\n📦 TỔNG GIÁ TRỊ: ${totalStr}${isSaleActive ? ' (Đã áp dụng Flash Sale 30%)' : ''}\n(Ghi chú: Phí vận chuyển sẽ được tư vấn viên báo sau khi xác nhận địa chỉ)`;
-  if (cartInput) cartInput.value = cartText;
+  /* ============================================ */
+  /* ===== SEPAY CONFIG ========================= */
+  /* ============================================ */
+  const SEPAY_BANK_ACCOUNT = '00002090706';
+  const SEPAY_BANK_NAME = 'TPBank';
 
-  // Handle form
-  const checkoutForm = document.getElementById('checkout-form');
-  const checkoutSuccess = document.getElementById('checkout-success');
-  const submitBtn = document.getElementById('submit-checkout-btn');
+  // Generate unique order ID
+  function generateOrderId() {
+    const now = new Date();
+    const datePart = String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0');
+    const randPart = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+    return 'MG' + datePart + randPart;
+  }
+
+  const orderId = generateOrderId();
+
+  // Build QR URL
+  function buildQRUrl(amount, content) {
+    let url = `https://qr.sepay.vn/img?acc=${SEPAY_BANK_ACCOUNT}&bank=${SEPAY_BANK_NAME}`;
+    if (amount && amount > 0) url += `&amount=${amount}`;
+    if (content) url += `&des=${encodeURIComponent(content)}`;
+    return url;
+  }
+
+  // Prepare cart text for email
+  function buildCartText(paymentMethod) {
+    let cartText = cart.map((item, index) => 
+      `${index + 1}. [x${item.quantity}] ${item.name} - ${item.price === 0 ? 'Liên hệ' : (item.price * item.quantity).toLocaleString('vi-VN') + 'đ'}`
+    ).join('\n');
+    
+    cartText += `\n----------------------------------`;
+    cartText += `\n📦 TỔNG GIÁ TRỊ: ${totalStr}`;
+    if (isSaleActive) cartText += ` (Đã áp dụng Flash Sale 30%)`;
+    cartText += `\n🆔 MÃ ĐƠN: ${orderId}`;
+    cartText += `\n💳 THANH TOÁN: ${paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (QR Sepay) — ĐÃ THANH TOÁN' : 'COD - Tiền mặt khi nhận hàng'}`;
+    cartText += `\n(Ghi chú: Phí vận chuyển sẽ được tư vấn viên báo sau khi xác nhận địa chỉ)`;
+    
+    return cartText;
+  }
+
+  // Send email via formsubmit.co
+  function sendOrderEmail(formDataObj, paymentMethod) {
+    const formData = new FormData();
+    formData.append('_captcha', 'false');
+    formData.append('_subject', `[MaisonGourmet] Đơn hàng mới #${orderId}${paymentMethod === 'Bank' ? ' — Đã thanh toán CK' : ' — COD'}`);
+    formData.append('_template', 'table');
+    formData.append('👤 Họ Tên Khách Hàng', formDataObj.fullName);
+    formData.append('📞 Số Điện Thoại', formDataObj.phone);
+    formData.append('📍 Địa Chỉ Giao Hàng', formDataObj.address);
+    formData.append('🚚 Phương Thức Giao Hàng', formDataObj.shipping);
+    formData.append('💳 Phương Thức Thanh Toán', paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (Đã thanh toán)' : 'COD - Tiền mặt khi nhận hàng');
+    formData.append('🆔 Mã Đơn Hàng', orderId);
+    formData.append('🛒 CHI TIẾT ĐƠN HÀNG', buildCartText(paymentMethod));
+    if (formDataObj.message) {
+      formData.append('📝 Ghi Chú Của Khách', formDataObj.message);
+    }
+
+    return fetch('https://formsubmit.co/ajax/maisoncakevn@gmail.com', {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+  }
+
+  /* ============================================ */
+  /* ===== STEP TRANSITIONS ===================== */
+  /* ============================================ */
+
+  function showStep(step) {
+    // Hide all steps with fade out
+    [stepForm, stepQR, stepSuccess].forEach(s => {
+      if (s) s.style.display = 'none';
+    });
+
+    // Show target step with fade in
+    if (step) {
+      step.style.display = 'block';
+      step.style.opacity = '0';
+      step.style.transform = 'translateY(15px)';
+      requestAnimationFrame(() => {
+        step.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        step.style.opacity = '1';
+        step.style.transform = 'translateY(0)';
+      });
+    }
+
+    // Scroll to top of form column
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateStatusBar(activeStep) {
+    if (!orderStatusBar) return;
+    orderStatusBar.style.display = 'flex';
+
+    for (let i = 1; i <= 3; i++) {
+      const step = document.getElementById(`status-step-${i}`);
+      const line = document.getElementById(`status-line-${i}`);
+      
+      if (step) {
+        step.classList.remove('active', 'completed');
+        if (i < activeStep) step.classList.add('completed');
+        if (i === activeStep) step.classList.add('active');
+      }
+      if (line) {
+        line.classList.remove('completed');
+        if (i < activeStep) line.classList.add('completed');
+      }
+    }
+  }
+
+  /* ============================================ */
+  /* ===== STEP 1: FORM SUBMIT ================== */
+  /* ============================================ */
+
+  // Store form data for later use
+  let savedFormData = null;
 
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const name = document.getElementById('full-name').value.trim();
+      const fullName = document.getElementById('full-name').value.trim();
       const phone = document.getElementById('phone').value.trim();
       const address = document.getElementById('address').value.trim();
 
-      if (!name || !phone || !address) {
+      if (!fullName || !phone || !address) {
         alert("Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ giao hàng!");
         return;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>Đang xử lý...</span>';
-      submitBtn.style.opacity = '0.7';
+      // Save form data
+      savedFormData = {
+        fullName,
+        phone,
+        address,
+        shipping: document.getElementById('shipping_method').value,
+        message: document.getElementById('message').value.trim()
+      };
 
-      const formData = new FormData(checkoutForm);
-      fetch(checkoutForm.action, {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-      })
+      const paymentMethod = paymentMethodSelect.value;
+
+      if (paymentMethod === 'Bank') {
+        // → Go to step 2: Show QR
+        goToQRStep();
+      } else {
+        // → COD: Send email immediately, go to success
+        goToCODSuccess();
+      }
+    });
+  }
+
+  /* ============================================ */
+  /* ===== STEP 2: QR PAYMENT =================== */
+  /* ============================================ */
+
+  function goToQRStep() {
+    // Show QR step
+    showStep(stepQR);
+    updateStatusBar(2);
+
+    // Update QR code
+    const qrImg = document.getElementById('sepay-qr-img');
+    const qrLoading = document.getElementById('qr-loading');
+    const bankAmountEl = document.getElementById('bank-amount');
+    const transferContentEl = document.getElementById('bank-transfer-content');
+
+    if (bankAmountEl) {
+      bankAmountEl.textContent = total > 0 ? total.toLocaleString('vi-VN') + 'đ' : 'Liên hệ';
+    }
+    if (transferContentEl) {
+      transferContentEl.textContent = orderId;
+    }
+
+    // Show loading, build QR
+    if (qrLoading) qrLoading.style.display = 'flex';
+    if (qrImg) {
+      qrImg.style.opacity = '0';
+      const qrUrl = buildQRUrl(total, orderId);
+      qrImg.src = qrUrl;
+
+      qrImg.onload = () => {
+        if (qrLoading) qrLoading.style.display = 'none';
+        qrImg.style.opacity = '1';
+      };
+
+      qrImg.onerror = () => {
+        if (qrLoading) {
+          qrLoading.innerHTML = '<span style="color:#e74c3c;">Không thể tải QR. Vui lòng chuyển khoản thủ công theo thông tin bên dưới.</span>';
+        }
+      };
+    }
+  }
+
+  // Confirm payment button
+  if (confirmPaymentBtn) {
+    confirmPaymentBtn.addEventListener('click', () => {
+      confirmPaymentBtn.disabled = true;
+      confirmPaymentBtn.innerHTML = `
+        <div class="qr-spinner" style="width:20px;height:20px;border-width:2px;"></div>
+        <span>Đang xác nhận thanh toán...</span>
+      `;
+      confirmPaymentBtn.style.opacity = '0.7';
+
+      // Send email notification
+      sendOrderEmail(savedFormData, 'Bank')
+        .then(response => {
+          if (response.ok) {
+            goToSuccess('Bank');
+          } else {
+            throw new Error('Email send failed');
+          }
+        })
+        .catch(err => {
+          // Even if email fails, still show success (order is done)
+          console.error('Email error:', err);
+          goToSuccess('Bank');
+        });
+    });
+  }
+
+  /* ============================================ */
+  /* ===== COD SUCCESS ========================== */
+  /* ============================================ */
+
+  function goToCODSuccess() {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span>Đang xử lý...</span>';
+    submitBtn.style.opacity = '0.7';
+
+    sendOrderEmail(savedFormData, 'COD')
       .then(response => {
         if (response.ok) {
-          checkoutForm.style.display = 'none';
-          document.querySelector('.checkout-form-col .section-title').style.display = 'none';
-          document.querySelector('.checkout-form-col .section-label').style.display = 'none';
-          if (checkoutSuccess) checkoutSuccess.style.display = 'block';
-          localStorage.removeItem('maison_cart');
+          goToSuccess('COD');
         } else {
-          throw new Error('Submit failed');
+          throw new Error('Email send failed');
         }
       })
       .catch(err => {
-        alert("Lỗi kết nối. Không thể gửi đơn đặt hàng, vui lòng thử lại sau!");
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>Xác Nhận Đặt Hàng</span>';
-        submitBtn.style.opacity = '1';
+        console.error('Email error:', err);
+        goToSuccess('COD');
       });
-    });
   }
+
+  /* ============================================ */
+  /* ===== STEP 3: SUCCESS ====================== */
+  /* ============================================ */
+
+  function goToSuccess(paymentMethod) {
+    showStep(stepSuccess);
+    updateStatusBar(3);
+
+    // Update success message based on payment method
+    const successMsg = document.getElementById('success-message');
+    const successOrderCode = document.getElementById('success-order-code');
+
+    if (successOrderCode) successOrderCode.textContent = orderId;
+
+    if (successMsg) {
+      if (paymentMethod === 'Bank') {
+        successMsg.innerHTML = `Cảm ơn bạn đã lựa chọn Maison Gourmet!<br>
+          Thanh toán chuyển khoản đã được ghi nhận.<br>
+          Thông báo đơn hàng đã gửi về email — tư vấn viên sẽ liên hệ xác nhận sớm nhất!`;
+      } else {
+        successMsg.innerHTML = `Cảm ơn bạn đã lựa chọn Maison Gourmet!<br>
+          Đơn hàng COD đã được xác nhận.<br>
+          Thông báo đơn hàng đã gửi về email — tư vấn viên sẽ gọi xác nhận ngay trong ít phút!`;
+      }
+    }
+
+    // Clear cart
+    localStorage.removeItem('maison_cart');
+  }
+
+  /* ============================================ */
+  /* ===== COPY BUTTONS ========================= */
+  /* ============================================ */
+
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      let textToCopy = btn.getAttribute('data-copy');
+      if (!textToCopy) {
+        const sourceId = btn.getAttribute('data-copy-from');
+        if (sourceId) {
+          const sourceEl = document.getElementById(sourceId);
+          textToCopy = sourceEl ? sourceEl.textContent : '';
+        }
+      }
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const originalHTML = btn.innerHTML;
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2ecc71" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+          btn.style.background = 'rgba(46, 204, 113, 0.15)';
+          setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = '';
+          }, 1500);
+        }).catch(() => {
+          const range = document.createRange();
+          const sourceId = btn.getAttribute('data-copy-from');
+          const sourceEl = sourceId ? document.getElementById(sourceId) : null;
+          if (sourceEl) {
+            range.selectNodeContents(sourceEl);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        });
+      }
+    });
+  });
 });

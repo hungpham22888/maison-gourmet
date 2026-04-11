@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Nguyễn Văn Anh",
+    "phone": "0912345678",
+    "zalo": "0912345678",
+    "email": "anh.nguyen@example.com",
+    "notes": "Quan tâm hộp quà Tết cho doanh nghiệp 50-100 người"
+  },
+  {
+    "name": "Trần Thị Bình",
+    "phone": "0987654321",
+    "zalo": "0987654321",
+    "email": "binh.tran@procurement.vn",
+    "notes": "Cần báo giá chiết khấu cho 500 hộp quà đối tác VIP"
+  },
+  {
+    "name": "Lê Hoàng Cường",
+    "phone": "0905556667",
+    "zalo": "0905556667",
+    "email": "cuong.lh@hr-manager.com",
+    "notes": "Đã từng mua Hộp Vạn An, muốn xem mẫu mới 2026"
+  }
+]

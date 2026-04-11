@@ -1,0 +1,107 @@
+{
+  "last_sync": "2026-04-11 17:54:31",
+  "products": [
+    {
+      "id": 5,
+      "name": "Set Quà Doanh Nghiệp (B2B)",
+      "price": 0.0,
+      "description": "Combo quà tặng cho doanh nghiệp, số lượng từ 50 hộp. Hỗ trợ in logo, thiết kế riêng theo yêu cầu. Liên hệ để nhận báo giá.",
+      "quantity": 999,
+      "category": "B2B / Doanh nghiệp",
+      "image": "product4.png",
+      "status": "active",
+      "created_at": "2026-04-11 17:15:38",
+      "updated_at": "2026-04-11 17:15:38"
+    },
+    {
+      "id": 4,
+      "name": "Set Quà Sức Khỏe",
+      "price": 528000.0,
+      "description": "Combo quà tặng sức khỏe: yến sào, mật ong, hạt dinh dưỡng. Đóng hộp thiếc cao cấp, thích hợp tặng sếp và đối tác.",
+      "quantity": 80,
+      "category": "Quà tặng sức khỏe",
+      "image": "product3.png",
+      "status": "active",
+      "created_at": "2026-04-11 17:15:38",
+      "updated_at": "2026-04-11 17:15:38"
+    },
+    {
+      "id": 3,
+      "name": "Hộp Trà Sen Premium",
+      "price": 368000.0,
+      "description": "Bộ trà sen cao cấp, nguyên liệu tự nhiên. Hương thơm thanh nhã, phù hợp làm quà biếu người lớn tuổi.",
+      "quantity": 200,
+      "category": "Trà & Đồ uống",
+      "image": "product2.png",
+      "status": "active",
+      "created_at": "2026-04-11 17:15:38",
+      "updated_at": "2026-04-11 17:15:38"
+    },
+    {
+      "id": 2,
+      "name": "Túi Quà Phú Quý",
+      "price": 428000.0,
+      "description": "Túi quà thanh lịch, phù hợp tặng đồng nghiệp, bạn bè. Đóng gói cẩn thận, quà tặng ý nghĩa.",
+      "quantity": 150,
+      "category": "Quà tặng trung cấp",
+      "image": "product1.png",
+      "status": "active",
+      "created_at": "2026-04-11 17:15:38",
+      "updated_at": "2026-04-11 17:15:38"
+    },
+    {
+      "id": 1,
+      "name": "Hộp Quà An Quý",
+      "price": 648000.0,
+      "description": "Hộp quà cao cấp dành cho đối tác, gia đình. Thiết kế hộp thiếc sang trọng, nội dung tuyển chọn hài hòa.",
+      "quantity": 100,
+      "category": "Quà tặng cao cấp",
+      "image": "product_set.png",
+      "status": "active",
+      "created_at": "2026-04-11 17:15:38",
+      "updated_at": "2026-04-11 17:15:38"
+    }
+  ],
+  "customers": [
+    {
+      "id": 3,
+      "name": "Lê Hoàng Cường",
+      "phone": "0905556667",
+      "zalo": "0905556667",
+      "email": "cuong.lh@hr-manager.com",
+      "source": "waitlist",
+      "notes": null,
+      "registered_at": "2026-04-11 17:47:50",
+      "updated_at": "2026-04-11 17:47:50"
+    },
+    {
+      "id": 2,
+      "name": "Trần Thị Bình",
+      "phone": "0987654321",
+      "zalo": "0987654321",
+      "email": "binh.tran@procurement.vn",
+      "source": "waitlist",
+      "notes": null,
+      "registered_at": "2026-04-11 17:47:50",
+      "updated_at": "2026-04-11 17:47:50"
+    },
+    {
+      "id": 1,
+      "name": "Nguyễn Văn Anh",
+      "phone": "0912345678",
+      "zalo": "0912345678",
+      "email": "anh.nguyen@example.com",
+      "source": "waitlist",
+      "notes": null,
+      "registered_at": "2026-04-11 17:47:50",
+      "updated_at": "2026-04-11 17:47:50"
+    }
+  ],
+  "orders": [],
+  "stats": {
+    "total_revenue": 0,
+    "total_orders": 0,
+    "total_customers": 3,
+    "pending_orders": 0
+  }
+}

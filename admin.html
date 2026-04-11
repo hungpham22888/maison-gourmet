@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maison Gourmet | Admin Portal</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <a href="index.html" class="sidebar-logo">
+                <div class="logo-mark">
+                    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+                        <circle cx="18" cy="18" r="17" stroke="#9c27b0" stroke-width="1.5"/>
+                        <text x="18" y="23" text-anchor="middle" font-family="Playfair Display" font-size="14" font-weight="700" fill="#9c27b0">M</text>
+                    </svg>
+                </div>
+                <div class="logo-text">MAISON ADMIN</div>
+            </a>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Tổng Quan
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        Đơn Hàng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        Khách Hàng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+                        Sản Phẩm
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <a href="index.html" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Về Website
+                </a>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <header class="header">
+                <div class="welcome-msg">
+                    <h1>Xin chào, Admin!</h1>
+                    <p id="last-sync-time">Cập nhật lúc: --:--</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-sync" id="sync-btn" title="Làm mới dữ liệu">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    </button>
+                    <button class="theme-toggle" id="theme-toggle">
+                        <!-- SVG injected by JS -->
+                    </button>
+                </div>
+            </header>
+
+            <!-- STATS CARDS -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon revenue">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Tổng doanh thu</h3>
+                        <div class="value" id="total-revenue">0đ</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orders">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Đơn hàng</h3>
+                        <div class="value" id="total-orders">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon customers">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Khách hàng</h3>
+                        <div class="value" id="total-customers">0</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pending">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Đang chờ</h3>
+                        <div class="value" id="pending-orders">0</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DASHBOARD GRID -->
+            <div class="dashboard-grid">
+                <!-- REVENUE CHART -->
+                <article class="admin-card">
+                    <div class="card-header">
+                        <h2>Biểu đồ doanh thu</h2>
+                        <a href="#" class="card-action-link">Xem chi tiết</a>
+                    </div>
+                    <div style="height: 300px;">
+                        <canvas id="revenue-chart"></canvas>
+                    </div>
+                </article>
+
+                <!-- RECENT PRODUCTS -->
+                <article class="admin-card">
+                    <div class="card-header">
+                        <h2>Sản phẩm nổi bật</h2>
+                        <a href="#" class="card-action-link">Quản lý</a>
+                    </div>
+                    <ul class="activity-list" id="recent-products">
+                        <!-- Injected by Admin JS -->
+                    </ul>
+                </article>
+            </div>
+
+            <!-- RECENT ORDERS TABLE -->
+            <section class="admin-card" style="margin-top: 24px;">
+                <div class="card-header">
+                    <h2>Đơn hàng gần đây</h2>
+                    <a href="#" class="card-action-link">Tất cả đơn hàng</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Sản phẩm</th>
+                                <th>Số tiền</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body">
+                            <!-- Dynamic rows via admin.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

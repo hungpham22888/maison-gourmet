@@ -38,65 +38,139 @@
         
         <!-- CỘT FORM TRÁI -->
         <div class="checkout-form-col">
-          <div class="section-label">Hoàn tất đơn hàng</div>
-          <h2 class="section-title" style="margin-bottom: 24px; font-size: 2rem;">Thông tin giao hàng</h2>
+
+          <!-- ========== STEP 1: FORM THÔNG TIN ========== -->
+          <div id="checkout-step-form">
+            <div class="section-label">Hoàn tất đơn hàng</div>
+            <h2 class="section-title" style="margin-bottom: 24px; font-size: 2rem;">Thông tin giao hàng</h2>
           
-          <form class="order-form" id="checkout-form" action="https://formsubmit.co/maisoncakevn@gmail.com" method="POST" novalidate style="box-shadow: none; padding: 0;">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_subject" value="[MaisonGourmet] Đơn hàng thanh toán mới!">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="🛒 CHI TIẾT ĐƠN HÀNG" id="checkout-cart-input" value="">
-            
-            <div class="form-row">
+            <form class="order-form" id="checkout-form" novalidate style="box-shadow: none; padding: 0;">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="full-name">Họ và tên *</label>
+                  <input type="text" id="full-name" name="full_name" placeholder="Ví dụ: Nguyễn Văn A" required />
+                </div>
+                <div class="form-group">
+                  <label for="phone">Số điện thoại *</label>
+                  <input type="tel" id="phone" name="phone" placeholder="Ví dụ: 0909 000 000" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group" style="flex: 100%;">
+                  <label for="address">Địa chỉ giao hàng chi tiết *</label>
+                  <input type="text" id="address" name="address" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." required />
+                </div>
+              </div>
+
               <div class="form-group">
-                <label for="full-name">Họ và tên *</label>
-                <input type="text" id="full-name" name="👤 Họ Tên Khách Hàng" placeholder="Ví dụ: Nguyễn Văn A" required />
+                <label for="shipping_method">Phương thức giao hàng</label>
+                <select id="shipping_method" name="shipping_method">
+                  <option value="Giao hàng tiêu chuẩn (Miễn phí từ 20 hộp)">Giao hàng tiêu chuẩn (2-4 ngày) - Miễn phí từ 20 hộp</option>
+                  <option value="Giao hàng hỏa tốc">Giao hàng hỏa tốc (Xác nhận phí sau qua điện thoại)</option>
+                </select>
               </div>
+
               <div class="form-group">
-                <label for="phone">Số điện thoại *</label>
-                <input type="tel" id="phone" name="📞 Số Điện Thoại" placeholder="Ví dụ: 0909 000 000" required />
+                <label for="payment_method">Phương thức thanh toán</label>
+                <select id="payment_method" name="payment_method">
+                  <option value="COD">Thanh toán tiền mặt khi nhận hàng (COD)</option>
+                  <option value="Bank">Chuyển khoản qua Ngân hàng</option>
+                </select>
               </div>
-            </div>
 
-            <div class="form-row">
-              <div class="form-group" style="flex: 100%;">
-                <label for="address">Địa chỉ giao hàng chi tiết *</label>
-                <input type="text" id="address" name="📍 Địa Chỉ Giao Hàng" placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố..." required />
+              <div class="form-group">
+                <label for="message">Ghi chú thêm (Tùy chọn)</label>
+                <textarea id="message" name="message" rows="3" placeholder="Vd: Giao giờ hành chính, in logo công ty..."></textarea>
               </div>
+
+              <button type="submit" class="btn btn-primary btn-full" id="submit-checkout-btn" style="margin-top: 20px; font-size: 1.1rem; border-radius: var(--radius-md);">
+                <span>Xác Nhận Đặt Hàng</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- ========== STEP 2: QR THANH TOÁN (ẩn mặc định) ========== -->
+          <div id="checkout-step-qr" style="display: none;">
+            <div class="checkout-step-indicator">
+              <div class="step-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span>Đơn hàng đã được xác nhận — Vui lòng thanh toán</span>
             </div>
 
-            <div class="form-group">
-              <label for="shipping_method">Phương thức giao hàng</label>
-              <select id="shipping_method" name="🚚 Phương Thức Giao Hàng">
-                <option value="Giao hàng tiêu chuẩn (Miễn phí từ 20 hộp)">Giao hàng tiêu chuẩn (2-4 ngày) - Miễn phí từ 20 hộp</option>
-                <option value="Giao hàng hỏa tốc">Giao hàng hỏa tốc (Xác nhận phí sau qua điện thoại)</option>
-              </select>
+            <div class="qr-payment-card">
+              <div class="qr-payment-header">
+                <div class="qr-payment-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><line x1="20" y1="14" x2="20" y2="20"/><line x1="14" y1="20" x2="20" y2="20"/></svg>
+                </div>
+                <div>
+                  <h4>Quét mã QR để thanh toán</h4>
+                  <p>Mở App Ngân hàng → Quét QR → Xác nhận chuyển khoản</p>
+                </div>
+              </div>
+
+              <div class="qr-code-wrapper">
+                <img id="sepay-qr-img" src="" alt="QR Code thanh toán" class="qr-code-img" />
+                <div class="qr-loading" id="qr-loading">
+                  <div class="qr-spinner"></div>
+                  <span>Đang tạo mã QR...</span>
+                </div>
+              </div>
+
+              <div class="bank-info-box">
+                <div class="bank-info-row">
+                  <span class="bank-info-label">Ngân hàng</span>
+                  <span class="bank-info-value">TPBank (Ngân hàng Tiên Phong)</span>
+                </div>
+                <div class="bank-info-row">
+                  <span class="bank-info-label">Số tài khoản</span>
+                  <span class="bank-info-value" id="bank-account-number">00002090706</span>
+                  <button type="button" class="copy-btn" data-copy="00002090706" title="Sao chép">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                </div>
+                <div class="bank-info-row">
+                  <span class="bank-info-label">Chủ tài khoản</span>
+                  <span class="bank-info-value">PHAM HUNG</span>
+                </div>
+                <div class="bank-info-row">
+                  <span class="bank-info-label">Số tiền</span>
+                  <span class="bank-info-value bank-amount" id="bank-amount">0đ</span>
+                </div>
+                <div class="bank-info-row">
+                  <span class="bank-info-label">Nội dung CK</span>
+                  <span class="bank-info-value bank-transfer-content" id="bank-transfer-content">MG000000</span>
+                  <button type="button" class="copy-btn" data-copy-from="bank-transfer-content" title="Sao chép">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="qr-payment-note">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Vui lòng giữ nguyên <strong>nội dung chuyển khoản</strong> để đơn hàng được xác nhận tự động.</span>
+              </div>
+
+              <!-- CONFIRM PAYMENT BUTTON -->
+              <button type="button" class="btn btn-primary btn-full qr-confirm-btn" id="confirm-payment-btn" style="margin-top: 24px; font-size: 1.1rem; border-radius: var(--radius-md);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Tôi đã chuyển khoản xong</span>
+              </button>
             </div>
+          </div>
 
-            <div class="form-group">
-              <label for="payment_method">Phương thức thanh toán</label>
-              <select id="payment_method" name="💳 Phương Thức Thanh Toán">
-                <option value="COD">Thanh toán tiền mặt khi nhận hàng (COD)</option>
-                <option value="Bank">Chuyển khoản qua Ngân hàng</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="message">Ghi chú thêm (Tùy chọn)</label>
-              <textarea id="message" name="📝 Ghi Chú Của Khách" rows="3" placeholder="Vd: Giao giờ hành chính, in logo công ty..."></textarea>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-full" id="submit-checkout-btn" style="margin-top: 20px; font-size: 1.1rem; border-radius: var(--radius-md);">
-              <span>Xác Nhận Đặt Hàng</span>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-          </form>
-
-          <!-- Success Message -->
+          <!-- ========== STEP 3: THÀNH CÔNG ========== -->
           <div class="form-success" id="checkout-success" style="display:none; text-align: center; margin-top: 40px; padding: 40px; border-radius: var(--radius-lg); background: var(--bg-color);">
             <div class="success-icon" style="font-size: 4rem; color: #2ecc71;">✅</div>
             <h3 style="font-family: var(--font-heading); color: var(--primary); margin: 20px 0 10px;">Đặt hàng thành công!</h3>
-            <p style="color: var(--text-light); line-height: 1.6;">Cảm ơn bạn đã lựa chọn Maison Gourmet. <br>Hóa đơn chi tiết đã được gửi đến hệ thống, tư vấn viên sẽ gọi xác nhận ngay trong ít phút!</p>
+            <p id="success-message" style="color: var(--text-light); line-height: 1.6;">Cảm ơn bạn đã lựa chọn Maison Gourmet. <br>Hóa đơn chi tiết đã được gửi đến hệ thống, tư vấn viên sẽ gọi xác nhận ngay trong ít phút!</p>
+            <div id="success-order-id" style="margin: 16px 0; padding: 12px 20px; background: rgba(156,39,176,0.08); border-radius: 8px; display: inline-block;">
+              <span style="color: var(--text-light); font-size: 0.85rem;">Mã đơn hàng: </span>
+              <strong style="color: var(--primary); font-family: 'Courier New', monospace; letter-spacing: 2px; font-size: 1.1rem;" id="success-order-code">MG000000</strong>
+            </div>
+            <br>
             <a href="index.html" class="btn btn-outline" style="margin-top: 24px; display: inline-flex;">Quay về trang chủ</a>
           </div>
         </div>
@@ -122,6 +196,24 @@
               <div class="summary-row total-row">
                 <span>Tổng cộng</span>
                 <strong id="checkout-total">0đ</strong>
+              </div>
+            </div>
+
+            <!-- Order status indicator -->
+            <div class="order-status-bar" id="order-status-bar" style="display: none;">
+              <div class="status-step active" id="status-step-1">
+                <div class="status-dot"></div>
+                <span>Xác nhận đơn</span>
+              </div>
+              <div class="status-line" id="status-line-1"></div>
+              <div class="status-step" id="status-step-2">
+                <div class="status-dot"></div>
+                <span>Thanh toán</span>
+              </div>
+              <div class="status-line" id="status-line-2"></div>
+              <div class="status-step" id="status-step-3">
+                <div class="status-dot"></div>
+                <span>Hoàn thành</span>
               </div>
             </div>
           </div>

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const paymentMethodSelect = document.getElementById('payment_method');
 
   // QR
-  const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+  const timerEl = document.getElementById('payment-timer');
 
   // Status bar
   const orderStatusBar = document.getElementById('order-status-bar');
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     cartText += `\n📦 TỔNG GIÁ TRỊ: ${totalStr}`;
     if (isSaleActive) cartText += ` (Đã áp dụng Flash Sale 30%)`;
     cartText += `\n🆔 MÃ ĐƠN: ${orderId}`;
-    cartText += `\n💳 THANH TOÁN: ${paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (QR Sepay) — ĐÃ THANH TOÁN' : 'COD - Tiền mặt khi nhận hàng'}`;
+    cartText += `\n💳 THANH TOÁN: ${paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (QR Sepay) — ĐẾN TỰ ĐỘNG' : 'COD - Tiền mặt khi nhận hàng'}`;
     cartText += `\n(Ghi chú: Phí vận chuyển sẽ được tư vấn viên báo sau khi xác nhận địa chỉ)`;
     
     return cartText;
@@ -111,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function sendOrderEmail(formDataObj, paymentMethod) {
     const formData = new FormData();
     formData.append('_captcha', 'false');
-    formData.append('_subject', `[MaisonGourmet] Đơn hàng mới #${orderId}${paymentMethod === 'Bank' ? ' — Đã thanh toán CK' : ' — COD'}`);
+    formData.append('_subject', `[MaisonGourmet] Đơn hàng mới #${orderId}${paymentMethod === 'Bank' ? ' — Đã thanh toán (Tự động)' : ' — COD'}`);
     formData.append('_template', 'table');
     formData.append('👤 Họ Tên Khách Hàng', formDataObj.fullName);
     formData.append('📞 Số Điện Thoại', formDataObj.phone);
     formData.append('📍 Địa Chỉ Giao Hàng', formDataObj.address);
     formData.append('🚚 Phương Thức Giao Hàng', formDataObj.shipping);
-    formData.append('💳 Phương Thức Thanh Toán', paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (Đã thanh toán)' : 'COD - Tiền mặt khi nhận hàng');
+    formData.append('💳 Phương Thức Thanh Toán', paymentMethod === 'Bank' ? 'Chuyển khoản ngân hàng (Xác nhận tự động)' : 'COD - Tiền mặt khi nhận hàng');
     formData.append('🆔 Mã Đơn Hàng', orderId);
     formData.append('🛒 CHI TIẾT ĐƠN HÀNG', buildCartText(paymentMethod));
     if (formDataObj.message) {
@@ -132,16 +132,65 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ============================================ */
+  /* ===== AUTOMATED PAYMENT LOGIC ============== */
+  /* ============================================ */
+  let paymentTimer = null;
+  let pollingInterval = null;
+
+  function startPaymentTimer(durationSeconds) {
+    let timer = durationSeconds;
+    paymentTimer = setInterval(() => {
+      const minutes = Math.floor(timer / 60);
+      const seconds = timer % 60;
+      
+      timerEl.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      
+      if (--timer < 0) {
+        handlePaymentTimeout();
+      }
+    }, 1000);
+  }
+
+  function startPolling() {
+    pollingInterval = setInterval(async () => {
+      try {
+        const response = await fetch('data_sync.json?t=' + new Date().getTime());
+        const data = await response.json();
+        
+        // Find current order in sync data
+        const currentOrder = data.orders.find(o => o.order_code === orderId);
+        
+        if (currentOrder && currentOrder.status === 'completed') {
+          clearInterval(paymentTimer);
+          clearInterval(pollingInterval);
+          
+          // Send final email notification before showing success screen
+          sendOrderEmail(savedFormData, 'Bank').finally(() => {
+            goToSuccess('Bank');
+          });
+        }
+      } catch (e) {
+        console.warn("Polling error:", e);
+      }
+    }, 5000); // Check every 5 seconds
+  }
+
+  function handlePaymentTimeout() {
+    clearInterval(paymentTimer);
+    clearInterval(pollingInterval);
+    alert("Đã hết thời hạn thanh toán (5 phút). Đơn hàng của bạn sẽ bị hủy hoặc vui lòng thực hiện lại.");
+    window.location.href = 'index.html';
+  }
+
+  /* ============================================ */
   /* ===== STEP TRANSITIONS ===================== */
   /* ============================================ */
 
   function showStep(step) {
-    // Hide all steps with fade out
     [stepForm, stepQR, stepSuccess].forEach(s => {
       if (s) s.style.display = 'none';
     });
 
-    // Show target step with fade in
     if (step) {
       step.style.display = 'block';
       step.style.opacity = '0';
@@ -153,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // Scroll to top of form column
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -181,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ===== STEP 1: FORM SUBMIT ================== */
   /* ============================================ */
 
-  // Store form data for later use
   let savedFormData = null;
 
   if (checkoutForm) {
@@ -197,7 +244,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Save form data
       savedFormData = {
         fullName,
         phone,
@@ -209,10 +255,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const paymentMethod = paymentMethodSelect.value;
 
       if (paymentMethod === 'Bank') {
-        // → Go to step 2: Show QR
         goToQRStep();
       } else {
-        // → COD: Send email immediately, go to success
         goToCODSuccess();
       }
     });
@@ -223,11 +267,9 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ============================================ */
 
   function goToQRStep() {
-    // Show QR step
     showStep(stepQR);
     updateStatusBar(2);
 
-    // Update QR code
     const qrImg = document.getElementById('sepay-qr-img');
     const qrLoading = document.getElementById('qr-loading');
     const bankAmountEl = document.getElementById('bank-amount');
@@ -240,7 +282,6 @@ document.addEventListener('DOMContentLoaded', () => {
       transferContentEl.textContent = orderId;
     }
 
-    // Show loading, build QR
     if (qrLoading) qrLoading.style.display = 'flex';
     if (qrImg) {
       qrImg.style.opacity = '0';
@@ -250,41 +291,18 @@ document.addEventListener('DOMContentLoaded', () => {
       qrImg.onload = () => {
         if (qrLoading) qrLoading.style.display = 'none';
         qrImg.style.opacity = '1';
+        
+        // --- START AUTOMATION ---
+        startPaymentTimer(300); // 5 minutes
+        startPolling();
       };
 
       qrImg.onerror = () => {
         if (qrLoading) {
-          qrLoading.innerHTML = '<span style="color:#e74c3c;">Không thể tải QR. Vui lòng chuyển khoản thủ công theo thông tin bên dưới.</span>';
+          qrLoading.innerHTML = '<span style="color:#e74c3c;">Lỗi tải mã QR.</span>';
         }
       };
     }
-  }
-
-  // Confirm payment button
-  if (confirmPaymentBtn) {
-    confirmPaymentBtn.addEventListener('click', () => {
-      confirmPaymentBtn.disabled = true;
-      confirmPaymentBtn.innerHTML = `
-        <div class="qr-spinner" style="width:20px;height:20px;border-width:2px;"></div>
-        <span>Đang xác nhận thanh toán...</span>
-      `;
-      confirmPaymentBtn.style.opacity = '0.7';
-
-      // Send email notification
-      sendOrderEmail(savedFormData, 'Bank')
-        .then(response => {
-          if (response.ok) {
-            goToSuccess('Bank');
-          } else {
-            throw new Error('Email send failed');
-          }
-        })
-        .catch(err => {
-          // Even if email fails, still show success (order is done)
-          console.error('Email error:', err);
-          goToSuccess('Bank');
-        });
-    });
   }
 
   /* ============================================ */
@@ -318,7 +336,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showStep(stepSuccess);
     updateStatusBar(3);
 
-    // Update success message based on payment method
     const successMsg = document.getElementById('success-message');
     const successOrderCode = document.getElementById('success-order-code');
 
@@ -327,16 +344,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (successMsg) {
       if (paymentMethod === 'Bank') {
         successMsg.innerHTML = `Cảm ơn bạn đã lựa chọn Maison Gourmet!<br>
-          Thanh toán chuyển khoản đã được ghi nhận.<br>
-          Thông báo đơn hàng đã gửi về email — tư vấn viên sẽ liên hệ xác nhận sớm nhất!`;
+          Hệ thống đã nhận được thanh toán <strong>tự động</strong>.<br>
+          Đơn hàng của bạn đang được xử lý và đóng gói!`;
       } else {
         successMsg.innerHTML = `Cảm ơn bạn đã lựa chọn Maison Gourmet!<br>
-          Đơn hàng COD đã được xác nhận.<br>
-          Thông báo đơn hàng đã gửi về email — tư vấn viên sẽ gọi xác nhận ngay trong ít phút!`;
+          Đơn hàng COD đã được ghi nhận.<br>
+          Tư vấn viên sẽ gọi xác nhận ngay trong ít phút!`;
       }
     }
 
-    // Clear cart
     localStorage.removeItem('maison_cart');
   }
 
@@ -364,16 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.innerHTML = originalHTML;
             btn.style.background = '';
           }, 1500);
-        }).catch(() => {
-          const range = document.createRange();
-          const sourceId = btn.getAttribute('data-copy-from');
-          const sourceEl = sourceId ? document.getElementById(sourceId) : null;
-          if (sourceEl) {
-            range.selectNodeContents(sourceEl);
-            const sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-          }
         });
       }
     });

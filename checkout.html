@@ -119,6 +119,14 @@
                 </div>
               </div>
 
+              <div class="qr-status-box" style="margin-bottom: 24px; padding: 15px; background: rgba(156, 39, 176, 0.05); border-radius: var(--radius-md); border: 1px dashed var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="status-pulse"></div>
+                  <span style="font-weight: 500; font-size: 0.95rem; color: var(--primary-color);">Đang chờ thanh toán tự động...</span>
+                </div>
+                <div id="payment-timer" style="font-family: monospace; font-size: 1.2rem; font-weight: 700; color: #ff4d6d;">05:00</div>
+              </div>
+
               <div class="bank-info-box">
                 <div class="bank-info-row">
                   <span class="bank-info-label">Ngân hàng</span>
@@ -150,14 +158,8 @@
 
               <div class="qr-payment-note">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span>Vui lòng giữ nguyên <strong>nội dung chuyển khoản</strong> để đơn hàng được xác nhận tự động.</span>
+                <span>Vui lòng giữ nguyên <strong>nội dung chuyển khoản</strong> để đơn hàng được xác nhận tự động. Hệ thống sẽ tự động chuyển hướng sau khi nhận được tiền.</span>
               </div>
-
-              <!-- CONFIRM PAYMENT BUTTON -->
-              <button type="button" class="btn btn-primary btn-full qr-confirm-btn" id="confirm-payment-btn" style="margin-top: 24px; font-size: 1.1rem; border-radius: var(--radius-md);">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Tôi đã chuyển khoản xong</span>
-              </button>
             </div>
           </div>
 

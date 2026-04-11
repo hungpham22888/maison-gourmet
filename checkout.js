@@ -156,7 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
     pollingInterval = setInterval(async () => {
       try {
         // Fetch live status from Cloud API instead of data_sync.json
-        const response = await fetch(`${API_BASE}/orders`);
+        const t = new Date().getTime();
+        const response = await fetch(`${API_BASE}/orders?t=${t}`);
         const orders = await response.json();
         
         // Find current order in live data

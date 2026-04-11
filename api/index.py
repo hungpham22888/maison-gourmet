@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 import os
 import psycopg2
@@ -127,10 +127,11 @@ def manage_orders():
         
         if request.method == 'GET':
             cur.execute("SELECT * FROM orders ORDER BY id DESC")
-            orders = cur.fetchall()
+            response = make_response(jsonify(orders))
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             cur.close()
             conn.close()
-            return jsonify(orders)
+            return response
             
         if request.method == 'POST':
             data = request.json

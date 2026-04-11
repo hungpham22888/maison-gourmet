@@ -60,10 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadDashboardData() {
     try {
       // Priority 1: Fetch live data from Cloud API
+      const t = new Date().getTime();
       const [productsRes, customersRes, ordersRes] = await Promise.all([
-          fetch(`${API_BASE}/products`),
-          fetch(`${API_BASE}/customers`),
-          fetch(`${API_BASE}/orders`)
+          fetch(`${API_BASE}/products?t=${t}`),
+          fetch(`${API_BASE}/customers?t=${t}`),
+          fetch(`${API_BASE}/orders?t=${t}`)
       ]);
       
       if (productsRes.ok && customersRes.ok && ordersRes.ok) {

@@ -1,8 +1,11 @@
 {
   "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.py" },
-    { "source": "/admin", "destination": "/admin.html" },
-    { "source": "/checkout", "destination": "/checkout.html" }
+  "builds": [
+    { "src": "api/index.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/index.py" },
+    { "src": "/admin", "dest": "/admin.html" },
+    { "src": "/checkout", "dest": "/checkout.html" }
   ]
 }

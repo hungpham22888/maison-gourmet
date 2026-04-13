@@ -48,31 +48,37 @@ def schedule_waitlist_emails(to_email, test_mode=False):
         return
 
     def send_sequence():
+        # Clean +test from email to pass Resend's strict same-email limitation
+        actual_email = to_email
+        if "+" in actual_email and "@" in actual_email:
+            base, domain = actual_email.split('@')
+            actual_email = base.split('+')[0] + '@' + domain
+
         if test_mode:
-            print(f"🟢 [TEST MODE] Gửi toàn bộ {len(emails)} emails ngay lập tức cho: {to_email}")
+            print(f"[TEST MODE] Gửi toàn bộ {len(emails)} emails ngay lập tức cho: {actual_email}")
             for i, em in enumerate(emails):
                 prefix = f"[Test Email {i+1}] "
                 # Dùng layout HTML cơ bản bọc ngoài
                 full_html = f"<div style='font-family:sans-serif; line-height:1.6; color:#333'>{em['html']}</div>"
-                send_email(to_email, prefix + em['subject'], full_html)
+                send_email(actual_email, prefix + em['subject'], full_html)
                 time.sleep(2) # Sleep nhẹ tránh spam api
         else:
             if len(emails) > 0:
-                print(f"🟢 Gửi Email 1 cho: {to_email}")
+                print(f"Gui Email 1 cho: {actual_email}")
                 full_html = f"<div style='font-family:sans-serif; line-height:1.6; color:#333'>{emails[0]['html']}</div>"
-                send_email(to_email, emails[0]['subject'], full_html)
+                send_email(actual_email, emails[0]['subject'], full_html)
             
             if len(emails) > 1:
                 def send_email_2():
-                    print(f"🟢 Gửi Email 2 cho: {to_email}")
+                    print(f"Gui Email 2 cho: {actual_email}")
                     full_html2 = f"<div style='font-family:sans-serif; line-height:1.6; color:#333'>{emails[1]['html']}</div>"
-                    send_email(to_email, emails[1]['subject'], full_html2)
+                    send_email(actual_email, emails[1]['subject'], full_html2)
                     
                     if len(emails) > 2:
                         def send_email_3():
-                            print(f"🟢 Gửi Email 3 cho: {to_email}")
+                            print(f"Gui Email 3 cho: {actual_email}")
                             full_html3 = f"<div style='font-family:sans-serif; line-height:1.6; color:#333'>{emails[2]['html']}</div>"
-                            send_email(to_email, emails[2]['subject'], full_html3)
+                            send_email(actual_email, emails[2]['subject'], full_html3)
                         
                         # 1 ngày sau (86400s) gửi email 3
                         threading.Timer(86400, send_email_3).start()

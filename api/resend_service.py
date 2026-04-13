@@ -21,7 +21,7 @@ resend.api_key = get_resend_api_key()
 
 def send_email(to_email, subject, html_content):
     if not resend.api_key:
-        print("❌ Lỗi: Chưa cấu hình Resend API Key.")
+        print("Loi: Chua cau hinh Resend API Key.")
         return False
         
     try:
@@ -32,8 +32,8 @@ def send_email(to_email, subject, html_content):
             "subject": subject,
             "html": html_content
         })
-        print(f"✅ Đã gửi email thành công tới {to_email}")
+        print(f"Da gui email thanh cong toi {to_email}")
         return response
     except Exception as e:
-        print(f"❌ Lỗi khi gửi email qua Resend: {e}")
+        print(f"Loi khi gui email qua Resend: {e}")
         return None

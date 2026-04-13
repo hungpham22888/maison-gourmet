@@ -1,0 +1,74 @@
+[
+  [
+    1,
+    "Hộp Quà An Quý",
+    648000.0,
+    "Hộp quà cao cấp dành cho đối tác, gia đình. Thiết kế hộp thiếc sang trọng, nội dung tuyển chọn hài hòa.",
+    100,
+    "Quà tặng cao cấp",
+    "product_set.png",
+    "active",
+    "2026-04-11 17:15:38",
+    "2026-04-11 17:15:38"
+  ],
+  [
+    2,
+    "Túi Quà Phú Quý",
+    428000.0,
+    "Túi quà thanh lịch, phù hợp tặng đồng nghiệp, bạn bè. Đóng gói cẩn thận, quà tặng ý nghĩa.",
+    150,
+    "Quà tặng trung cấp",
+    "product1.png",
+    "active",
+    "2026-04-11 17:15:38",
+    "2026-04-11 17:15:38"
+  ],
+  [
+    3,
+    "Hộp Trà Sen Premium",
+    368000.0,
+    "Bộ trà sen cao cấp, nguyên liệu tự nhiên. Hương thơm thanh nhã, phù hợp làm quà biếu người lớn tuổi.",
+    200,
+    "Trà & Đồ uống",
+    "product2.png",
+    "active",
+    "2026-04-11 17:15:38",
+    "2026-04-11 17:15:38"
+  ],
+  [
+    4,
+    "Set Quà Sức Khỏe",
+    528000.0,
+    "Combo quà tặng sức khỏe: yến sào, mật ong, hạt dinh dưỡng. Đóng hộp thiếc cao cấp, thích hợp tặng sếp và đối tác.",
+    80,
+    "Quà tặng sức khỏe",
+    "product3.png",
+    "active",
+    "2026-04-11 17:15:38",
+    "2026-04-11 17:15:38"
+  ],
+  [
+    5,
+    "Set Quà Doanh Nghiệp (B2B)",
+    0.0,
+    "Combo quà tặng cho doanh nghiệp, số lượng từ 50 hộp. Hỗ trợ in logo, thiết kế riêng theo yêu cầu. Liên hệ để nhận báo giá.",
+    999,
+    "B2B / Doanh nghiệp",
+    "product4.png",
+    "active",
+    "2026-04-11 17:15:38",
+    "2026-04-11 17:15:38"
+  ],
+  [
+    6,
+    "Set Quà Demo (Test 2k)",
+    2400.0,
+    null,
+    999,
+    "classic",
+    "product_set.png",
+    "active",
+    "2026-04-11 21:30:35",
+    "2026-04-11 21:30:35"
+  ]
+]

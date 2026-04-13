@@ -236,6 +236,11 @@
           </div>
         </div>
 
+        <div class="form-group" style="margin-top:24px;">
+          <label for="email">Địa chỉ Email *</label>
+          <input type="email" id="email" name="Email" placeholder="nguyenvana@gmail.com" required />
+        </div>
+
         <div class="form-group">
           <label>1. Bạn thường mua bánh Trung Thu cho đối tượng nào? *</label>
           <select name="Đối Tượng" required>
@@ -347,6 +352,18 @@
         }
       })
       .then(() => {
+        // Sau khi lưu trên Google Sheet, bắn thông tin sang Backend để gửi Resend tự động
+        const payload = {
+            name: document.getElementById('full-name').value,
+            phone: document.getElementById('phone').value,
+            email: document.getElementById('email').value
+        };
+        fetch('/api/waitlist', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        }).catch(err => console.error('Lỗi khi gọi API waitlist backend:', err));
+
         cardContent.style.display = 'none';
         successScreen.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });

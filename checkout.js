@@ -240,16 +240,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const fullName = document.getElementById('full-name').value.trim();
       const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
       const address = document.getElementById('address').value.trim();
 
-      if (!fullName || !phone || !address) {
-        alert("Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ giao hàng!");
+      if (!fullName || !phone || !email || !address) {
+        alert("Vui lòng điền đầy đủ Họ tên, Số điện thoại, Email và Địa chỉ giao hàng!");
         return;
       }
 
       savedFormData = {
         fullName,
         phone,
+        email,
         address,
         shipping: document.getElementById('shipping_method').value,
         message: document.getElementById('message').value.trim()
@@ -274,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const orderData = {
         order_code: orderId,
         customer_name: savedFormData.fullName,
+        customer_email: savedFormData.email,
         product_name: cart.length > 1 ? `${cart[0].name} và ${cart.length - 1} món khác` : cart[0].name,
         amount: total,
         status: 'pending',

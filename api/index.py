@@ -116,6 +116,42 @@ def update_customer(cust_id):
     conn.close()
     return jsonify({"success": True})
 
+# WAITLIST PROCESSOR
+@app.route('/api/waitlist', methods=['POST', 'OPTIONS'])
+def manage_waitlist():
+    if request.method == 'OPTIONS':
+        return '', 200
+        
+    data = request.json
+    print(f"Received waitlist: {data['email']}")
+    
+    # 1. Save to database
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            INSERT INTO customers (name, phone, email, source)
+            VALUES (%s, %s, %s, %s)
+            RETURNING id
+        ''', (data['name'], data['phone'], data['email'], 'waitlist'))
+        conn.commit()
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print("Database insert failed (possibly duplicate phone/email):", e)
+        # Continuing even if db save failed because we still want to trigger emails
+
+    # 2. Trigger Emails 
+    try:
+        from api.email_scheduler import schedule_waitlist_emails
+    except ImportError:
+        from email_scheduler import schedule_waitlist_emails
+        
+    is_test = '+test' in data.get('email', '')
+    schedule_waitlist_emails(data['email'], test_mode=is_test)
+
+    return jsonify({"success": True, "message": "Waitlist received and sequence started"}), 200
+
 # ORDERS
 @app.route('/api/orders', methods=['GET', 'POST', 'OPTIONS'])
 def manage_orders():
@@ -159,6 +195,32 @@ def manage_orders():
             ))
             new_id = cur.fetchone()['id']
             conn.commit()
+            
+            # Send confirmation email if email was provided
+            cust_email = data.get('customer_email')
+            if cust_email:
+                try:
+                    from api.resend_service import send_email
+                except ImportError:
+                    from resend_service import send_email
+                
+                subject = f"Xác nhận đơn hàng Maison Gourmet (Mã: {order_code})"
+                html = f"""
+                <div style='font-family:sans-serif; line-height:1.6; color:#333'>
+                    <p>Chào {data['customer_name']},</p>
+                    <p>Cảm ơn bạn đã chốt đơn tại Maison Gourmet. Dưới đây là thông tin đơn hàng của bạn:</p>
+                    <ul>
+                        <li><strong>Mã đơn:</strong> {order_code}</li>
+                        <li><strong>Sản phẩm:</strong> {data['product_name']}</li>
+                        <li><strong>Thành tiền:</strong> {int(data['amount']):,} VNĐ</li>
+                    </ul>
+                    <p><strong>Hướng dẫn nhận hàng:</strong> Bên mình sẽ đóng gói cẩn thận và gọi xác nhận gửi đi trong ngày. Bạn nhớ nghe máy thủ kho giúp mình nhé.</p>
+                    <p>Nhận được quà ưng ý thì feedback lại cho ae Maison có động lực làm việc nhé.</p>
+                    <p>Cảm ơn bạn!</p>
+                </div>
+                """
+                send_email(cust_email, subject, html)
+
             cur.close()
             conn.close()
             return jsonify({"success": True, "order_code": order_code, "id": new_id}), 201

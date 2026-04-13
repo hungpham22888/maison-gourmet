@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTitle.innerText = id ? 'Chỉnh sửa đơn hàng' : 'Thêm đơn hàng thủ công';
         adminForm.innerHTML = `
             <div class="form-group"><label>Tên khách hàng</label><input type="text" name="customer_name" value="${record ? record.customer_name : ''}" required></div>
+            <div class="form-group"><label>Email khách hàng</label><input type="email" name="customer_email" placeholder="Để gửi email xác nhận" value=""></div>
             <div class="form-group"><label>Sản phẩm</label><input type="text" name="product_name" value="${record ? record.product_name : ''}" required></div>
             <div class="form-group"><label>Số tiền (VNĐ)</label><input type="number" name="amount" value="${record ? record.amount : ''}" required></div>
             <div class="form-group"><label>Trạng thái</label>

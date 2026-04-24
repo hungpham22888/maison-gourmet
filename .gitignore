@@ -4,3 +4,6 @@ node_modules/
 Thumbs.db
 .env
 *.log
+__pycache__/
+*.pyc
+brain.db

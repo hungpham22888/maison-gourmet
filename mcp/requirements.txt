@@ -1,0 +1,3 @@
+mcp
+flask
+python-dotenv

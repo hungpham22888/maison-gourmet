@@ -386,36 +386,37 @@ def generate_fb_caption(mode: str, idea: str) -> str:
 
 
 @mcp.tool()
-def post_to_facebook_page(image_source: str, caption: str) -> str:
+def post_to_facebook_page(image_url: str, caption: str) -> str:
     """
     Đăng ảnh + caption lên Facebook Page của Maison Gourmet.
-    - image_source: Có thể là URL công khai (http...) hoặc đường dẫn file local (/opt/maison...)
+    - image_url: Chấp nhận cả URL công khai (http...) HOẶC đường dẫn file nội bộ trên server (/opt/maison...)
     - caption: nội dung bài đăng
     """
     if not FB_PAGE_ID or not FB_PAGE_TOKEN:
         return "Lỗi: FB_PAGE_ID hoặc FB_PAGE_TOKEN chưa được cấu hình."
 
     try:
-        url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
+        fb_url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
         payload = {
             "caption":      caption,
             "access_token": FB_PAGE_TOKEN
         }
         
-        # Kiem tra xem image_source la file local hay URL
-        is_local = image_source.startswith("/") or (len(image_source) > 2 and image_source[1] == ":")
+        # Kiem tra xem image_url la file local hay URL web
+        # Neu bat dau bang / hoac C: thi la local path
+        is_local = image_url.startswith("/") or (len(image_url) > 2 and image_url[1] == ":")
         
         if is_local:
-            if not os.path.exists(image_source):
-                return f"Lỗi: Không tìm thấy file ảnh tại {image_source}"
+            if not os.path.exists(image_url):
+                return f"Lỗi: Không tìm thấy file ảnh tại đường dẫn: {image_url}"
             
-            with open(image_source, "rb") as fimg:
-                files = {"source": (os.path.basename(image_source), fimg, "image/png")}
-                response = requests.post(url, data=payload, files=files, timeout=60)
+            with open(image_url, "rb") as fimg:
+                files = {"source": (os.path.basename(image_url), fimg, "image/png")}
+                response = requests.post(fb_url, data=payload, files=files, timeout=60)
         else:
-            # Truong hop la URL
-            payload["url"] = image_source
-            response = requests.post(url, data=payload, timeout=60)
+            # Truong hop la URL web cong khai
+            payload["url"] = image_url
+            response = requests.post(fb_url, data=payload, timeout=60)
 
         result = response.json()
 
@@ -424,10 +425,10 @@ def post_to_facebook_page(image_source: str, caption: str) -> str:
             return f"Đăng bài thành công! Post ID: {post_id} | Link: https://www.facebook.com/{post_id}"
         else:
             err = result.get("error", {})
-            return f"Đăng bài thất bại: {err.get('message', 'Unknown error')} (Code: {err.get('code')})"
+            return f"Đăng bài thất bại từ phía Facebook: {err.get('message', 'Unknown error')} (Code: {err.get('code')})"
 
     except Exception as e:
-        return f"Lỗi khi đăng bài: {str(e)}"
+        return f"Lỗi hệ thống khi đăng bài: {str(e)}"
 
 
 if __name__ == "__main__":

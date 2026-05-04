@@ -307,31 +307,32 @@ def generate_fb_image(prompt: str, quality: str = "low") -> str:
 
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
+        # gpt-image-1 luon tra ve b64_json mac dinh, KHONG truyen response_format
         response = client.images.generate(
             model="gpt-image-1",
             prompt=prompt,
             n=1,
             size="1024x1024",
             quality=quality,
-            response_format="b64_json",
         )
+        # b64_json la field mac dinh cua gpt-image-1
         b64_data = response.data[0].b64_json
         if not b64_data:
-            return "Lỗi: API trả về dữ liệu rỗng."
+            return "Loi: API tra ve du lieu rong."
 
-        # Lưu PNG vào thư mục temp của skill
-        import time
-        ts = int(time.time())
+        # Luu PNG vao thu muc assets cua skill
+        import time as _time
+        ts = int(_time.time())
         save_dir = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets")
         os.makedirs(save_dir, exist_ok=True)
         img_path = os.path.join(save_dir, f"fb_image_{ts}.png")
         with open(img_path, "wb") as fout:
             fout.write(base64.b64decode(b64_data))
 
-        return f"Tạo ảnh thành công! Đường dẫn local: {img_path} | base64_len: {len(b64_data)}"
+        return f"Tao anh thanh cong! Duong dan: {img_path}"
 
     except Exception as e:
-        return f"Lỗi tạo ảnh: {str(e)}"
+        return f"Loi tao anh: {str(e)}"
 
 
 @mcp.tool()

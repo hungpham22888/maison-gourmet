@@ -2,8 +2,26 @@
 node_modules/
 .netlify/
 Thumbs.db
+
+# Secrets — KHÔNG BAO GIỜ commit
 .env
+*.env
+my-skills/**/.env
+brain.db
+
+# Build & cache
 *.log
 __pycache__/
 *.pyc
-brain.db
+*.pyo
+.venv/
+venv/
+
+# Skill: tao-creative-fb — output tạm thời
+my-skills/tao-creative-fb/assets/temp_image.png
+my-skills/tao-creative-fb/assets/temp_caption.txt
+my-skills/tao-creative-fb/assets/test_image.png
+my-skills/tao-creative-fb/assets/test_caption.txt
+my-skills/tao-creative-fb/assets/dry_run_outputs/
+my-skills/tao-creative-fb/assets/ads_*.png
+my-skills/tao-creative-fb/assets/ads_*.txt

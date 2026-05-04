@@ -386,33 +386,45 @@ def generate_fb_caption(mode: str, idea: str) -> str:
 
 
 @mcp.tool()
-def post_to_facebook_page(image_url: str, caption: str) -> str:
+def post_to_facebook_page(image_source: str, caption: str) -> str:
     """
     Đăng ảnh + caption lên Facebook Page của Maison Gourmet.
-    - image_url: URL công khai của ảnh (lấy từ kết quả của generate_fb_image)
-    - caption: nội dung bài đăng (lấy từ kết quả của generate_fb_caption)
-    QUAN TRỌNG: Chỉ gọi tool này sau khi đã xác nhận với anh Hùng.
+    - image_source: Có thể là URL công khai (http...) hoặc đường dẫn file local (/opt/maison...)
+    - caption: nội dung bài đăng
     """
     if not FB_PAGE_ID or not FB_PAGE_TOKEN:
-        return "Lỗi: FB_PAGE_ID hoặc FB_PAGE_TOKEN chưa được cấu hình trong .env của skill."
+        return "Lỗi: FB_PAGE_ID hoặc FB_PAGE_TOKEN chưa được cấu hình."
 
     try:
-        url = f"https://graph.facebook.com/v20.0/{FB_PAGE_ID}/photos"
+        url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
         payload = {
-            "url":          image_url,
             "caption":      caption,
             "access_token": FB_PAGE_TOKEN
         }
-        response = requests.post(url, data=payload, timeout=30)
-        result   = response.json()
+        
+        # Kiem tra xem image_source la file local hay URL
+        is_local = image_source.startswith("/") or (len(image_source) > 2 and image_source[1] == ":")
+        
+        if is_local:
+            if not os.path.exists(image_source):
+                return f"Lỗi: Không tìm thấy file ảnh tại {image_source}"
+            
+            with open(image_source, "rb") as fimg:
+                files = {"source": (os.path.basename(image_source), fimg, "image/png")}
+                response = requests.post(url, data=payload, files=files, timeout=60)
+        else:
+            # Truong hop la URL
+            payload["url"] = image_source
+            response = requests.post(url, data=payload, timeout=60)
+
+        result = response.json()
 
         if response.status_code == 200 and ("id" in result or "post_id" in result):
             post_id = result.get("id") or result.get("post_id")
-            return f"Đăng bài thành công! Post ID: {post_id}"
+            return f"Đăng bài thành công! Post ID: {post_id} | Link: https://www.facebook.com/{post_id}"
         else:
-            err_msg = result.get("error", {}).get("message", "Không rõ lỗi")
-            err_code = result.get("error", {}).get("code", "")
-            return f"Đăng bài thất bại (code {err_code}): {err_msg}"
+            err = result.get("error", {})
+            return f"Đăng bài thất bại: {err.get('message', 'Unknown error')} (Code: {err.get('code')})"
 
     except Exception as e:
         return f"Lỗi khi đăng bài: {str(e)}"

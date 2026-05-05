@@ -407,33 +407,48 @@ def generate_fb_caption(mode: str, idea: str) -> str:
 @mcp.tool()
 def post_to_facebook_page(image_url: str, caption: str) -> str:
     """
-    Đăng ảnh + caption lên Facebook Page của Maison Gourmet.
-    - image_url: Chấp nhận cả URL công khai (http...) HOẶC đường dẫn file nội bộ trên server (/opt/maison...)
-    - caption: nội dung bài đăng
+    Dang anh + caption len Facebook Page cua Maison Gourmet.
+    - image_url: URL anh tu generate_fb_image (dang https://maisonpremium.vn/mcp-static/...)
+    - caption: noi dung bai dang (tu generate_fb_caption)
+    QUAN TRONG: Chi goi sau khi anh Hung da xac nhan noi dung.
     """
     if not FB_PAGE_ID or not FB_PAGE_TOKEN:
-        return "Lỗi: FB_PAGE_ID hoặc FB_PAGE_TOKEN chưa được cấu hình."
+        return "Loi: FB_PAGE_ID hoac FB_PAGE_TOKEN chua duoc cau hinh."
 
     try:
         fb_url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
         payload = {
             "caption":      caption,
-            "access_token": FB_PAGE_TOKEN
+            "access_token": FB_PAGE_TOKEN,
         }
-        
-        # Kiem tra xem image_url la file local hay URL web
-        # Neu bat dau bang / hoac C: thi la local path
-        is_local = image_url.startswith("/") or (len(image_url) > 2 and image_url[1] == ":")
-        
-        if is_local:
-            if not os.path.exists(image_url):
-                return f"Lỗi: Không tìm thấy file ảnh tại đường dẫn: {image_url}"
-            
-            with open(image_url, "rb") as fimg:
-                files = {"source": (os.path.basename(image_url), fimg, "image/png")}
+
+        # --- Xac dinh local path tu image_url ---
+        # Uu tien binary upload de tranh Facebook crawler bi block/timeout
+        local_path = None
+
+        if image_url.startswith("/") or (len(image_url) > 2 and image_url[1] == ":"):
+            # Da la local path roi
+            local_path = image_url
+        elif "/mcp-static/" in image_url or "/static/" in image_url:
+            # URL tro ve server cua minh -> resolve sang local file
+            filename = image_url.split("/")[-1]
+            candidate = os.path.join(STATIC_DIR, filename)
+            if os.path.exists(candidate):
+                local_path = candidate
+            else:
+                candidate2 = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets", filename)
+                if os.path.exists(candidate2):
+                    local_path = candidate2
+
+        if local_path:
+            # Binary upload -- Facebook khong can crawl bat cu URL nao
+            if not os.path.exists(local_path):
+                return f"Loi: Khong tim thay file anh tai: {local_path}"
+            with open(local_path, "rb") as fimg:
+                files = {"source": (os.path.basename(local_path), fimg, "image/png")}
                 response = requests.post(fb_url, data=payload, files=files, timeout=60)
         else:
-            # Truong hop la URL web cong khai
+            # URL ben ngoai thuc su (Cloudinary, S3...)
             payload["url"] = image_url
             response = requests.post(fb_url, data=payload, timeout=60)
 
@@ -441,13 +456,23 @@ def post_to_facebook_page(image_url: str, caption: str) -> str:
 
         if response.status_code == 200 and ("id" in result or "post_id" in result):
             post_id = result.get("id") or result.get("post_id")
-            return f"Đăng bài thành công! Post ID: {post_id} | Link: https://www.facebook.com/{post_id}"
+            return (
+                f"Dang bai thanh cong!\n"
+                f"Post ID: {post_id}\n"
+                f"Link: https://www.facebook.com/{post_id}"
+            )
         else:
             err = result.get("error", {})
-            return f"Đăng bài thất bại từ phía Facebook: {err.get('message', 'Unknown error')} (Code: {err.get('code')})"
+            return (
+                f"Dang bai that bai (Facebook API):\n"
+                f"  Code: {err.get('code')}\n"
+                f"  Message: {err.get('message', 'Unknown error')}\n"
+                f"  Type: {err.get('type', '')}"
+            )
 
     except Exception as e:
-        return f"Lỗi hệ thống khi đăng bài: {str(e)}"
+        return f"Loi he thong khi dang bai: {str(e)}"
+
 
 
 if __name__ == "__main__":

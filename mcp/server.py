@@ -12,486 +12,149 @@ from starlette.staticfiles import StaticFiles
 try:
     from dotenv import load_dotenv
 except ImportError:
-    load_dotenv = None  # python-dotenv chưa cài
+    load_dotenv = None
 
 # --- CONFIGURATION ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'brain.db')
 
-# --- LOAD .env theo thứ tự ưu tiên ---
 def _bootstrap_env():
-    """Load .env từ nhiều vị trí: skill → root project → home."""
-    if os.getenv("OPENAI_API_KEY"):
-        return  # Đã có, không cần load
-
+    if os.getenv("OPENAI_API_KEY"): return
     candidates = [
         os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", ".env"),
         os.path.join(BASE_DIR, ".env"),
         os.path.expanduser("~/.env"),
-        "/etc/maison-gourmet.env",  # fallback cho VPS
+        "/etc/maison-gourmet.env",
     ]
-
     for path in candidates:
         if os.path.exists(path):
-            if load_dotenv:
-                load_dotenv(path, override=False)
+            if load_dotenv: load_dotenv(path, override=False)
             else:
-                # Manual parse nếu python-dotenv chưa cài
                 with open(path, encoding="utf-8") as f:
                     for line in f:
                         line = line.strip()
                         if line and not line.startswith("#") and "=" in line:
                             k, v = line.split("=", 1)
                             os.environ.setdefault(k.strip(), v.strip())
-            print(f"[MCP] Loaded env t\u1eeb: {path}")
             break
-    else:
-        print("[MCP] CANH BAO: Khong tim thay file .env! OPENAI_API_KEY se bi thieu.")
 
 _bootstrap_env()
-
-# OpenAI & Facebook config (sau khi đã load .env)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 FB_PAGE_ID     = os.getenv("FB_PAGE_ID", "")
 FB_PAGE_TOKEN  = os.getenv("FB_PAGE_TOKEN", "")
 
-if not OPENAI_API_KEY:
-    print("[MCP] WARNING: OPENAI_API_KEY CHUA DUOC SET!")
-else:
-    print(f"[MCP] OPENAI_API_KEY loaded (starts with: {OPENAI_API_KEY[:12]}...)")
-if not FB_PAGE_TOKEN:
-    print("[MCP] WARNING: FB_PAGE_TOKEN CHUA DUOC SET!")
-
-# Khoi tao FastMCP native, bind 0.0.0.0:3001
 mcp = FastMCP("Maison Gourmet Business Tools", host="0.0.0.0", port=3001, streamable_http_path="/mcp")
 
-# Serve static files (anh gen ra) qua HTTP de Facebook co the download
 MCP_DIR    = os.path.dirname(os.path.abspath(__file__))
 STATIC_DIR = os.path.join(MCP_DIR, "static")
 os.makedirs(STATIC_DIR, exist_ok=True)
+VPS_PUBLIC_URL = os.getenv("VPS_PUBLIC_URL", "https://maisonpremium.vn/mcp-static")
 
-# Public IP cua VPS — dung de tra ve URL cho agent
-VPS_PUBLIC_URL = os.getenv("VPS_PUBLIC_URL", "http://103.97.127.184:3001")
-
-# Mount /static vao ung dung Starlette cua FastMCP
 @mcp.custom_route("/static/{filename}", methods=["GET"])
 async def serve_static(request):
-    """Serve generated images as public static files."""
     from starlette.responses import FileResponse, Response
     filename = request.path_params["filename"]
     filepath = os.path.join(STATIC_DIR, filename)
-    if os.path.exists(filepath) and os.path.isfile(filepath):
-        return FileResponse(filepath)
+    if os.path.exists(filepath): return FileResponse(filepath)
     return Response("Not found", status_code=404)
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    conn = sqlite3.connect(DB_PATH); conn.row_factory = sqlite3.Row
     return conn
 
 # --- TOOLS ---
-
 @mcp.tool()
 def view_orders_summary(period: str = "today") -> str:
-    """Xem báo cáo TÓM TẮT (chỉ có số lượng và tổng tiền) đơn hàng (today, yesterday, this_week). KHÔNG dùng tool này nếu cần xem chi tiết từng đơn hàng."""
-    conn = get_db()
-    cur = conn.cursor()
-    
+    conn = get_db(); cur = conn.cursor()
     date_filter = "date(order_date) = date('now', 'localtime')"
-    if period == "yesterday":
-        date_filter = "date(order_date) = date('now', 'localtime', '-1 day')"
-    elif period == "this_week":
-        date_filter = "date(order_date) >= date('now', 'localtime', 'weekday 0', '-7 days')"
-    
+    if period == "yesterday": date_filter = "date(order_date) = date('now', 'localtime', '-1 day')"
+    elif period == "this_week": date_filter = "date(order_date) >= date('now', 'localtime', 'weekday 0', '-7 days')"
     cur.execute(f"SELECT status, COUNT(*) as count, SUM(amount) as total FROM orders WHERE {date_filter} GROUP BY status")
     rows = cur.fetchall()
-    
-    if not rows:
-        return f"Khong co don hang nao trong khoang thoi gian: {period}."
-    
+    if not rows: return f"Khong co don hang nao trong khoang thoi gian: {period}."
     report = [f"BAO CAO DON HANG ({period.upper()}):"]
     grand_total = 0
     for r in rows:
         report.append(f"- {r['status'].capitalize()}: {r['count']} don | {int(r['total']):,} VND")
         grand_total += r['total']
-    
     report.append(f"\nTONG DOANH THU: {int(grand_total):,} VND")
-    conn.close()
-    return "\n".join(report)
+    conn.close(); return "\n".join(report)
 
 @mcp.tool()
 def confirm_payment(order_code: str) -> str:
-    """Xác nhận thanh toán cho mã đơn hàng (ví dụ: MGM-1234)."""
-    conn = get_db()
-    cur = conn.cursor()
+    conn = get_db(); cur = conn.cursor()
     cur.execute("SELECT customer_name FROM orders WHERE order_code = ?", (order_code,))
     order = cur.fetchone()
-    
-    if not order:
-        return f"Khong tim thay don {order_code}."
-    
-    cur.execute("UPDATE orders SET status = 'completed', updated_at = datetime('now', 'localtime') WHERE order_code = ?", (order_code,))
-    conn.commit()
-    conn.close()
-    return f"Da xac nhan thanh toan don {order_code} ({order['customer_name']})."
-
-@mcp.tool()
-def update_stock(product_name: str, new_quantity: int) -> str:
-    """Cập nhật kho sản phẩm."""
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT id, name FROM products WHERE name LIKE ? LIMIT 1", (f"%{product_name}%",))
-    p = cur.fetchone()
-    
-    if not p:
-        return f"Khong tim thay san pham '{product_name}'."
-    
-    cur.execute("UPDATE products SET quantity = ?, updated_at = datetime('now', 'localtime') WHERE id = ?", (new_quantity, p['id']))
-    conn.commit()
-    conn.close()
-    return f"Da cap nhat kho {p['name']} thanh {new_quantity}."
-
-@mcp.tool()
-def edit_website(element_id: str, new_text: str) -> str:
-    """Chỉnh sửa text trên giao diện website. element_id có thể là 'hero_title' (Tiêu đề chính) hoặc 'hero_desc' (Mô tả)."""
-    index_path = os.path.join(BASE_DIR, 'index.html')
-    try:
-        with open(index_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            
-        if element_id == 'hero_title':
-            content = re.sub(r'(<h1 class="hero-title">).*?(</h1>)', r'\1\n' + new_text + r'\n\2', content, flags=re.DOTALL)
-        elif element_id == 'hero_desc':
-            content = re.sub(r'(<p class="hero-description">).*?(</p>)', r'\1\n' + new_text + r'\n\2', content, flags=re.DOTALL)
-        else:
-            return f"Element ID '{element_id}' khong duoc ho tro."
-            
-        with open(index_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-            
-        return f"Da cap nhat {element_id} thanh cong tren website."
-    except Exception as e:
-        return f"Loi cap nhat web: {str(e)}"
-
-@mcp.tool()
-def create_promotion(discount_percent: int, is_active: bool) -> str:
-    """Bật/tắt chương trình Flash Sale trên website và chỉnh phần trăm giảm giá."""
-    index_path = os.path.join(BASE_DIR, 'index.html')
-    try:
-        with open(index_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            
-        if is_active:
-            content = re.sub(r'<div class="flash-sale-banner" id="flash-sale-banner" style=".*?">', '<div class="flash-sale-banner" id="flash-sale-banner" style="display: flex;">', content)
-            content = re.sub(r'<span>FLASH SALE GIẢM .*? – CHỈ CÒN:</span>', f'<span>FLASH SALE GIẢM {discount_percent}% – CHỈ CÒN:</span>', content)
-            res = f"Da BAT Flash Sale {discount_percent}% tren website."
-        else:
-            content = re.sub(r'<div class="flash-sale-banner" id="flash-sale-banner" style=".*?">', '<div class="flash-sale-banner" id="flash-sale-banner" style="display: none;">', content)
-            res = "Da TAT Flash Sale tren website."
-            
-        with open(index_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-            
-        return res
-    except Exception as e:
-        return f"Loi tao khuyen mai: {str(e)}"
-@mcp.tool()
-def check_orders() -> str:
-    """Kiểm tra và lấy chi tiết các đơn hàng mới chưa thông báo."""
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT id, order_code, customer_name, customer_phone, customer_address, amount, product_name, quantity, payment_method, notes FROM orders WHERE is_notified = 0")
-    rows = cur.fetchall()
-    if not rows:
-        conn.close()
-        return "Không có đơn hàng mới."
-    ids = []
-    report = ["CÓ ĐƠN HÀNG MỚI:"]
-    for r in rows:
-        ids.append(r['id'])
-        report.append(
-            f"- Đơn {r['order_code']}:\n"
-            f"  + Khách: {r['customer_name']} ({r['customer_phone']})\n"
-            f"  + SP: {r['product_name']} (SL: {r['quantity']})\n"
-            f"  + Tiền: {int(r['amount']):,} VND\n"
-            f"  + Thanh toán: {r['payment_method']}\n"
-            f"  + Ghi chú: {r['notes'] or 'Không'}"
-        )
-    cur.execute(f"UPDATE orders SET is_notified = 1 WHERE id IN ({','.join(['?']*len(ids))})", ids)
-    conn.commit()
-    conn.close()
-    return "\n".join(report)
-
-
-@mcp.tool()
-def get_daily_report() -> str:
-    """Tổng hợp báo cáo ngày hôm qua (doanh thu, số đơn, số khách)."""
-    conn = get_db()
-    cur = conn.cursor()
-    
-    date_filter = "date(order_date) = date('now', 'localtime', '-1 day')"
-    
-    # Lay tong so don, tong doanh thu, va so luong khach hang doc nhat
-    cur.execute(f"SELECT COUNT(id) as total_orders, SUM(amount) as total_revenue, COUNT(DISTINCT COALESCE(customer_phone, customer_name)) as total_customers FROM orders WHERE {date_filter} AND status != 'cancelled'")
-    row = cur.fetchone()
-    
-    if not row or not row['total_orders']:
-        conn.close()
-        return "Hom qua khong co don hang nao thanh cong."
-        
-    report = [
-        "BAO CAO HOM QUA:",
-        f"- Tong so don hang: {row['total_orders']}",
-        f"- So luong khach hang: {row['total_customers']}",
-        f"- Tong doanh thu: {int(row['total_revenue'] if row['total_revenue'] else 0):,} VND"
-    ]
-    
-    conn.close()
-    return "\n".join(report)
-
-@mcp.tool()
-def add_product(name: str, price: float, description: str, quantity: int, category: str, image: str = "product_set.png") -> str:
-    """Thêm một sản phẩm mới vào cơ sở dữ liệu. Cần cung cấp tên, giá, mô tả, số lượng, danh mục, và hình ảnh."""
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute('''
-        INSERT INTO products (name, price, description, quantity, category, image, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'active')
-    ''', (name, price, description, quantity, category, image))
-    conn.commit()
-    conn.close()
-    return f"Da them san pham '{name}' voi gia {int(price):,} VND thanh cong."
-
-@mcp.tool()
-def edit_product(product_id: int, name: str = None, price: float = None, description: str = None, quantity: int = None, category: str = None) -> str:
-    """Chỉnh sửa thông tin sản phẩm dựa trên product_id. Bỏ trống các trường không muốn thay đổi."""
-    conn = get_db()
-    cur = conn.cursor()
-    
-    cur.execute("SELECT * FROM products WHERE id = ?", (product_id,))
-    p = cur.fetchone()
-    if not p:
-        conn.close()
-        return f"Khong tim thay san pham co ID {product_id}."
-        
-    new_name = name if name is not None else p['name']
-    new_price = price if price is not None else p['price']
-    new_desc = description if description is not None else p['description']
-    new_qty = quantity if quantity is not None else p['quantity']
-    new_cat = category if category is not None else p['category']
-    
-    cur.execute('''
-        UPDATE products 
-        SET name=?, price=?, description=?, quantity=?, category=?, updated_at=datetime('now','localtime')
-        WHERE id=?
-    ''', (new_name, new_price, new_desc, new_qty, new_cat, product_id))
-    conn.commit()
-    conn.close()
-    return f"Da cap nhat san pham ID {product_id} ('{new_name}') thanh cong."
-
-@mcp.tool()
-def complete_order(order_code: str) -> str:
-    """Đánh dấu một đơn hàng là đã hoàn thành (completed) và đã giao hàng."""
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT customer_name FROM orders WHERE order_code = ?", (order_code,))
-    order = cur.fetchone()
-    
-    if not order:
-        conn.close()
-        return f"Khong tim thay don hang {order_code}."
-    
-    cur.execute("UPDATE orders SET status = 'completed', updated_at = datetime('now', 'localtime') WHERE order_code = ?", (order_code,))
-    conn.commit()
-    conn.close()
-    return f"Da danh dau don hang {order_code} cua khach {order['customer_name']} la HOAN THANH."
-
-# ─────────────────────────────────────────────────
-# FACEBOOK CONTENT TOOLS (Skill: tao-creative-fb)
-# ─────────────────────────────────────────────────
+    if not order: return f"Khong tim thay don {order_code}."
+    cur.execute("UPDATE orders SET status = 'completed' WHERE order_code = ?", (order_code,))
+    conn.commit(); conn.close()
+    return f"Da xac nhan thanh toan don {order_code}."
 
 @mcp.tool()
 def generate_fb_image(prompt: str, quality: str = "low") -> str:
-    """
-    Tạo ảnh cho bài đăng Facebook bằng OpenAI gpt-image-1.
-    - quality='low'    → tiết kiệm chi phí, dùng cho organic post
-    - quality='medium' → chất lượng cao hơn, dùng cho creative ads
-    Trả về PUBLIC URL dạng http://... để dùng ngay với post_to_facebook_page.
-    """
-    if not OPENAI_API_KEY:
-        return (
-            "Lỗi: OPENAI_API_KEY chưa được cấu hình. "
-            "Thêm vào /opt/maison-gourmet/.env rồi restart MCP server."
-        )
-
+    """Tạo ảnh và trả về PUBLIC URL để dùng với post_to_facebook_page."""
+    if not OPENAI_API_KEY: return "Lỗi: Thẻ OpenAI chưa cấu hình."
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
-        # gpt-image-1 luon tra ve b64_json mac dinh
-        response = client.images.generate(
-            model="gpt-image-1",
-            prompt=prompt,
-            n=1,
-            size="1024x1024",
-            quality=quality,
-        )
+        response = client.images.generate(model="gpt-image-1", prompt=prompt, n=1, size="1024x1024", quality=quality)
         b64_data = response.data[0].b64_json
-        if not b64_data:
-            return "Lỗi: OpenAI API trả về dữ liệu rỗng."
-
-        # Luu vao mcp/static/ de serve qua HTTP
-        import time as _time
-        ts = int(_time.time())
-        filename = f"fb_image_{ts}.png"
+        filename = f"fb_image_{int(datetime.now().timestamp())}.png"
         img_path = os.path.join(STATIC_DIR, filename)
-        with open(img_path, "wb") as fout:
-            fout.write(base64.b64decode(b64_data))
-
-        # Tra ve PUBLIC URL de Facebook co the download
-        public_url = f"{VPS_PUBLIC_URL}/static/{filename}"
-        return f"Tạo ảnh thành công! URL công khai: {public_url}"
-
-    except Exception as e:
-        return f"Lỗi tạo ảnh: {str(e)}"
-
+        with open(img_path, "wb") as f: f.write(base64.b64decode(b64_data))
+        return f"{VPS_PUBLIC_URL}/{filename}"
+    except Exception as e: return f"Lỗi tạo ảnh: {str(e)}"
 
 @mcp.tool()
 def generate_fb_caption(mode: str, idea: str) -> str:
-    """
-    Viết caption/ad copy cho bài đăng Facebook bằng GPT-4.
-    - mode='organic' → bài đăng hàng ngày (soft CTA, gần gũi, 80-150 từ)
-    - mode='ads'     → ad copy chạy quảng cáo (hook mạnh, hard CTA, 80-150 từ)
-    - idea: ý tưởng hoặc angle muốn triển khai
-    Trả về nội dung caption đã viết.
-    """
-    if not OPENAI_API_KEY:
-        return "Lỗi: OPENAI_API_KEY chưa được cấu hình trong .env của skill."
-
-    brand_voice = (
-        "Tone: Gần gũi, vui vẻ, không dùng từ hoa mỹ, hay dùng câu ngắn. "
-        "Tránh dùng: synergy, leverage, tối ưu hóa trải nghiệm, corporate. "
-        "Phong cách: Câu văn ngắn gọn, trực diện. Dùng tiếng Việt đời thường."
-    )
-
-    if mode == "organic":
-        system_prompt = (
-            f"Bạn là Content Creator của Maison Gourmet.\n"
-            f"Viết một bài đăng Facebook dựa trên ý tưởng được cung cấp.\n"
-            f"Yêu cầu: 80-150 từ. Cấu trúc: Hook thu hút + Body ngắn gọn + Soft CTA.\n"
-            f"Brand Voice: {brand_voice}"
-        )
-    else:
-        system_prompt = (
-            f"Bạn là Copywriter chạy quảng cáo của Maison Gourmet.\n"
-            f"Viết một Ad Copy dựa trên angle và sản phẩm được cung cấp.\n"
-            f"Yêu cầu: 80-150 từ. Cấu trúc: Hook cực mạnh + USP nổi bật + Hard CTA.\n"
-            f"Brand Voice: {brand_voice}"
-        )
-
+    """Viết caption Facebook."""
+    if not OPENAI_API_KEY: return "Lỗi: Thẻ OpenAI chưa cấu hình."
+    sys_prompt = f"Bạn là Content Creator của Maison Gourmet. Viết bài {mode} khoảng 100 từ về: {idea}. Tone: Gần gũi."
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user",   "content": f"Ý tưởng/Angle: {idea}"}
-            ],
-            temperature=0.7
-        )
-        caption = response.choices[0].message.content.strip()
-        return f"Caption đã viết xong:\n\n{caption}"
-
-    except Exception as e:
-        return f"Lỗi viết caption: {str(e)}"
-
+        response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role":"system","content":sys_prompt}])
+        return response.choices[0].message.content.strip()
+    except Exception as e: return f"Lỗi viết bài: {str(e)}"
 
 @mcp.tool()
-def post_to_facebook_page(image_url: str, caption: str) -> str:
+def post_to_facebook_page(image_source: str, caption: str) -> str:
     """
-    Dang anh + caption len Facebook Page cua Maison Gourmet.
-    - image_url: URL anh tu generate_fb_image (https://maisonpremium.vn/mcp-static/...)
-                 hoac duong dan file local (/opt/maison-gourmet/...)
-    - caption: noi dung bai dang (tu generate_fb_caption)
-    LUON dung binary upload - khong gui URL cho Facebook crawler.
+    Đăng bài lên Facebook. 
+    image_source: Phải là URL ảnh hoặc đường dẫn file local.
+    caption: Nội dung bài đăng.
     """
-    if not FB_PAGE_ID or not FB_PAGE_TOKEN:
-        return "Loi: FB_PAGE_ID hoac FB_PAGE_TOKEN chua duoc cau hinh."
-
+    if not FB_PAGE_ID or not FB_PAGE_TOKEN: return "Lỗi: Thiếu ID/Token Facebook."
     try:
-        import time as _time
         fb_url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
-        payload = {
-            "caption":      caption,
-            "access_token": FB_PAGE_TOKEN,
-        }
-
-        # ----------------------------------------------------------------
-        # CHIEN LUOC: LUON LUON dung binary upload
-        # Khong bao gio gui URL cho Facebook crawler de tranh bi block
-        # ----------------------------------------------------------------
+        # KHÔNG gửi tham số 'url' để ép Facebook dùng file upload
+        payload = {"caption": caption, "access_token": FB_PAGE_TOKEN}
+        
+        # Tìm file local từ URL/Path
+        filename = image_source.split("/")[-1].split("?")[0]
         local_path = None
-        temp_path  = None
-
-        # Case 1: Da la local path
-        if image_url.startswith("/") or (len(image_url) > 2 and image_url[1] == ":"):
-            local_path = image_url.strip()
-
-        # Case 2: URL cua chinh server (mcp-static) -> resolve local file
-        elif "/mcp-static/" in image_url or "/static/" in image_url:
-            filename  = image_url.split("/")[-1].split("?")[0]
-            candidate = os.path.join(STATIC_DIR, filename)
-            if os.path.exists(candidate):
-                local_path = candidate
-            else:
-                c2 = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets", filename)
-                if os.path.exists(c2):
-                    local_path = c2
-
-        # Case 3: Bat ky URL HTTP nao khac -> tu download roi upload binary
-        if local_path is None and image_url.startswith("http"):
-            dl = requests.get(image_url, timeout=30)
-            if dl.status_code == 200:
-                temp_path = os.path.join(STATIC_DIR, f"_dl_{int(_time.time())}.png")
-                with open(temp_path, "wb") as tf:
-                    tf.write(dl.content)
-                local_path = temp_path
-            else:
-                return f"Loi: Khong the download anh tu {image_url} (HTTP {dl.status_code})"
-
-        if not local_path or not os.path.exists(local_path):
-            return f"Loi: Khong tim thay file anh. image_url={image_url}"
-
-        # Binary upload - Facebook khong can crawl bat cu thu gi
-        with open(local_path, "rb") as fimg:
-            files    = {"source": (os.path.basename(local_path), fimg, "image/png")}
-            response = requests.post(fb_url, data=payload, files=files, timeout=60)
-
-        if temp_path and os.path.exists(temp_path):
-            os.remove(temp_path)
-
-        result = response.json()
-
-        if response.status_code == 200 and ("id" in result or "post_id" in result):
-            post_id = result.get("id") or result.get("post_id")
-            return (
-                f"Dang bai thanh cong!\n"
-                f"Post ID: {post_id}\n"
-                f"Link: https://www.facebook.com/{post_id}"
-            )
+        for p in [os.path.join(STATIC_DIR, filename), image_source.strip()]:
+            if os.path.exists(p) and os.path.isfile(p):
+                local_path = p; break
+        
+        if not local_path:
+            # Nếu là link ngoài, tải về tạm thời
+            if image_source.startswith("http"):
+                r = requests.get(image_source, timeout=30)
+                if r.status_code == 200:
+                    local_path = os.path.join(STATIC_DIR, f"tmp_{filename}")
+                    with open(local_path, "wb") as f: f.write(r.content)
+        
+        if local_path and os.path.exists(local_path):
+            with open(local_path, "rb") as fimg:
+                files = {"source": (os.path.basename(local_path), fimg, "image/png")}
+                response = requests.post(fb_url, data=payload, files=files, timeout=60)
         else:
-            err = result.get("error", {})
-            return (
-                f"Dang bai that bai (Facebook API):\n"
-                f"  Code: {err.get('code')}\n"
-                f"  Message: {err.get('message', 'Unknown error')}\n"
-                f"  Type: {err.get('type', '')}\n"
-                f"  [Debug] local_path={local_path}"
-            )
+            return f"Lỗi: Không tìm thấy ảnh tại {image_source}"
 
-    except Exception as e:
-        return f"Loi he thong khi dang bai: {str(e)}"
-
-
+        res = response.json()
+        if response.status_code == 200:
+            return f"Thành công! ID: {res.get('id')}"
+        return f"Facebook báo lỗi: {res.get('error', {}).get('message')}"
+    except Exception as e: return f"Lỗi hệ thống: {str(e)}"
 
 if __name__ == "__main__":
-    print("Maison Gourmet MCP Server starting on 0.0.0.0:3001 using sse")
     mcp.run("sse")

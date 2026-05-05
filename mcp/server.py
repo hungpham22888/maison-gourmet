@@ -408,49 +408,65 @@ def generate_fb_caption(mode: str, idea: str) -> str:
 def post_to_facebook_page(image_url: str, caption: str) -> str:
     """
     Dang anh + caption len Facebook Page cua Maison Gourmet.
-    - image_url: URL anh tu generate_fb_image (dang https://maisonpremium.vn/mcp-static/...)
+    - image_url: URL anh tu generate_fb_image (https://maisonpremium.vn/mcp-static/...)
+                 hoac duong dan file local (/opt/maison-gourmet/...)
     - caption: noi dung bai dang (tu generate_fb_caption)
-    QUAN TRONG: Chi goi sau khi anh Hung da xac nhan noi dung.
+    LUON dung binary upload - khong gui URL cho Facebook crawler.
     """
     if not FB_PAGE_ID or not FB_PAGE_TOKEN:
         return "Loi: FB_PAGE_ID hoac FB_PAGE_TOKEN chua duoc cau hinh."
 
     try:
+        import time as _time
         fb_url = f"https://graph.facebook.com/v21.0/{FB_PAGE_ID}/photos"
         payload = {
             "caption":      caption,
             "access_token": FB_PAGE_TOKEN,
         }
 
-        # --- Xac dinh local path tu image_url ---
-        # Uu tien binary upload de tranh Facebook crawler bi block/timeout
+        # ----------------------------------------------------------------
+        # CHIEN LUOC: LUON LUON dung binary upload
+        # Khong bao gio gui URL cho Facebook crawler de tranh bi block
+        # ----------------------------------------------------------------
         local_path = None
+        temp_path  = None
 
+        # Case 1: Da la local path
         if image_url.startswith("/") or (len(image_url) > 2 and image_url[1] == ":"):
-            # Da la local path roi
-            local_path = image_url
+            local_path = image_url.strip()
+
+        # Case 2: URL cua chinh server (mcp-static) -> resolve local file
         elif "/mcp-static/" in image_url or "/static/" in image_url:
-            # URL tro ve server cua minh -> resolve sang local file
-            filename = image_url.split("/")[-1]
+            filename  = image_url.split("/")[-1].split("?")[0]
             candidate = os.path.join(STATIC_DIR, filename)
             if os.path.exists(candidate):
                 local_path = candidate
             else:
-                candidate2 = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets", filename)
-                if os.path.exists(candidate2):
-                    local_path = candidate2
+                c2 = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets", filename)
+                if os.path.exists(c2):
+                    local_path = c2
 
-        if local_path:
-            # Binary upload -- Facebook khong can crawl bat cu URL nao
-            if not os.path.exists(local_path):
-                return f"Loi: Khong tim thay file anh tai: {local_path}"
-            with open(local_path, "rb") as fimg:
-                files = {"source": (os.path.basename(local_path), fimg, "image/png")}
-                response = requests.post(fb_url, data=payload, files=files, timeout=60)
-        else:
-            # URL ben ngoai thuc su (Cloudinary, S3...)
-            payload["url"] = image_url
-            response = requests.post(fb_url, data=payload, timeout=60)
+        # Case 3: Bat ky URL HTTP nao khac -> tu download roi upload binary
+        if local_path is None and image_url.startswith("http"):
+            dl = requests.get(image_url, timeout=30)
+            if dl.status_code == 200:
+                temp_path = os.path.join(STATIC_DIR, f"_dl_{int(_time.time())}.png")
+                with open(temp_path, "wb") as tf:
+                    tf.write(dl.content)
+                local_path = temp_path
+            else:
+                return f"Loi: Khong the download anh tu {image_url} (HTTP {dl.status_code})"
+
+        if not local_path or not os.path.exists(local_path):
+            return f"Loi: Khong tim thay file anh. image_url={image_url}"
+
+        # Binary upload - Facebook khong can crawl bat cu thu gi
+        with open(local_path, "rb") as fimg:
+            files    = {"source": (os.path.basename(local_path), fimg, "image/png")}
+            response = requests.post(fb_url, data=payload, files=files, timeout=60)
+
+        if temp_path and os.path.exists(temp_path):
+            os.remove(temp_path)
 
         result = response.json()
 
@@ -467,7 +483,8 @@ def post_to_facebook_page(image_url: str, caption: str) -> str:
                 f"Dang bai that bai (Facebook API):\n"
                 f"  Code: {err.get('code')}\n"
                 f"  Message: {err.get('message', 'Unknown error')}\n"
-                f"  Type: {err.get('type', '')}"
+                f"  Type: {err.get('type', '')}\n"
+                f"  [Debug] local_path={local_path}"
             )
 
     except Exception as e:

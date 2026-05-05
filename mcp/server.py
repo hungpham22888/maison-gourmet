@@ -7,6 +7,7 @@ import requests
 from datetime import datetime
 from mcp.server.fastmcp import FastMCP
 from openai import OpenAI
+from starlette.staticfiles import StaticFiles
 
 try:
     from dotenv import load_dotenv
@@ -63,6 +64,25 @@ if not FB_PAGE_TOKEN:
 
 # Khoi tao FastMCP native, bind 0.0.0.0:3001
 mcp = FastMCP("Maison Gourmet Business Tools", host="0.0.0.0", port=3001, streamable_http_path="/mcp")
+
+# Serve static files (anh gen ra) qua HTTP de Facebook co the download
+MCP_DIR    = os.path.dirname(os.path.abspath(__file__))
+STATIC_DIR = os.path.join(MCP_DIR, "static")
+os.makedirs(STATIC_DIR, exist_ok=True)
+
+# Public IP cua VPS — dung de tra ve URL cho agent
+VPS_PUBLIC_URL = os.getenv("VPS_PUBLIC_URL", "http://103.97.127.184:3001")
+
+# Mount /static vao ung dung Starlette cua FastMCP
+@mcp.custom_route("/static/{filename}", methods=["GET"])
+async def serve_static(request):
+    """Serve generated images as public static files."""
+    from starlette.responses import FileResponse, Response
+    filename = request.path_params["filename"]
+    filepath = os.path.join(STATIC_DIR, filename)
+    if os.path.exists(filepath) and os.path.isfile(filepath):
+        return FileResponse(filepath)
+    return Response("Not found", status_code=404)
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -296,18 +316,17 @@ def generate_fb_image(prompt: str, quality: str = "low") -> str:
     Tạo ảnh cho bài đăng Facebook bằng OpenAI gpt-image-1.
     - quality='low'    → tiết kiệm chi phí, dùng cho organic post
     - quality='medium' → chất lượng cao hơn, dùng cho creative ads
-    Trả về base64 PNG đã được encode, hoặc thông báo lỗi nếu thất bại.
+    Trả về PUBLIC URL dạng http://... để dùng ngay với post_to_facebook_page.
     """
     if not OPENAI_API_KEY:
         return (
             "Lỗi: OPENAI_API_KEY chưa được cấu hình. "
-            "Trên VPS, chạy: export OPENAI_API_KEY='sk-...' "
-            "hoặc thêm vào /etc/maison-gourmet.env rồi restart MCP server."
+            "Thêm vào /opt/maison-gourmet/.env rồi restart MCP server."
         )
 
     try:
         client = OpenAI(api_key=OPENAI_API_KEY)
-        # gpt-image-1 luon tra ve b64_json mac dinh, KHONG truyen response_format
+        # gpt-image-1 luon tra ve b64_json mac dinh
         response = client.images.generate(
             model="gpt-image-1",
             prompt=prompt,
@@ -315,24 +334,24 @@ def generate_fb_image(prompt: str, quality: str = "low") -> str:
             size="1024x1024",
             quality=quality,
         )
-        # b64_json la field mac dinh cua gpt-image-1
         b64_data = response.data[0].b64_json
         if not b64_data:
-            return "Loi: API tra ve du lieu rong."
+            return "Lỗi: OpenAI API trả về dữ liệu rỗng."
 
-        # Luu PNG vao thu muc assets cua skill
+        # Luu vao mcp/static/ de serve qua HTTP
         import time as _time
         ts = int(_time.time())
-        save_dir = os.path.join(BASE_DIR, "my-skills", "tao-creative-fb", "assets")
-        os.makedirs(save_dir, exist_ok=True)
-        img_path = os.path.join(save_dir, f"fb_image_{ts}.png")
+        filename = f"fb_image_{ts}.png"
+        img_path = os.path.join(STATIC_DIR, filename)
         with open(img_path, "wb") as fout:
             fout.write(base64.b64decode(b64_data))
 
-        return f"Tao anh thanh cong! Duong dan: {img_path}"
+        # Tra ve PUBLIC URL de Facebook co the download
+        public_url = f"{VPS_PUBLIC_URL}/static/{filename}"
+        return f"Tạo ảnh thành công! URL công khai: {public_url}"
 
     except Exception as e:
-        return f"Loi tao anh: {str(e)}"
+        return f"Lỗi tạo ảnh: {str(e)}"
 
 
 @mcp.tool()

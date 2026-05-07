@@ -3,6 +3,9 @@ import sqlite3
 import re
 import json
 import base64
+import shutil
+import glob
+import subprocess
 import requests
 from datetime import datetime
 from mcp.server.fastmcp import FastMCP
@@ -17,6 +20,59 @@ except ImportError:
 # --- CONFIGURATION ---
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH = os.path.join(BASE_DIR, 'brain.db')
+
+# --- WEB EDITING CONFIG ---
+EDITABLE_FILES = {
+    'index.html', 'style.css', 'script.js',
+    'admin.html', 'admin.js', 'admin.css',
+    'checkout.html', 'checkout.js',
+    'khao-sat-trung-thu.html'
+}
+BACKUP_DIR = os.path.join(BASE_DIR, 'backups')
+os.makedirs(BACKUP_DIR, exist_ok=True)
+MAX_READ_LINES = 200  # Giới hạn số dòng đọc mỗi lần
+MAX_EDIT_CHARS = 2000  # Giới hạn kích thước replace_text tối đa
+ALLOWED_EXTENSIONS = {'.html', '.css', '.js'}  # Phần mở rộng cho file mới
+
+def _validate_web_filename(filename: str, allow_new: bool = False) -> str | None:
+    """Validate filename: chống directory traversal, chỉ cho phép file trong whitelist.
+    allow_new=True cho phép file chưa có trong whitelist nếu có extension hợp lệ."""
+    # Chống traversal: loại bỏ path separators
+    clean = os.path.basename(filename.strip())
+    if clean != filename.strip():
+        return None  # Có chứa path separator -> bị chặn
+    if clean not in EDITABLE_FILES:
+        if not allow_new:
+            return None
+        # Cho phép tạo file mới nếu extension hợp lệ
+        _, ext = os.path.splitext(clean)
+        if ext.lower() not in ALLOWED_EXTENSIONS:
+            return None
+    filepath = os.path.join(BASE_DIR, clean)
+    # Double-check: resolved path phải nằm trong BASE_DIR
+    real_path = os.path.realpath(filepath)
+    if not real_path.startswith(os.path.realpath(BASE_DIR)):
+        return None
+    return real_path
+
+def _auto_git_deploy(filename: str, action: str) -> str:
+    """Tự động git add, commit, push sau khi thay đổi file web."""
+    try:
+        git_cmds = [
+            ["git", "add", filename],
+            ["git", "commit", "-m", f"[MCP Auto] {action}: {filename}"],
+            ["git", "push", "origin", "main"]
+        ]
+        results = []
+        for cmd in git_cmds:
+            r = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, timeout=30)
+            if r.returncode != 0 and "nothing to commit" not in r.stdout + r.stderr:
+                results.append(f"Git warn: {' '.join(cmd)} -> {r.stderr.strip()[:100]}")
+        if results:
+            return "\n" + "\n".join(results)
+        return "\n🚀 Auto-deploy: Git push thanh cong!"
+    except Exception as e:
+        return f"\n⚠️ Git deploy loi: {str(e)}"
 
 def _bootstrap_env():
     if os.getenv("OPENAI_API_KEY"): return
@@ -62,7 +118,7 @@ def get_db():
     conn = sqlite3.connect(DB_PATH); conn.row_factory = sqlite3.Row
     return conn
 
-# --- TOOLS ---
+# --- BUSINESS TOOLS ---
 @mcp.tool()
 def view_orders_summary(period: str = "today") -> str:
     conn = get_db(); cur = conn.cursor()
@@ -155,6 +211,180 @@ def post_to_facebook_page(image_source: str, caption: str) -> str:
             return f"Thành công! ID: {res.get('id')}"
         return f"Facebook báo lỗi: {res.get('error', {}).get('message')}"
     except Exception as e: return f"Lỗi hệ thống: {str(e)}"
+
+# --- WEB CODE EDITING TOOLS ---
+
+@mcp.tool()
+def list_web_files() -> str:
+    """Liệt kê tất cả file web có thể chỉnh sửa (HTML, CSS, JS).
+    Trả về danh sách file kèm kích thước và thời gian sửa đổi cuối."""
+    results = []
+    for fname in sorted(EDITABLE_FILES):
+        fpath = os.path.join(BASE_DIR, fname)
+        if os.path.exists(fpath):
+            stat = os.stat(fpath)
+            size_kb = round(stat.st_size / 1024, 1)
+            modified = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M")
+            # Đếm số dòng
+            with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+                line_count = sum(1 for _ in f)
+            # Kiểm tra backup
+            backup_pattern = os.path.join(BACKUP_DIR, f"{fname}.*.bak")
+            has_backup = "✅" if glob.glob(backup_pattern) else "—"
+            results.append(f"📄 {fname} | {size_kb}KB | {line_count} dòng | Sửa: {modified} | Backup: {has_backup}")
+        else:
+            results.append(f"⚠️ {fname} | KHÔNG TÌM THẤY")
+    header = f"=== DANH SÁCH FILE WEB ({len(results)} files) ===\n"
+    return header + "\n".join(results)
+
+@mcp.tool()
+def read_web_file(filename: str, start_line: int = 1, end_line: int = 0) -> str:
+    """Đọc nội dung file web.
+    filename: Tên file (vd: index.html, style.css, script.js).
+    start_line: Dòng bắt đầu (mặc định 1).
+    end_line: Dòng kết thúc (mặc định 0 = đọc MAX_READ_LINES dòng từ start_line)."""
+    filepath = _validate_web_filename(filename)
+    if not filepath:
+        allowed = ", ".join(sorted(EDITABLE_FILES))
+        return f"Lỗi: File '{filename}' không hợp lệ. Chỉ được đọc: {allowed}"
+    if not os.path.exists(filepath):
+        return f"Lỗi: File '{filename}' không tồn tại trên server."
+    try:
+        with open(filepath, "r", encoding="utf-8", errors="replace") as f:
+            all_lines = f.readlines()
+        total = len(all_lines)
+        # Xử lý range
+        start = max(1, start_line)
+        if end_line <= 0:
+            end = min(start + MAX_READ_LINES - 1, total)
+        else:
+            end = min(end_line, total)
+        # Giới hạn tối đa
+        if (end - start + 1) > MAX_READ_LINES:
+            end = start + MAX_READ_LINES - 1
+        selected = all_lines[start - 1:end]
+        # Format với số dòng
+        numbered = []
+        for i, line in enumerate(selected, start=start):
+            numbered.append(f"{i:4d} | {line.rstrip()}")
+        header = f"📄 {filename} (dòng {start}-{end} / tổng {total} dòng)\n"
+        header += "=" * 50 + "\n"
+        return header + "\n".join(numbered)
+    except Exception as e:
+        return f"Lỗi đọc file: {str(e)}"
+
+@mcp.tool()
+def edit_web_file(filename: str, search_text: str, replace_text: str) -> str:
+    """Chỉnh sửa file web bằng cách tìm và thay thế text.
+    filename: Tên file cần sửa (vd: index.html).
+    search_text: Đoạn text cần tìm (phải chính xác).
+    replace_text: Đoạn text thay thế (tối đa 2000 ký tự).
+    Tự động tạo backup trước khi sửa và push lên Git."""
+    filepath = _validate_web_filename(filename)
+    if not filepath:
+        allowed = ", ".join(sorted(EDITABLE_FILES))
+        return f"Lỗi: File '{filename}' không hợp lệ. Chỉ được sửa: {allowed}"
+    if not os.path.exists(filepath):
+        return f"Lỗi: File '{filename}' không tồn tại trên server."
+    if not search_text or not search_text.strip():
+        return "Lỗi: search_text không được để trống."
+    if len(replace_text) > MAX_EDIT_CHARS:
+        return f"Lỗi: replace_text quá dài ({len(replace_text)} ký tự). Giới hạn tối đa {MAX_EDIT_CHARS} ký tự. Hãy chia nhỏ thay đổi."
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+        # Kiểm tra search_text có tồn tại
+        count = content.count(search_text)
+        if count == 0:
+            return f"Lỗi: Không tìm thấy đoạn text trong {filename}. Hãy dùng read_web_file để xem nội dung chính xác."
+        if count > 1:
+            return f"Cảnh báo: Tìm thấy {count} vị trí khớp trong {filename}. Để an toàn, hãy dùng search_text dài hơn/chính xác hơn để chỉ khớp 1 vị trí duy nhất."
+        # Tạo backup trước khi sửa
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup_name = f"{filename}.{timestamp}.bak"
+        backup_path = os.path.join(BACKUP_DIR, backup_name)
+        shutil.copy2(filepath, backup_path)
+        # Thực hiện thay thế
+        new_content = content.replace(search_text, replace_text, 1)
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(new_content)
+        # Tạo diff preview
+        search_preview = search_text[:100] + ("..." if len(search_text) > 100 else "")
+        replace_preview = replace_text[:100] + ("..." if len(replace_text) > 100 else "")
+        # Auto git deploy
+        git_result = _auto_git_deploy(filename, "edit")
+        return (
+            f"✅ Đã sửa file {filename} thành công!\n\n"
+            f"📋 Thay đổi:\n"
+            f"  ❌ CŨ: {search_preview}\n"
+            f"  ✅ MỚI: {replace_preview}\n\n"
+            f"💾 Backup: {backup_name}\n"
+            f"🔄 Dùng restore_web_file('{filename}') để hoàn tác nếu cần."
+            f"{git_result}"
+        )
+    except Exception as e:
+        return f"Lỗi khi sửa file: {str(e)}"
+
+@mcp.tool()
+def create_web_file(filename: str, content: str) -> str:
+    """Tạo file web mới (HTML, CSS, JS).
+    filename: Tên file mới (vd: landing-page.html, promo.css).
+    content: Nội dung file (tối đa 2000 ký tự).
+    File mới sẽ được tự động thêm vào whitelist và push lên Git."""
+    if len(content) > MAX_EDIT_CHARS:
+        return f"Lỗi: Nội dung quá dài ({len(content)} ký tự). Giới hạn tối đa {MAX_EDIT_CHARS} ký tự. Hãy tạo file cơ bản trước, sau đó dùng edit_web_file để thêm nội dung."
+    filepath = _validate_web_filename(filename, allow_new=True)
+    if not filepath:
+        exts = ", ".join(sorted(ALLOWED_EXTENSIONS))
+        return f"Lỗi: File '{filename}' không hợp lệ. Chỉ cho phép tạo file có đuôi: {exts}. Tên file không được chứa đường dẫn."
+    if os.path.exists(filepath):
+        return f"Lỗi: File '{filename}' đã tồn tại. Dùng edit_web_file để chỉnh sửa."
+    try:
+        with open(filepath, "w", encoding="utf-8") as f:
+            f.write(content)
+        # Thêm vào whitelist để có thể edit sau này
+        EDITABLE_FILES.add(filename.strip())
+        # Auto git deploy
+        git_result = _auto_git_deploy(filename, "create")
+        return (
+            f"✅ Đã tạo file {filename} thành công!\n"
+            f"📄 Kích thước: {len(content)} ký tự\n"
+            f"📝 File đã được thêm vào danh sách có thể chỉnh sửa.\n"
+            f"💡 Dùng edit_web_file('{filename}', ...) để chỉnh sửa tiếp."
+            f"{git_result}"
+        )
+    except Exception as e:
+        return f"Lỗi tạo file: {str(e)}"
+
+@mcp.tool()
+def restore_web_file(filename: str) -> str:
+    """Khôi phục file web về phiên bản backup gần nhất.
+    filename: Tên file cần khôi phục (vd: index.html)."""
+    filepath = _validate_web_filename(filename)
+    if not filepath:
+        allowed = ", ".join(sorted(EDITABLE_FILES))
+        return f"Lỗi: File '{filename}' không hợp lệ. Chỉ được khôi phục: {allowed}"
+    try:
+        # Tìm backup mới nhất
+        backup_pattern = os.path.join(BACKUP_DIR, f"{filename}.*.bak")
+        backups = sorted(glob.glob(backup_pattern), reverse=True)
+        if not backups:
+            return f"Lỗi: Không tìm thấy backup nào cho {filename}."
+        latest_backup = backups[0]
+        backup_name = os.path.basename(latest_backup)
+        # Khôi phục
+        shutil.copy2(latest_backup, filepath)
+        # Liệt kê các backup còn lại
+        backup_list = "\n".join([f"  • {os.path.basename(b)}" for b in backups[:5]])
+        # Auto git deploy
+        git_result = _auto_git_deploy(filename, "restore")
+        return (
+            f"✅ Đã khôi phục {filename} từ backup: {backup_name}\n\n"
+            f"📦 Các backup hiện có ({len(backups)} bản):\n{backup_list}"
+            f"{git_result}"
+        )
+    except Exception as e:
+        return f"Lỗi khôi phục: {str(e)}"
 
 if __name__ == "__main__":
     mcp.run("sse")

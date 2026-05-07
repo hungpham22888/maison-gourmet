@@ -31,6 +31,30 @@ WantedBy=multi-user.target
 ```
 
 ## Tools Exposed
-- `view_orders_summary(period)`
-- `confirm_payment(order_code)`
-- `update_stock(product_name, new_quantity)`
+
+### Business Tools
+- `view_orders_summary(period)` – Xem báo cáo đơn hàng (today/yesterday/this_week)
+- `confirm_payment(order_code)` – Xác nhận thanh toán đơn hàng
+- `generate_fb_image(prompt, quality)` – Tạo ảnh bằng AI cho Facebook
+- `generate_fb_caption(mode, idea)` – Viết caption Facebook bằng AI
+- `post_to_facebook_page(image_source, caption)` – Đăng bài lên Facebook Page
+
+### Web Code Editing Tools
+- `list_web_files()` – Liệt kê tất cả file web có thể chỉnh sửa
+- `read_web_file(filename, start_line, end_line)` – Đọc nội dung file web (tối đa 200 dòng/lần)
+- `edit_web_file(filename, search_text, replace_text)` – Chỉnh sửa file web (tự động backup)
+- `restore_web_file(filename)` – Khôi phục file web từ backup gần nhất
+
+### Editable Files
+```
+index.html, style.css, script.js
+admin.html, admin.js, admin.css
+checkout.html, checkout.js
+khao-sat-trung-thu.html
+```
+
+### Security
+- Whitelist: Chỉ cho phép sửa file web cụ thể
+- Anti-traversal: Chặn path traversal (../../../etc/passwd)
+- Auto-backup: Tạo backup tự động trước mỗi lần sửa (lưu tại `backups/`)
+

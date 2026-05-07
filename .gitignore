@@ -16,6 +16,7 @@ __pycache__/
 *.pyo
 .venv/
 venv/
+backups/
 
 # Skill: tao-creative-fb — output tạm thời
 my-skills/tao-creative-fb/assets/temp_image.png
